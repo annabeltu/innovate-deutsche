@@ -138,13 +138,13 @@ describe("ApiLesson", () => {
     await fireEvent.press(
       screen.getByRole("button", { name: "B. Under the mattress" }),
     );
-    await fireEvent.press(screen.getByRole("button", { name: "Check  ✓" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Check" }));
     expect(screen.getByText("Not quite. The answer is A.")).toBeTruthy();
 
     await fireEvent.press(
       screen.getByRole("button", { name: "A. In a licensed bank" }),
     );
-    await fireEvent.press(screen.getByRole("button", { name: "Check  ✓" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Check" }));
     expect(screen.getByText("Correct. Deposits are insured.")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Finish" }));
 

@@ -2,9 +2,11 @@ import { ApiError } from "../api/client";
 // A lesson from the API (customized for this learner), shown card by card
 // with the shared UI pieces. Used by the Lesson screen when the API is set.
 import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
+import { Feather } from "@expo/vector-icons";
 import { useLesson, saveLessonResult } from "../api/lessons";
 import { VoiceInput } from "./VoiceInput";
 import { recognizeIntent } from "../api/voice";
@@ -16,6 +18,7 @@ import {
   Card,
   Choice,
   Kiko,
+  KikoNote,
   Label,
   Progress,
   Row,
@@ -47,7 +50,7 @@ export function ApiLesson({
   if (lesson.isPending) {
     return (
       <Screen>
-        <Kiko size={140} />
+        <Kiko size={140} mood="thinking" />
         <Txt accessibilityLiveRegion="polite" style={{ textAlign: "center" }}>
           {t("lessonLoading")}
         </Txt>
@@ -57,15 +60,22 @@ export function ApiLesson({
   if (lesson.isError) {
     return (
       <Screen>
-        <Txt accessibilityLiveRegion="polite" style={{ color: c.error }}>
-          {t(
+        <KikoNote
+          live
+          mood="oops"
+          tone="error"
+          message={t(
             lesson.error instanceof ApiError &&
               lesson.error.code === "lesson_translation_failed"
               ? "app.noTranslation"
               : "lessonError",
           )}
-        </Txt>
-        <Button title={t("tryAgain")} onPress={() => void lesson.refetch()} />
+        />
+        <Button
+          title={t("tryAgain")}
+          icon="refresh-cw"
+          onPress={() => void lesson.refetch()}
+        />
         <Button
           secondary
           title={t("roadmap")}
@@ -211,9 +221,14 @@ function LessonCardView({
           onPress={() => router.replace("/roadmap")}
         />
         <Progress value={progress} />
-        <Txt accessibilityLabel={t("app.hearts", { count: hearts })}>
-          ♥ {hearts}
-        </Txt>
+        <View
+          accessible
+          accessibilityLabel={t("app.hearts", { count: hearts })}
+          style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+        >
+          <Feather name="heart" size={20} color={c.error} />
+          <Txt style={{ fontWeight: "700" }}>{hearts}</Txt>
+        </View>
       </Row>
       <Label>{title.toUpperCase()}</Label>
       <Card>
@@ -231,16 +246,13 @@ function LessonCardView({
         />
       ))}
       {isQuiz && checked && feedback && (
-        <Card
-          style={{ backgroundColor: isCorrect ? c.successSoft : c.errorSoft }}
-        >
-          <Txt
-            accessibilityLiveRegion="polite"
-            style={{ color: isCorrect ? c.success : c.error }}
-          >
-            {feedback}
-          </Txt>
-        </Card>
+        <KikoNote
+          key={`${answer}-${isCorrect}`}
+          live
+          mood={isCorrect ? "cheer" : "oops"}
+          tone={isCorrect ? "success" : "error"}
+          message={feedback}
+        />
       )}
       {canContinue ? (
         <Button
@@ -250,7 +262,8 @@ function LessonCardView({
         />
       ) : (
         <Button
-          title={`${t("check")}  ✓`}
+          title={t("check")}
+          icon="check"
           disabled={answer === null}
           onPress={() => {
             setChecked(true);

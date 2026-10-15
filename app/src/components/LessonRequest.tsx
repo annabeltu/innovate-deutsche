@@ -45,7 +45,8 @@ export function LessonRequest({
         <Button title={t("addedToRoadmap")} disabled onPress={() => {}} />
         <Button
           secondary
-          title={`${t("roadmap")} →`}
+          icon="arrow-right"
+          title={t("roadmap")}
           onPress={() => router.replace("/roadmap")}
         />
       </>
