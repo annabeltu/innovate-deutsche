@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-export type Language = "en" | "hi" | "sw" | "de";
+export type Language = "en" | "es" | "sw";
 export type Country = "US" | "MX" | "KE";
 type State = {
   language: Language;
@@ -72,11 +72,14 @@ export const useApp = create<State>()(
     {
       name: "kompass-v1",
       storage: createJSONStorage(() => AsyncStorage),
-      version: 1,
+      version: 2,
       migrate: (persisted) => {
         const state = persisted as Partial<State>;
         return {
           ...state,
+          language: ["en", "es", "sw"].includes(state.language ?? "")
+            ? state.language
+            : "en",
           country: ["US", "MX", "KE"].includes(state.country ?? "")
             ? state.country
             : "US",
