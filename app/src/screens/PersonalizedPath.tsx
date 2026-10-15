@@ -4,11 +4,12 @@ import { useWindowSize } from "../hooks/use-window-size";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen, Progress } from "../components/ui";
+import { KikoNote, Screen, Progress } from "../components/ui";
 import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
-import { personalizePath } from "../onboarding/personalized-path";
+import { usePath } from "../api/path";
+import { topics } from "../onboarding/request";
 
 const reference = require("../../assets/path/reference.png");
 const artRegions = {
@@ -48,7 +49,31 @@ export function PersonalizedPath() {
   const large = useApp((state) => state.large);
   const { width, height, fontScale } = useWindowSize();
   const { t } = useTranslation();
-  const path = personalizePath(confidence);
+  const result = usePath();
+  if (result.isPending)
+    return (
+      <Screen>
+        <KikoNote mood="thinking" message={t("app.pathLoading")} live />
+      </Screen>
+    );
+  if (result.isError)
+    return (
+      <Screen>
+        <KikoNote live mood="oops" tone="error" message={t("app.pathError")} />
+        <Action
+          title={t("tryAgain")}
+          hint={t("pathPreview.previewHint")}
+          onPress={() => void result.refetch()}
+        />
+      </Screen>
+    );
+  const path = result.data.lessons.map((lesson) => {
+    const score = confidence[topics.indexOf(lesson.topic)] ?? 0.5;
+    return {
+      ...lesson,
+      band: score < 0.4 ? "low" : score < 0.7 ? "medium" : "high",
+    };
+  });
   const unit = Math.min(
     Math.min(width, 540) / 390,
     Math.max(0.85, height / 800),

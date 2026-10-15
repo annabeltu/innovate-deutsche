@@ -1,5 +1,12 @@
 import { personalizePath } from "../personalized-path";
-import { pathPreviewCopy } from "../../i18n/path-preview";
+import en from "../../i18n/locales/en.json";
+import es from "../../i18n/locales/es.json";
+import sw from "../../i18n/locales/sw.json";
+const pathPreviewCopy = {
+  en: en.pathPreview,
+  es: es.pathPreview,
+  sw: sw.pathPreview,
+};
 
 it("starts with the least confident topic and includes all five lessons", () => {
   expect(
