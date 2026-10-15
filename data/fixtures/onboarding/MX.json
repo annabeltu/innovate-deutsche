@@ -1,0 +1,19 @@
+{
+  "country": "MX",
+  "language": "es",
+  "accessibility": {
+    "read_aloud": false,
+    "simple_mode": true,
+    "large_text": false
+  },
+  "life_stage": "student",
+  "goal": "avoid_debt",
+  "comfort": "beginner",
+  "confidence": {
+    "accounts": 3,
+    "saving": 1,
+    "borrowing": 1,
+    "scams": 4,
+    "budget": 2
+  }
+}

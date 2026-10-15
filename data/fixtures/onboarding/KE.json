@@ -1,0 +1,19 @@
+{
+  "country": "KE",
+  "language": "sw",
+  "accessibility": {
+    "read_aloud": true,
+    "simple_mode": true,
+    "large_text": true
+  },
+  "life_stage": "parent",
+  "goal": "handle_emergencies",
+  "comfort": "confident",
+  "confidence": {
+    "accounts": 5,
+    "saving": 4,
+    "borrowing": 2,
+    "scams": 2,
+    "budget": 3
+  }
+}
