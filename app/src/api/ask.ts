@@ -1,7 +1,9 @@
 import type { Country, Language } from "../types/api";
 import { API_UNAVAILABLE, VoiceApiError, apiBaseUrl } from "./voice";
 
-/** Ask Kiko a question; returns null when no API is configured (demo mode). */
+const NOT_FOUND = 404;
+
+/** Ask Kiko a question; returns null in demo mode (no API, or /v1/ask not built yet). */
 export async function askKiko(
   question: string,
   country: Country,
@@ -19,6 +21,8 @@ export async function askKiko(
   } catch {
     throw new VoiceApiError(API_UNAVAILABLE);
   }
+  // /v1/ask (path and lessons API) is not built yet; show the sample answer meanwhile.
+  if (response.status === NOT_FOUND) return null;
   if (!response.ok) throw new VoiceApiError(API_UNAVAILABLE);
   const data = (await response.json()) as { answer?: unknown };
   if (typeof data.answer !== "string") throw new VoiceApiError(API_UNAVAILABLE);

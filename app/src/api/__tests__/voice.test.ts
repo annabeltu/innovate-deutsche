@@ -78,3 +78,25 @@ describe("transcribeRecording", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe("askKiko", () => {
+  it("returns null (sample answer) while /v1/ask is not deployed", async () => {
+    const { askKiko } = jest.requireActual<typeof import("../ask")>("../ask");
+    fetchMock.mockResolvedValue({ ok: false, status: 404 });
+
+    await expect(askKiko("Hi", "US", "en")).resolves.toBeNull();
+  });
+
+  it("returns the answer from the API", async () => {
+    const { askKiko } = jest.requireActual<typeof import("../ask")>("../ask");
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ answer: "Compare fees first." }),
+    });
+
+    await expect(askKiko("Hi", "US", "en")).resolves.toBe(
+      "Compare fees first.",
+    );
+  });
+});
