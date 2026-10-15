@@ -102,48 +102,33 @@ export function Welcome() {
           ]}
         >
           <View style={{ height: heroHeight, overflow: "hidden" }}>
-            {s.country === "US" ? (
-              <>
-                <LinearGradient
-                  colors={["#F6F4F5", "#BED8FC", "#8ABCF8"]}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ height: 87 * unit }}
-                />
-                <View style={{ flex: 1 }}>
-                  <ReferenceArt crop="54 270 776 465" />
-                </View>
-              </>
-            ) : (
-              <>
-                <Image
-                  key={s.country}
-                  source={countries[s.country].image}
-                  resizeMode="cover"
-                  style={{ width: "100%", height: "100%" }}
-                  accessible
-                  accessibilityLabel={t(
-                    `app.${{ US: "usaScene", MX: "mexicoScene", KE: "kenyaScene" }[s.country]}`,
-                  )}
-                />
-                <LinearGradient
-                  pointerEvents="none"
-                  colors={[
-                    "rgba(244,248,255,0.94)",
-                    "rgba(244,248,255,0.45)",
-                    "rgba(244,248,255,0)",
-                  ]}
-                  locations={[0, 0.55, 1]}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 130 * unit,
-                  }}
-                />
-              </>
-            )}
+            {/* One continuous scene per country, so no sky strip or crop seam. */}
+            <Image
+              key={s.country}
+              source={countries[s.country].image}
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+              accessible
+              accessibilityLabel={t(
+                `app.${{ US: "usaScene", MX: "mexicoScene", KE: "kenyaScene" }[s.country]}`,
+              )}
+            />
+            <LinearGradient
+              pointerEvents="none"
+              colors={[
+                "rgba(244,248,255,0.94)",
+                "rgba(244,248,255,0.45)",
+                "rgba(244,248,255,0)",
+              ]}
+              locations={[0, 0.55, 1]}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 130 * unit,
+              }}
+            />
             <View
               accessibilityRole="header"
               accessibilityLabel="Deutsche Bank. Kompass"
