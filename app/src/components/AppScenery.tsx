@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { useApp } from "../state/useApp";
 
 const scenes = {
@@ -7,6 +7,15 @@ const scenes = {
   MX: require("../../assets/welcome/mx.png"),
   KE: require("../../assets/welcome/ke.png"),
 };
+
+/**
+ * Fill the parent with a background image. Uses a style, not className:
+ * className sizing is ignored for Image on web, which rendered the scenery
+ * at 1254px and widened the page on phones.
+ */
+export const SCENERY_FILL = StyleSheet.create({
+  image: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
+}).image;
 
 /** Full-bleed country scenery with readable overlays for light and dark screens. */
 export function AppScenery({ dark = false }: { dark?: boolean }) {
@@ -17,7 +26,8 @@ export function AppScenery({ dark = false }: { dark?: boolean }) {
         source={scenes[country]}
         resizeMode="cover"
         accessible={false}
-        className="absolute h-full w-full"
+        testID="app-scenery-image"
+        style={SCENERY_FILL}
       />
       <View
         className={`absolute inset-0 ${dark ? "bg-ink/80" : "bg-ice/80"}`}

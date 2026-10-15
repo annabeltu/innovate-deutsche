@@ -1,4 +1,5 @@
 import React from "react";
+import { SCENERY_FILL } from "../components/AppScenery";
 import { Image, Pressable, Text, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
@@ -8,6 +9,9 @@ import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { topics } from "../onboarding/request";
 import { KompassLogo } from "../components/KompassLogo";
+
+// Faint scenery so the sliders stay readable.
+const SCENERY_OPACITY = 0.2;
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -31,7 +35,7 @@ export function Confidence() {
         <Image
           source={scenes[country]}
           resizeMode="cover"
-          className="absolute h-full w-full opacity-20"
+          style={[SCENERY_FILL, { opacity: SCENERY_OPACITY }]}
           accessible={false}
         />
       }

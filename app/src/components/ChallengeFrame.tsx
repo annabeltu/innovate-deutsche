@@ -1,4 +1,5 @@
 import React from "react";
+import { SCENERY_FILL } from "./AppScenery";
 import { Image, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -8,6 +9,9 @@ import { Action } from "../screens/Confidence";
 import { useApp } from "../state/useApp";
 import { personalizePath } from "../onboarding/personalized-path";
 import { KompassLogo } from "./KompassLogo";
+
+// Soft scenery behind the challenge card.
+const SCENERY_OPACITY = 0.4;
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -44,7 +48,7 @@ export function ChallengeFrame({
         <Image
           source={scenes[country]}
           resizeMode="cover"
-          className="absolute h-full w-full opacity-40"
+          style={[SCENERY_FILL, { opacity: SCENERY_OPACITY }]}
           accessible={false}
         />
       }
