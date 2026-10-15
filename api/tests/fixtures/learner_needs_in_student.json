@@ -1,0 +1,11 @@
+{
+  "user_id": "u_8f3c2a91",
+  "country": "IN",
+  "topic_needs": {
+    "accounts": {"indicator": "Adults with an account", "group_rate": 0.78, "benchmark_rate": 0.9, "findex_gap": 0.13},
+    "saving": {"indicator": "Saved at a bank in the past year", "group_rate": 0.384, "benchmark_rate": 0.6, "findex_gap": 0.36},
+    "borrowing": {"indicator": "Borrowed from a formal lender", "group_rate": 0.12, "benchmark_rate": 0.3, "findex_gap": 0.6},
+    "scams": {"indicator": "Made a digital payment", "group_rate": 0.55, "benchmark_rate": 0.7, "findex_gap": 0.21},
+    "budget": {"indicator": "Could raise emergency funds in 30 days", "group_rate": 0.5, "benchmark_rate": 0.65, "findex_gap": 0.23}
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "lesson_id": "saving-safe-saving",
+  "topic": "saving",
+  "title": "Safe Saving",
+  "goal": "Compare where money can be kept and understand protection and growth.",
+  "cards": [
+    {
+      "card_id": "where-money-lives",
+      "type": "concept",
+      "text": "Money kept at home can be lost, stolen or spent. A bank account keeps it protected.",
+      "voice": {
+        "speak_text": "Money kept at home can be lost, stolen or spent. A bank account keeps it protected. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "people-like-you",
+      "type": "bridge",
+      "text": "{indicator}: {group_percent}% of people like you, compared with {benchmark_percent}% overall.",
+      "voice": {
+        "speak_text": "{indicator}: {group_percent} percent of people like you, compared with {benchmark_percent} percent overall. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "student-start-small",
+      "type": "concept",
+      "text": "Saving a little from every allowance or paycheck adds up faster than you think.",
+      "life_stages": ["student", "first_job"],
+      "voice": {
+        "speak_text": "Saving a little from every allowance or paycheck adds up faster than you think. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "parent-family-fund",
+      "type": "concept",
+      "text": "A separate savings account for the family keeps school and health money apart from daily spending.",
+      "life_stages": ["parent"],
+      "voice": {
+        "speak_text": "A separate savings account for the family keeps school and health money apart from daily spending. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "emergency-fund",
+      "type": "concept",
+      "text": "Saving first for emergencies means a surprise bill does not become a loan.",
+      "goals": ["handle_emergencies"],
+      "voice": {
+        "speak_text": "Saving first for emergencies means a surprise bill does not become a loan. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "protected-quiz",
+      "type": "mc_quiz",
+      "text": "Where is your money protected if something goes wrong?",
+      "options": {
+        "a": "In a licensed bank with deposit insurance",
+        "b": "Under the mattress",
+        "c": "With a friend"
+      },
+      "correct_option": "a",
+      "voice": {
+        "speak_text": "Where is your money protected if something goes wrong? A: in a licensed bank with deposit insurance. B: under the mattress. C: with a friend. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "in a licensed bank with deposit insurance",
+          "b": "under the mattress",
+          "c": "with a friend"
+        },
+        "correct_feedback": "Correct. Deposit insurance protects your money even if the bank fails.",
+        "incorrect_feedback": "Not quite. The answer is A. A licensed bank with deposit insurance protects your money even if the bank fails."
+      }
+    },
+    {
+      "card_id": "interest-quiz",
+      "type": "mc_quiz",
+      "text": "You save 100 and earn 10% interest a year. How much do you have after one year?",
+      "options": {"a": "100", "b": "110", "c": "120"},
+      "correct_option": "b",
+      "min_difficulty": 2,
+      "voice": {
+        "speak_text": "You save 100 and earn 10 percent interest a year. How much do you have after one year? A: 100. B: 110. C: 120. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {"a": "100", "b": "110", "c": "120"},
+        "correct_feedback": "Correct. 10 percent of 100 is 10, so you have 110.",
+        "incorrect_feedback": "Not quite. The answer is B. 10 percent of 100 is 10, so you have 110."
+      }
+    },
+    {
+      "card_id": "takeaway",
+      "type": "takeaway",
+      "text": "Keep savings somewhere protected, and let interest help them grow.",
+      "voice": {
+        "speak_text": "Remember: keep savings somewhere protected, and let interest help them grow. Say next to finish the lesson.",
+        "answer_mode": "say_next"
+      }
+    }
+  ]
+}
