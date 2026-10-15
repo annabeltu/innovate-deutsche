@@ -3,7 +3,7 @@ import { Pressable, Text, View, useWindowDimensions } from "react-native";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen, Progress } from "../components/ui";
+import { KikoNote, Screen, Progress } from "../components/ui";
 import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
@@ -52,13 +52,13 @@ export function PersonalizedPath() {
   if (result.isPending)
     return (
       <Screen>
-        <Text>{t("quizLoading")}</Text>
+        <KikoNote mood="thinking" message={t("app.pathLoading")} live />
       </Screen>
     );
   if (result.isError)
     return (
       <Screen>
-        <Text accessibilityRole="alert">{t("apiUnavailable")}</Text>
+        <KikoNote live mood="oops" tone="error" message={t("app.pathError")} />
         <Action
           title={t("tryAgain")}
           hint={t("pathPreview.previewHint")}

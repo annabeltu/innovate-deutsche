@@ -7,7 +7,7 @@ import { LessonRequest } from "../components/LessonRequest";
 import { VoiceInput } from "../components/VoiceInput";
 import { recognizeIntent } from "../api/voice";
 import { useApp } from "../state/useApp";
-import { Screen, Txt, Button, Kiko } from "../components/ui";
+import { Screen, Txt, Title, Button, Kiko } from "../components/ui";
 
 /** Ask for a real lesson by typing or recording, with no local sample answers. */
 export default function Ask() {
@@ -45,9 +45,9 @@ export default function Ask() {
   }
   return (
     <Screen>
-      <Txt accessibilityRole="header">{t("ask")}</Txt>
-      <Kiko size={140} />
-      <Txt>{t("voice.askKiko.prompt")}</Txt>
+      <Title>{t("ask")}</Title>
+      <Kiko size={140} pulse />
+      <Txt style={{ textAlign: "center" }}>{t("voice.askKiko.prompt")}</Txt>
       <VoiceInput onText={spokenQuestion} />
       <TextInput
         accessibilityLabel={t("voice.askKiko.prompt")}

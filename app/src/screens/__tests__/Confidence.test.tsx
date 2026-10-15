@@ -45,6 +45,7 @@ jest.mock("../../components/ui", () => {
     Txt: Text,
     Progress: View,
     Kiko: View,
+    KikoNote: ({ message }: { message: string }) => <Text>{message}</Text>,
   };
 });
 jest.mock("@react-native-community/slider", () => {

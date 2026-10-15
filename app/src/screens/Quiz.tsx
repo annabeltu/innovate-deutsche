@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen, Txt, Progress } from "../components/ui";
+import { KikoNote, Screen, Txt, Progress } from "../components/ui";
 import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 import { useStartQuiz, useSubmitQuiz } from "../api/onboarding";
@@ -35,7 +35,7 @@ function QuizSession() {
       <Txt accessibilityRole="header" className="text-3xl font-bold">
         {t("quizTitle")}
       </Txt>
-      <Txt>{t("quizIntro")}</Txt>
+      <KikoNote message={t("quizIntro")} />
       {(invalid || start.isError) && (
         <Txt accessibilityRole="alert">
           {t(invalid ? "unsupportedLanguage" : "apiUnavailable")}

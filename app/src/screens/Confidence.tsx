@@ -3,7 +3,7 @@ import { Image, Pressable, Text, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen, Txt, Progress } from "../components/ui";
+import { KikoNote, Screen, Txt, Progress } from "../components/ui";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { topics } from "../onboarding/request";
@@ -52,6 +52,7 @@ export function Confidence() {
           {t("confident")}
         </Txt>
       </View>
+      <KikoNote message={t("noWrong")} />
       <View className="gap-3">
         {topics.map((topic, index) => (
           <View
