@@ -1,6 +1,6 @@
 # Kompass
 
-Kompass is a gamified mobile app, with a lesson roadmap, coins, streaks and hearts, that teaches money skills tailored to the user's country: India, Kenya or Germany. Five pre-written lessons are personalized with the learner's profile and World Bank Global Findex data, and an LLM adapts the wording. Users can "Ask Kiko" by voice to get a brand-new lesson added to their roadmap, and the whole app, including that flow, works in a full voice mode for blind and low-vision users.
+Kompass is a gamified mobile app, with a lesson roadmap, coins, streaks and hearts, that teaches money skills tailored to the user's country: the United States, Mexico or Kenya. Five pre-written lessons are personalized with the learner's profile and World Bank Global Findex data, and an LLM adapts the wording. Users can "Ask Kiko" by voice to get a brand-new lesson added to their roadmap, and the whole app, including that flow, works in a full voice mode for blind and low-vision users.
 
 ## Team
 

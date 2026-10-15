@@ -1,0 +1,77 @@
+{
+  "US": {
+    "languages": ["en", "es"],
+    "variables": {
+      "en": {
+        "cur": "$",
+        "id_document": "a government-issued photo ID",
+        "mobile_money": "a payment app like Zelle or Venmo",
+        "deposit_insurer": "the FDIC",
+        "credit_bureau": "Equifax, Experian and TransUnion",
+        "scam_report_agency": "the FTC (Federal Trade Commission)",
+        "savings_group": "lending circle",
+        "informal_lender": "a payday lender"
+      },
+      "es": {
+        "cur": "$",
+        "id_document": "una identificación oficial con foto",
+        "mobile_money": "una app de pagos como Zelle o Venmo",
+        "deposit_insurer": "la FDIC",
+        "credit_bureau": "Equifax, Experian y TransUnion",
+        "scam_report_agency": "la FTC (Comisión Federal de Comercio)",
+        "savings_group": "tanda",
+        "informal_lender": "un prestamista de día de pago (payday lender)"
+      }
+    }
+  },
+  "MX": {
+    "languages": ["es", "en"],
+    "variables": {
+      "es": {
+        "cur": "$",
+        "id_document": "tu INE (credencial para votar)",
+        "mobile_money": "una transferencia SPEI o CoDi",
+        "deposit_insurer": "el IPAB",
+        "credit_bureau": "el Buró de Crédito",
+        "scam_report_agency": "la CONDUSEF",
+        "savings_group": "tanda",
+        "informal_lender": "un prestamista informal (agiotista)"
+      },
+      "en": {
+        "cur": "MX$",
+        "id_document": "your INE voter ID card",
+        "mobile_money": "an SPEI or CoDi transfer",
+        "deposit_insurer": "IPAB (Mexico's deposit insurance agency)",
+        "credit_bureau": "the Buró de Crédito",
+        "scam_report_agency": "CONDUSEF (Mexico's financial consumer agency)",
+        "savings_group": "tanda (savings circle)",
+        "informal_lender": "an informal moneylender"
+      }
+    }
+  },
+  "KE": {
+    "languages": ["en", "sw"],
+    "variables": {
+      "en": {
+        "cur": "KSh ",
+        "id_document": "your national ID card",
+        "mobile_money": "M-Pesa",
+        "deposit_insurer": "the Kenya Deposit Insurance Corporation (KDIC)",
+        "credit_bureau": "Metropol, TransUnion or Creditinfo",
+        "scam_report_agency": "the police",
+        "savings_group": "chama",
+        "informal_lender": "a shylock (informal moneylender)"
+      },
+      "sw": {
+        "cur": "KSh ",
+        "id_document": "kitambulisho chako cha taifa",
+        "mobile_money": "M-Pesa",
+        "deposit_insurer": "Shirika la Bima ya Amana la Kenya (KDIC)",
+        "credit_bureau": "Metropol, TransUnion au Creditinfo",
+        "scam_report_agency": "polisi",
+        "savings_group": "chama",
+        "informal_lender": "mkopeshaji binafsi (shylock)"
+      }
+    }
+  }
+}
