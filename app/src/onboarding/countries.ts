@@ -1,4 +1,4 @@
-import type { CountryCode, LanguageCode } from '@/src/types/onboarding';
+import type { CountryCode, LanguageCode } from "@/src/types/onboarding";
 
 // MVP countries and languages. Add or replace countries here only.
 // No financial facts belong in this file; those come from data/country_packs.
@@ -21,33 +21,37 @@ export type CountryOption = {
 
 /** Every language the app supports, keyed by code. */
 export const LANGUAGES: Record<LanguageCode, LanguageOption> = {
-  en: { code: 'en', labelKey: 'onboarding.language.en', nativeName: 'English' },
-  es: { code: 'es', labelKey: 'onboarding.language.es', nativeName: 'Español' },
-  sw: { code: 'sw', labelKey: 'onboarding.language.sw', nativeName: 'Kiswahili' },
+  en: { code: "en", labelKey: "onboarding.language.en", nativeName: "English" },
+  es: { code: "es", labelKey: "onboarding.language.es", nativeName: "Español" },
+  sw: {
+    code: "sw",
+    labelKey: "onboarding.language.sw",
+    nativeName: "Kiswahili",
+  },
 };
 
 /** Supported countries, in the order they appear in the picker. */
 export const COUNTRIES: CountryOption[] = [
   {
-    countryCode: 'US',
-    labelKey: 'onboarding.country.US',
-    currencyCode: 'USD',
-    currencySymbol: '$',
-    supportedLanguages: ['en', 'es'],
+    countryCode: "US",
+    labelKey: "onboarding.country.US",
+    currencyCode: "USD",
+    currencySymbol: "$",
+    supportedLanguages: ["en", "es"],
   },
   {
-    countryCode: 'MX',
-    labelKey: 'onboarding.country.MX',
-    currencyCode: 'MXN',
-    currencySymbol: '$',
-    supportedLanguages: ['es', 'en'],
+    countryCode: "MX",
+    labelKey: "onboarding.country.MX",
+    currencyCode: "MXN",
+    currencySymbol: "$",
+    supportedLanguages: ["es", "en"],
   },
   {
-    countryCode: 'KE',
-    labelKey: 'onboarding.country.KE',
-    currencyCode: 'KES',
-    currencySymbol: 'KSh',
-    supportedLanguages: ['en', 'sw'],
+    countryCode: "KE",
+    labelKey: "onboarding.country.KE",
+    currencyCode: "KES",
+    currencySymbol: "KSh",
+    supportedLanguages: ["en", "sw"],
   },
 ];
 
@@ -57,7 +61,11 @@ export function getCountry(countryCode: string): CountryOption | undefined {
 }
 
 /** Returns the language options to show once a country is picked. */
-export function getLanguagesForCountry(countryCode: CountryCode): LanguageOption[] {
+export function getLanguagesForCountry(
+  countryCode: CountryCode,
+): LanguageOption[] {
   const country = getCountry(countryCode);
-  return country ? country.supportedLanguages.map((code) => LANGUAGES[code]) : [];
+  return country
+    ? country.supportedLanguages.map((code) => LANGUAGES[code])
+    : [];
 }

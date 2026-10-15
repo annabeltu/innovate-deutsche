@@ -11,13 +11,14 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   ),
 );
 
-it("offers exactly the three question bank languages and selects Spanish", () => {
+it("offers exactly the three question bank languages and selects Spanish", async () => {
   expect(languageOptions.map((option) => option.code).sort()).toEqual(
     Object.keys(bank.speech).sort(),
   );
-  const screen = render(<LanguageSelector />);
-  expect(screen.getAllByRole("radio")).toHaveLength(3);
-  fireEvent.press(screen.getByRole("radio", { name: "Español" }));
+  useApp.setState({ country: "US", language: "en" });
+  const screen = await render(<LanguageSelector />);
+  expect(screen.getAllByRole("radio")).toHaveLength(2);
+  await fireEvent.press(screen.getByRole("radio", { name: "Español" }));
   expect(useApp.getState().language).toBe("es");
   expect(
     screen.getByRole("radio", { name: "Español" }).props.accessibilityState

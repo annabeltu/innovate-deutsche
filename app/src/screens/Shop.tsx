@@ -26,7 +26,11 @@ export function Shop() {
   const { t } = useTranslation();
   const { width, fontScale } = useWindowDimensions();
   const stacked = width < 350 || fontScale > 1.3;
-  const [message, setMessage] = useState("");
+  // Keep the key, not the text, so feedback follows a language change.
+  const [message, setMessage] = useState<{
+    key: "shopScreen.purchased" | "shopScreen.notEnough";
+    itemId: ShopItem["id"];
+  } | null>(null);
   const owned = (item: ShopItem) =>
     purchases.includes(item.id) ||
     (item.id === "transfer" && bonus.includes(TRANSFER_LESSON));
@@ -40,11 +44,10 @@ export function Shop() {
       return;
     }
     const bought = useApp.getState().buy(item.id, item.price);
-    setMessage(
-      t(bought ? "shopScreen.purchased" : "shopScreen.notEnough", {
-        item: t(`shopScreen.items.${item.id}.title`),
-      }),
-    );
+    setMessage({
+      key: bought ? "shopScreen.purchased" : "shopScreen.notEnough",
+      itemId: item.id,
+    });
   };
   const card = (item: ShopItem, outfit = false) => (
     <Pressable
@@ -171,12 +174,14 @@ export function Shop() {
             </Text>
           </Pressable>
         </View>
-        {!!message && (
+        {message && (
           <Text
             accessibilityRole="alert"
             className="text-sm font-bold text-brand"
           >
-            {message}
+            {t(message.key, {
+              item: t(`shopScreen.items.${message.itemId}.title`),
+            })}
           </Text>
         )}
       </View>

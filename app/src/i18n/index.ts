@@ -1,116 +1,19 @@
 import { experienceCopy } from "./experience";
 import { challengeCopy } from "./challenges";
 import { roadmapCopy } from "./roadmap";
-import { pathPreviewCopy } from "./path-preview";
-import { confidenceCopy } from "./confidence";
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
+import en from "./locales/en.json";
+import es from "./locales/es.json";
+import sw from "./locales/sw.json";
+
 const i18n = createInstance();
-const en = {
-  languageSelectHint: "Choose this language for Kompass and the quiz.",
-  welcome: "Welcome to Kompass",
-  tagline: "Let’s find your way.",
-  language: "Choose your language",
-  country: "Where are you finding your way?",
-  access: "Make Kompass work for you",
-  go: "Let’s go",
-  getStarted: "Get started",
-  continue: "Continue",
-  build: "Build my path",
-  path: "Path",
-  practice: "Practice",
-  ask: "Ask",
-  leagues: "Leagues",
-  shop: "Shop",
-  ready: "Your path is ready!",
-  roadmap: "See my roadmap",
-  about: "About you",
-  where: "Where are you",
-  now: "right now?",
-  grow: "Your path will grow with you.",
-  goals: "What matters most to you?",
-  feels: "Money feels…",
-  confidence: "Confidence check",
-  confident: "How confident are you with…",
-  noWrong: "No wrong answers. Just your starting point.",
-  keep: "Keep going",
-  check: "Check",
-  wallet: "YOUR WALLET",
-  shopSub: "Spend coins on things that help you keep going.",
-};
-const sw = {
-  ...en,
-  getStarted: "Anza",
-  languageSelectHint: "Chagua lugha hii kwa Kompass na maswali.",
-  access: "Rekebisha Kompass kwa mahitaji yako",
-  welcome: "Karibu Kompass",
-  tagline: "Tutafute njia yako.",
-  language: "Chagua lugha yako",
-  country: "Uko katika nchi gani?",
-  go: "Tuanze",
-  continue: "Endelea",
-  build: "Tengeneza njia yangu",
-  path: "Njia",
-  practice: "Mazoezi",
-  ask: "Uliza",
-  leagues: "Ligi",
-  shop: "Duka",
-  ready: "Njia yako iko tayari!",
-  roadmap: "Ona njia yangu",
-  about: "Kuhusu wewe",
-  where: "Uko wapi",
-  now: "sasa hivi?",
-  grow: "Njia yako itakua nawe.",
-  goals: "Ni nini muhimu kwako?",
-  feels: "Pesa zinakufanya uhisi…",
-  confidence: "Kujiamini",
-  confident: "Unajiamini kiasi gani kuhusu…",
-  noWrong: "Hakuna jibu baya.",
-  keep: "Endelea",
-  check: "Angalia",
-  wallet: "POCHI YAKO",
-  shopSub: "Tumia sarafu kukusaidia kuendelea.",
-};
-const es = {
-  languageSelectHint: "Elige este idioma para Kompass y el cuestionario.",
-  welcome: "Bienvenido a Kompass",
-  tagline: "Encuentra tu camino.",
-  language: "Elige tu idioma",
-  country: "¿Dónde empieza tu camino?",
-  access: "Adapta Kompass a tus necesidades",
-  go: "Vamos",
-  getStarted: "Empezar",
-  continue: "Continuar",
-  build: "Crear mi camino",
-  path: "Camino",
-  practice: "Practicar",
-  ask: "Preguntar",
-  leagues: "Ligas",
-  shop: "Tienda",
-  ready: "¡Tu camino está listo!",
-  roadmap: "Ver mi ruta",
-  about: "Sobre ti",
-  where: "¿En qué etapa",
-  now: "estás ahora?",
-  grow: "Tu camino crecerá contigo.",
-  goals: "¿Qué es lo más importante para ti?",
-  feels: "El dinero se siente…",
-  confidence: "Nivel de confianza",
-  confident: "¿Qué confianza tienes con…?",
-  noWrong: "No hay respuestas incorrectas. Es tu punto de partida.",
-  keep: "Sigue adelante",
-  check: "Comprobar",
-  wallet: "TU CARTERA",
-  shopSub: "Usa monedas para seguir aprendiendo.",
-};
 void i18n.use(initReactI18next).init({
   resources: {
     en: {
       translation: {
         ...en,
-        ...confidenceCopy.en,
         ...experienceCopy.en,
-        pathPreview: pathPreviewCopy.en,
         roadmapScreen: roadmapCopy.en,
         challenge: challengeCopy.en,
       },
@@ -118,9 +21,7 @@ void i18n.use(initReactI18next).init({
     es: {
       translation: {
         ...es,
-        ...confidenceCopy.es,
         ...experienceCopy.es,
-        pathPreview: pathPreviewCopy.es,
         roadmapScreen: roadmapCopy.es,
         challenge: challengeCopy.es,
       },
@@ -128,16 +29,14 @@ void i18n.use(initReactI18next).init({
     sw: {
       translation: {
         ...sw,
-        ...confidenceCopy.sw,
         ...experienceCopy.sw,
-        pathPreview: pathPreviewCopy.sw,
         roadmapScreen: roadmapCopy.sw,
         challenge: challengeCopy.sw,
       },
     },
   },
   lng: "en",
-  fallbackLng: "en",
+  fallbackLng: false,
   interpolation: { escapeValue: false },
 });
 export default i18n;

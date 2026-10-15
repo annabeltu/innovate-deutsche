@@ -1,5 +1,8 @@
 import { buildOnboardingRequest, topics } from "../request";
-import { confidenceCopy } from "../../i18n/confidence";
+import en from "../../i18n/locales/en.json";
+import es from "../../i18n/locales/es.json";
+import sw from "../../i18n/locales/sw.json";
+const confidenceCopy = { en, es, sw };
 const state = {
   country: "KE" as const,
   language: "sw",

@@ -4,16 +4,18 @@
   "accessibility": {
     "read_aloud": false,
     "simple_mode": false,
-    "large_text": false
+    "large_text": false,
+    "voice_mode": false
   },
   "life_stage": "first_job",
   "goal": "save_more",
-  "comfort": "somewhat_comfortable",
+  "comfort": 2,
   "confidence": {
-    "accounts": 4,
-    "saving": 2,
-    "borrowing": 3,
-    "scams": 3,
-    "budget": 2
-  }
+    "accounts": 0.75,
+    "saving": 0.25,
+    "borrowing": 0.5,
+    "scams": 0.5,
+    "budget": 0.25
+  },
+  "savings_habit": "none"
 }

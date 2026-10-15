@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import * as Speech from "expo-speech";
+import { recognizeIntent } from "../api/voice";
+import { VoiceInput } from "../components/VoiceInput";
 import { Screen, Progress } from "../components/ui";
 import { AppScenery } from "../components/AppScenery";
 import { AccountHeader } from "../components/AccountHeader";
@@ -13,6 +16,11 @@ import type { OnboardingResponse, QuizAnswer } from "../types/api";
 
 /** Restore the baseline quiz between confidence sliders and the path preview. */
 export function QuizScreen() {
+  const language = useApp((state) => state.language);
+  return <QuizSession key={language} />;
+}
+
+function QuizSession() {
   const { t } = useTranslation();
   const country = useApp((state) => state.country);
   const language = useApp((state) => state.language);
@@ -38,7 +46,8 @@ export function QuizScreen() {
       mutate(request);
     }
   }, [request, mutate]);
-  if (start.data) return <QuizQuestions session={start.data} />;
+  if (start.data && start.data.quiz.language === language)
+    return <QuizQuestions session={start.data} />;
   return (
     <Screen compact background={<AppScenery />}>
       <AccountHeader />
@@ -119,6 +128,16 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
   const question = session.quiz.questions[index];
   const selected = answers[question.question_id];
   const last = index === session.quiz.questions.length - 1;
+  const readAloud = useApp((state) => state.readAloud);
+  useEffect(() => {
+    if (readAloud)
+      Speech.speak(question.voice.speak_text, {
+        language: session.quiz.language,
+      });
+    return () => {
+      void Speech.stop();
+    };
+  }, [question, readAloud, session.quiz.language]);
   const finish = () => {
     const payload: QuizAnswer[] = session.quiz.questions.map((entry) => ({
       question_id: entry.question_id,
@@ -129,6 +148,33 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
       { onSuccess: () => router.replace("/path") },
     );
   };
+  // Spoken replies: an option letter, next, back, help or repeat.
+  async function spokenReply(text: string) {
+    const command = await recognizeIntent(text, session.quiz.language);
+    if (useApp.getState().language !== session.quiz.language) return;
+    if (
+      command.intent === "option" &&
+      command.option_id &&
+      question.options.some((option) => option.option_id === command.option_id)
+    ) {
+      setAnswers((previous) => ({
+        ...previous,
+        [question.question_id]: command.option_id!,
+      }));
+    } else if (command.intent === "next" && selected && !submit.isPending) {
+      if (last) finish();
+      else setIndex(index + 1);
+    } else if (command.intent === "back" && !submit.isPending) {
+      if (index > 0) setIndex(index - 1);
+      else router.back();
+    } else
+      Speech.speak(
+        command.intent === "help"
+          ? t("voice.lesson.help")
+          : question.voice.speak_text,
+        { language: session.quiz.language },
+      );
+  }
   return (
     <Screen
       compact
@@ -233,6 +279,7 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
           </Pressable>
         ))}
       </View>
+      <VoiceInput onText={spokenReply} />
       {submit.isError && (
         <Text
           accessibilityRole="alert"

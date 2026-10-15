@@ -9,6 +9,7 @@ jest.mock("expo-router", () => ({
   router: { replace: jest.fn(), push: jest.fn() },
 }));
 jest.mock("react-i18next", () => ({
+  ...jest.requireActual("react-i18next"),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.mock("@expo/vector-icons", () => ({
@@ -37,20 +38,18 @@ jest.mock("../../components/ui", () => {
   };
 });
 beforeEach(() =>
-  useApp
-    .getState()
-    .set({
-      coins: 500,
-      hearts: 5,
-      purchases: [],
-      bonus: [],
-      pendingBonus: null,
-      equippedOutfit: null,
-    }),
+  useApp.getState().set({
+    coins: 500,
+    hearts: 5,
+    purchases: [],
+    bonus: [],
+    pendingBonus: null,
+    equippedOutfit: null,
+  }),
 );
-it("buys a heart from the designed shop", () => {
-  const screen = render(<Shop />);
-  fireEvent.press(
+it("buys a heart from the designed shop", async () => {
+  const screen = await render(<Shop />);
+  await fireEvent.press(
     screen.getByRole("button", {
       name: "shopScreen.items.heart.title. shopScreen.price",
     }),
@@ -58,25 +57,27 @@ it("buys a heart from the designed shop", () => {
   expect(useApp.getState().coins).toBe(400);
   expect(useApp.getState().hearts).toBe(6);
 });
-it("buys and equips an outfit", () => {
-  const screen = render(<Shop />);
-  fireEvent.press(
+it("buys and equips an outfit", async () => {
+  const screen = await render(<Shop />);
+  await fireEvent.press(
     screen.getByRole("button", {
       name: "shopScreen.items.outfit-europe.title. shopScreen.price",
     }),
   );
-  fireEvent.press(
+  await fireEvent.press(
     screen.getByRole("button", {
       name: "shopScreen.items.outfit-europe.title. shopScreen.owned",
     }),
   );
   expect(useApp.getState().equippedOutfit).toBe("outfit-europe");
 });
-it("dismisses the new lesson toast without deleting the lesson", () => {
+it("dismisses the new lesson toast without deleting the lesson", async () => {
   useApp.getState().addBonus(TRANSFER_LESSON);
-  const screen = render(<BonusNotification />);
+  const screen = await render(<BonusNotification />);
   expect(screen.getByText("experience.newLesson")).toBeTruthy();
-  fireEvent.press(screen.getByRole("button", { name: "experience.dismiss" }));
+  await fireEvent.press(
+    screen.getByRole("button", { name: "experience.dismiss" }),
+  );
   expect(screen.queryByText("experience.newLesson")).toBeNull();
   expect(useApp.getState().bonus).toEqual([TRANSFER_LESSON]);
 });

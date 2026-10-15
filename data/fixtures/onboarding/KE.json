@@ -4,16 +4,18 @@
   "accessibility": {
     "read_aloud": true,
     "simple_mode": true,
-    "large_text": true
+    "large_text": true,
+    "voice_mode": true
   },
   "life_stage": "parent",
   "goal": "handle_emergencies",
-  "comfort": "confident",
+  "comfort": 3,
   "confidence": {
-    "accounts": 5,
-    "saving": 4,
-    "borrowing": 2,
-    "scams": 2,
-    "budget": 3
-  }
+    "accounts": 1.0,
+    "saving": 0.75,
+    "borrowing": 0.25,
+    "scams": 0.25,
+    "budget": 0.5
+  },
+  "savings_habit": "none"
 }

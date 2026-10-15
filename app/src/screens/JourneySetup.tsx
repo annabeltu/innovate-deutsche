@@ -15,23 +15,30 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
+import { toOnboardingRequest } from "../api/learner";
+import {
+  COMFORT_OPTIONS,
+  GOAL_OPTIONS,
+  LIFE_STAGE_OPTIONS,
+} from "../onboarding/options";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
   MX: require("../../assets/welcome/mx.png"),
   KE: require("../../assets/welcome/ke.png"),
 };
-const stages = [
-  ["Student", "🎒"],
-  ["First job", "💼"],
-  ["Parent", "🏡"],
-  ["Retired", "🏖️🌿"],
-] as const;
+const stageIcons = {
+  student: "🎒",
+  first_job: "💼",
+  parent: "🏡",
+  retired: "🏖️🌿",
+};
 
 export function JourneySetup() {
   const insets = useSafeAreaInsets();
   const s = useApp();
   const { t } = useTranslation();
+  const answers = toOnboardingRequest(s);
   const { width, fontScale } = useWindowDimensions();
   const stacked = width < 320 || fontScale > 1.5 || s.large;
   return (
@@ -107,21 +114,68 @@ export function JourneySetup() {
           </View>
           <View style={styles.landscapeSpace} />
           <View style={styles.grid}>
-            {stages.map(([stage, icon]) => (
+            {LIFE_STAGE_OPTIONS.map((option) => (
               <Pressable
-                key={stage}
+                key={option.id}
                 accessibilityRole="button"
-                accessibilityLabel={stage}
-                accessibilityState={{ selected: s.stage === stage }}
-                onPress={() => s.set({ stage })}
+                accessibilityLabel={t(option.labelKey)}
+                accessibilityHint={t(option.helperKey)}
+                accessibilityState={{
+                  selected: answers.life_stage === option.id,
+                }}
+                onPress={() => s.set({ stage: option.id })}
                 style={[
                   styles.choice,
                   { width: stacked ? "100%" : "48%" },
-                  s.stage === stage && styles.selected,
+                  answers.life_stage === option.id && styles.selected,
                 ]}
               >
-                <Txt style={styles.emoji}>{icon}</Txt>
-                <Txt style={styles.choiceLabel}>{stage}</Txt>
+                <Txt style={styles.emoji}>{stageIcons[option.id]}</Txt>
+                <Txt style={styles.choiceLabel}>{t(option.labelKey)}</Txt>
+              </Pressable>
+            ))}
+          </View>
+          <Txt
+            accessibilityRole="header"
+            className="mt-6 text-xl font-bold text-ink"
+          >
+            {t("goals")}
+          </Txt>
+          <View className="gap-2">
+            {GOAL_OPTIONS.map((option) => (
+              <Pressable
+                key={option.id}
+                accessibilityRole="radio"
+                accessibilityLabel={t(option.labelKey)}
+                accessibilityHint={t(option.helperKey)}
+                accessibilityState={{ checked: answers.goal === option.id }}
+                onPress={() => s.set({ goal: option.id })}
+                className={`min-h-12 rounded-2xl border-2 p-3 ${answers.goal === option.id ? "border-brand bg-ice" : "border-transparent bg-white"}`}
+              >
+                <Txt>{t(option.labelKey)}</Txt>
+              </Pressable>
+            ))}
+          </View>
+          <Txt
+            accessibilityRole="header"
+            className="mt-6 text-xl font-bold text-ink"
+          >
+            {t("feels")}
+          </Txt>
+          <View className="gap-2">
+            {COMFORT_OPTIONS.map((option, index) => (
+              <Pressable
+                key={option.id}
+                accessibilityRole="radio"
+                accessibilityLabel={t(option.labelKey)}
+                accessibilityHint={t(option.helperKey)}
+                accessibilityState={{ checked: answers.comfort === index + 1 }}
+                onPress={() =>
+                  s.set({ comfort: index / (COMFORT_OPTIONS.length - 1) })
+                }
+                className={`min-h-12 rounded-2xl border-2 p-3 ${answers.comfort === index + 1 ? "border-brand bg-ice" : "border-transparent bg-white"}`}
+              >
+                <Txt>{t(option.labelKey)}</Txt>
               </Pressable>
             ))}
           </View>
