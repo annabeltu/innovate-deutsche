@@ -243,6 +243,14 @@ class QuizSkipResponse(BaseModel):
     profile: LearnerProfile
 
 
+class LanguageUpdate(BaseModel):
+    """Change the learner's language without replacing their profile."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    language: Language = Field(description="Target language offered for this country.")
+
+
 class AccessibilityUpdate(BaseModel):
     """Body of PATCH /v1/profile/{user_id}/accessibility. Omitted fields keep their value."""
 

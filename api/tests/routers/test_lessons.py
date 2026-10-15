@@ -194,3 +194,22 @@ def test_broken_base_lesson_returns_500_in_error_shape(
 
     assert response.status_code == 500
     assert response.json()["error"]["code"] == "lesson_build_failed"
+
+
+def test_language_change_is_used_by_next_lesson_request(
+    lessons_client: TestClient, onboarding_body: dict[str, object]
+) -> None:
+    """The UI language update reaches the wording step on the same learner."""
+    user_id = onboard(lessons_client, {**onboarding_body, "language": "en"})
+    llm = FakeLlm(SWAHILI_TITLE)
+    app.dependency_overrides[get_llm_client] = lambda: llm
+
+    updated = lessons_client.patch(
+        f"/v1/profile/{user_id}/language", json={"language": "sw"}
+    )
+    response = lessons_client.get(f"/v1/lessons/saving?user_id={user_id}")
+
+    assert updated.status_code == 200
+    assert response.status_code == 200
+    assert response.json()["title"] == SWAHILI_TITLE
+    assert llm.requests[-1]["language"] == "sw"

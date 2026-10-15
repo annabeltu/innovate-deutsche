@@ -258,3 +258,14 @@ Every card has a **required** `voice` block, so every lesson, including AI-gener
 ## Scoring
 
 **priority = 0.4 × findex_gap + 0.4 × (1 − proficiency) + 0.2 × goal_match**
+
+### Change lesson language without resetting progress
+
+`PATCH /v1/profile/{user_id}/language` accepts `{"language": "en"}` and returns
+`LearnerProfile`. The learner id, scores, completions and bonus lesson ids are
+preserved. US/MX offer `en` and `es`; KE offers `en` and `sw`.
+Unknown learner: `404 profile_not_found`; unsupported country/language pair:
+`422 unsupported_language`; invalid or extra fields: `400 validation_error`.
+Subsequent GET lesson and POST bonus-lesson requests use the saved language,
+including question text, options and voice text, through `reword_lesson`.
+Translation failures still fall back to the original English lesson.

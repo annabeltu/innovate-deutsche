@@ -45,7 +45,10 @@ class EchoLlmClient:
 
     def complete_json(self, instructions: str, request_json: str) -> str:
         """Return the request's lesson as-is."""
-        return json.dumps(json.loads(request_json)["lesson"])
+        request = json.loads(request_json)
+        if "lesson" not in request:
+            raise LlmError("Lesson generation requires a configured LLM client")
+        return json.dumps(request["lesson"])
 
 
 class OpenAiClient:

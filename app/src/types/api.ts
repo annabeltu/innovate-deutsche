@@ -1,11 +1,13 @@
 // Must mirror api/app/schemas/shared.py
 
-export type Country = 'US' | 'MX' | 'KE';
-export type Language = 'en' | 'es' | 'sw';
-export type Topic = 'accounts' | 'saving' | 'borrowing' | 'scams' | 'budget';
-export type LifeStage = 'student' | 'first_job' | 'parent' | 'retired';
-export type Goal = 'save_more' | 'avoid_debt' | 'stay_safe_online' | 'handle_emergencies';
-export type SavingsHabit = 'cash_at_home' | 'savings_group' | 'bank' | 'gold_or_assets' | 'none';
+export type Country = "US" | "MX" | "KE";
+export type Language = "en" | "es" | "sw";
+export type Topic = "accounts" | "saving" | "borrowing" | "scams" | "budget";
+export type LifeStage = "student" | "first_job" | "parent" | "retired";
+export type Goal =
+  "save_more" | "avoid_debt" | "stay_safe_online" | "handle_emergencies";
+export type SavingsHabit =
+  "cash_at_home" | "savings_group" | "bank" | "gold_or_assets" | "none";
 export type Comfort = 1 | 2 | 3;
 export type Difficulty = 1 | 2 | 3;
 
@@ -109,6 +111,9 @@ export interface QuizSkipResponse {
 
 export type AccessibilityUpdate = Partial<Accessibility>;
 
+/** PATCH /v1/profile/{user_id}/language; preserves learner identity and progress. */
+export type LanguageUpdate = { language: Language };
+
 export interface LessonResultRequest {
   lesson_id: string;
   correct: number;
@@ -134,9 +139,9 @@ export interface ErrorResponse {
 // Path + Lessons API (Faraz)
 
 /** Findex age group a learner's numbers come from, set by life stage. */
-export type AgeGroup = 'ages_15_24' | 'age_25_plus' | 'all';
+export type AgeGroup = "ages_15_24" | "age_25_plus" | "all";
 
-export type NeedKind = 'struggle' | 'lacking' | 'could_use' | 'exposure';
+export type NeedKind = "struggle" | "lacking" | "could_use" | "exposure";
 
 /** One Findex number about people like the learner, compared to a benchmark. */
 export interface NeedSignal {
@@ -175,17 +180,17 @@ export interface LearnerNeeds {
 }
 
 export type CardType =
-  | 'concept'
-  | 'bridge'
-  | 'mc_quiz'
-  | 'drag_match'
-  | 'compare_chart'
-  | 'clause_tap'
-  | 'scam_swipe'
-  | 'budget_sim'
-  | 'takeaway';
+  | "concept"
+  | "bridge"
+  | "mc_quiz"
+  | "drag_match"
+  | "compare_chart"
+  | "clause_tap"
+  | "scam_swipe"
+  | "budget_sim"
+  | "takeaway";
 
-export type AnswerMode = 'say_option' | 'say_next';
+export type AnswerMode = "say_option" | "say_next";
 
 /** Spoken version of a card, so every lesson works by voice alone. */
 export interface VoiceBlock {

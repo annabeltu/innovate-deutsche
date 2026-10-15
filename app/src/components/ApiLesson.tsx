@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
-import { useLesson } from "../api/lessons";
+import { useLesson, saveLessonResult } from "../api/lessons";
 import { lessonLanguage } from "../api/learner";
 import { useApp } from "../state/useApp";
 import type { LessonCard } from "../types/api";
@@ -32,6 +32,9 @@ export function ApiLesson({
   const { t } = useTranslation();
   const lesson = useLesson(lessonId);
   const [index, setIndex] = useState(0);
+  const [wrongCards, setWrongCards] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   if (lesson.isPending) {
     return (
@@ -61,14 +64,45 @@ export function ApiLesson({
 
   const cards = lesson.data.cards;
   const isLast = index === cards.length - 1;
+  async function next() {
+    if (!isLast) {
+      setIndex(index + 1);
+      return;
+    }
+    setSaving(true);
+    setSaveFailed(false);
+    try {
+      const total = cards.filter((card) => card.correct_option !== null).length;
+      await saveLessonResult({
+        lesson_id: lessonId,
+        correct: total - wrongCards.length,
+        total,
+        completed: true,
+      });
+      finish(routeId);
+    } catch {
+      setSaveFailed(true);
+    } finally {
+      setSaving(false);
+    }
+  }
   return (
     <LessonCardView
-      key={cards[index].card_id}
+      key={`${lesson.dataUpdatedAt}-${cards[index].card_id}`}
       title={lesson.data.title}
       card={cards[index]}
       progress={(index + 1) / cards.length}
       isLast={isLast}
-      onNext={() => (isLast ? finish(routeId) : setIndex(index + 1))}
+      onNext={() => void next()}
+      saving={saving}
+      saveFailed={saveFailed}
+      onWrong={() =>
+        setWrongCards((previous) =>
+          previous.includes(cards[index].card_id)
+            ? previous
+            : [...previous, cards[index].card_id],
+        )
+      }
     />
   );
 }
@@ -90,12 +124,18 @@ function LessonCardView({
   progress,
   isLast,
   onNext,
+  saving,
+  saveFailed,
+  onWrong,
 }: {
   title: string;
   card: LessonCard;
   progress: number;
   isLast: boolean;
   onNext: () => void;
+  saving: boolean;
+  saveFailed: boolean;
+  onWrong: () => void;
 }) {
   const { t } = useTranslation();
   const hearts = useApp((s) => s.hearts);
@@ -144,13 +184,23 @@ function LessonCardView({
         </Card>
       )}
       {canContinue ? (
-        <Button title={isLast ? t("finish") : t("next")} onPress={onNext} />
+        <Button
+          title={saving ? t("saving") : isLast ? t("finish") : t("next")}
+          disabled={saving}
+          onPress={onNext}
+        />
       ) : (
         <Button
           title={`${t("check")}  ✓`}
           disabled={answer === null}
-          onPress={() => setChecked(true)}
+          onPress={() => {
+            setChecked(true);
+            if (!isCorrect) onWrong();
+          }}
         />
+      )}
+      {saveFailed && (
+        <Txt accessibilityLiveRegion="polite">{t("lessonError")}</Txt>
       )}
     </Screen>
   );

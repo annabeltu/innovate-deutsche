@@ -16,7 +16,8 @@ import { router, useFocusEffect } from "expo-router";
 import * as Speech from "expo-speech";
 import Svg, { Image as SvgImage, Path, Rect } from "react-native-svg";
 import { useTranslation } from "react-i18next";
-import { Country, Language, useApp } from "../state/useApp";
+import { LANGUAGES_BY_COUNTRY, lessonLanguage } from "../api/learner";
+import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 
 const blue = "#0012B3";
@@ -224,41 +225,39 @@ export function Welcome() {
           >
             <Txt style={[styles.label, labelStyle]}>{t("language")}</Txt>
             <View style={[styles.grid, { gap, marginTop: 8 * unit }]}>
-              {(
-                [
-                  ["en", "English"],
-                  ["hi", "हिन्दी"],
-                  ["sw", "Kiswahili"],
-                  ["de", "Deutsch"],
-                ] as [Language, string][]
-              ).map(([code, name]) => (
-                <Pressable
-                  key={code}
-                  accessibilityRole="button"
-                  accessibilityLabel={name}
-                  accessibilityState={{ selected: s.language === code }}
-                  onPress={() => s.set({ language: code })}
-                  style={[
-                    styles.tile,
-                    {
-                      flexBasis: "46%",
-                      flexGrow: 1,
-                      minHeight: Math.max(44, 43 * unit),
-                      borderRadius: 13 * unit,
-                    },
-                    s.language === code && styles.selected,
-                  ]}
-                >
-                  <Txt
+              {LANGUAGES_BY_COUNTRY[s.country].map((code) => {
+                const name = { en: "English", es: "Español", sw: "Kiswahili" }[
+                  code
+                ];
+                return (
+                  <Pressable
+                    key={code}
+                    accessibilityRole="button"
+                    accessibilityLabel={name}
+                    accessibilityState={{ selected: s.language === code }}
+                    onPress={() => s.set({ language: code })}
                     style={[
-                      styles.option,
-                      { fontSize: s.large ? 18 : 13 * unit },
+                      styles.tile,
+                      {
+                        flexBasis: "46%",
+                        flexGrow: 1,
+                        minHeight: Math.max(44, 43 * unit),
+                        borderRadius: 13 * unit,
+                      },
+                      s.language === code && styles.selected,
                     ]}
                   >
-                    {name}
-                  </Txt>
-                </Pressable>
-              ))}
+                    <Txt
+                      style={[
+                        styles.option,
+                        { fontSize: s.large ? 18 : 13 * unit },
+                      ]}
+                    >
+                      {name}
+                    </Txt>
+                  </Pressable>
+                );
+              })}
             </View>
             <Txt style={[styles.label, labelStyle, { marginTop: 17 * unit }]}>
               {t("country")}
@@ -270,7 +269,12 @@ export function Welcome() {
                   accessibilityRole="button"
                   accessibilityLabel={countries[code].name}
                   accessibilityState={{ selected: s.country === code }}
-                  onPress={() => s.set({ country: code })}
+                  onPress={() =>
+                    s.set({
+                      country: code,
+                      language: lessonLanguage(code, s.language),
+                    })
+                  }
                   style={[
                     styles.tile,
                     {

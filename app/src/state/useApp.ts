@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-export type Language = "en" | "hi" | "sw" | "de";
+import type { Language } from "../types/api";
+export type { Language } from "../types/api";
 export type Country = "US" | "MX" | "KE";
 type State = {
   language: Language;
@@ -40,15 +41,15 @@ export const useApp = create<State>()(
       stage: "First job",
       goal: "Save more",
       comfort: 0.4,
-      confidence: [0.45, 0.6, 0.3, 0.2, 0.8],
+      confidence: [0.5, 0.5, 0.5, 0.5, 0.5],
       readAloud: false,
       simple: false,
       large: false,
       onboarded: false,
-      coins: 240,
+      coins: 0,
       hearts: 5,
-      streak: 7,
-      completed: ["accounts", "saving"],
+      streak: 0,
+      completed: [],
       purchases: [],
       bonus: [],
       learnerId: null,
@@ -80,17 +81,28 @@ export const useApp = create<State>()(
     {
       name: "kompass-v1",
       storage: createJSONStorage(() => AsyncStorage),
-      version: 2,
+      version: 3,
       migrate: (persisted) => {
         const state = persisted as Partial<State>;
         return {
           ...state,
+          // Earlier versions seeded demo progress; start this preview clean once.
+          completed: [],
+          coins: 0,
+          streak: 0,
+          hearts: 5,
+          purchases: [],
+          bonus: [],
+          onboarded: false,
+          language: ["en", "es", "sw"].includes(state.language ?? "")
+            ? state.language
+            : "en",
           country: ["US", "MX", "KE"].includes(state.country ?? "")
             ? state.country
             : "US",
-          learnerId: state.learnerId ?? null,
-          learnerKey: state.learnerKey ?? null,
-          bonusLessonIds: state.bonusLessonIds ?? {},
+          learnerId: null,
+          learnerKey: null,
+          bonusLessonIds: {},
         };
       },
     },

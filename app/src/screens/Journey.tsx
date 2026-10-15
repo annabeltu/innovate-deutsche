@@ -24,11 +24,13 @@ import { lessons } from "./Onboarding";
 import { ApiLesson } from "../components/ApiLesson";
 import { isApiConfigured } from "../api/client";
 import { serverLessonId } from "../api/lessons";
+import { LanguageChooser } from "../components/LanguageChooser";
 const money = { US: "$", MX: "MX$", KE: "KSh" };
 export function Roadmap() {
   const s = useApp();
   return (
     <Screen dark footer={<Nav active="path" />}>
+      <LanguageChooser />
       <Row>
         {[`♨ ${s.streak}`, `● ${s.coins}`, `♥ ${s.hearts}`].map((text) => (
           <View
@@ -176,8 +178,8 @@ export function Lesson() {
   const s = useApp();
   const { t } = useTranslation();
   const apiLessonId = serverLessonId(id, s);
-  if (isApiConfigured() && apiLessonId) {
-    return <ApiLesson routeId={id} lessonId={apiLessonId} />;
+  if (isApiConfigured()) {
+    return <ApiLesson routeId={id} lessonId={apiLessonId ?? id} />;
   }
   const scam = id === "scams";
   const budget = id === "budget";

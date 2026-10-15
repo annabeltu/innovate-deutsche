@@ -44,6 +44,22 @@ cd app
 npm ci
 ```
 
+### Connect the lesson UI to the API
+
+Run the API on port 8000, then set `EXPO_PUBLIC_API_URL=http://127.0.0.1:8000`
+in `app/.env` for the browser preview. Use your Mac's LAN address for a physical
+phone. Restart Expo after changing this value. Configure `LLM_API_KEY` and
+`LLM_MODEL` in `api/.env` for generation and translation.
+
+Opening a lesson fetches its personalized cards. In Ask Kiko, type a request
+and choose **Turn this into a lesson**; generated lessons appear on the roadmap.
+The roadmap language chooser saves the language on the same learner. Finishing
+a lesson saves its result before awarding local progress. API errors offer a
+retry rather than silently showing a demo lesson.
+
+State version 3 clears old preview/demo progress once. New sessions have no
+completed lessons, coins or streak; subsequent earned progress persists.
+
 ### macOS: test in Xcode Device Hub
 
 Use **Device Hub** to display the simulated iPhone and **Expo Go** inside it to run Kompass. You do not need to open the repository in Xcode.

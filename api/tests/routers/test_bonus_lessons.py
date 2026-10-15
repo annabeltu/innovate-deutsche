@@ -148,3 +148,16 @@ def test_rejects_empty_or_too_long_requests(
     response = ask(client, onboarded, request_text)
 
     assert response.status_code == 400
+
+
+def test_generation_without_llm_returns_service_unavailable(
+    client: TestClient, onboarded: str
+) -> None:
+    """A missing API key produces a handled error rather than a fake lesson."""
+    from app.llm.client import EchoLlmClient
+
+    app.dependency_overrides[get_llm_client] = EchoLlmClient
+    response = ask(client, onboarded)
+    assert response.status_code == 503
+    profile = client.get(f"/v1/profile/{onboarded}").json()
+    assert profile["bonus_lesson_ids"] == []

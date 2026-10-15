@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { router } from "expo-router";
 import { ApiLesson } from "../ApiLesson";
-import { useLesson } from "../../api/lessons";
+import { useLesson, saveLessonResult } from "../../api/lessons";
 import { useApp } from "../../state/useApp";
 import type { Lesson } from "../../types/api";
 import "../../i18n";
@@ -12,7 +12,10 @@ jest.mock("expo-router", () => ({
   useFocusEffect: jest.fn(),
 }));
 jest.mock("expo-speech", () => ({ speak: jest.fn(), stop: jest.fn() }));
-jest.mock("../../api/lessons", () => ({ useLesson: jest.fn() }));
+jest.mock("../../api/lessons", () => ({
+  useLesson: jest.fn(),
+  saveLessonResult: jest.fn().mockResolvedValue(undefined),
+}));
 
 const lesson: Lesson = {
   lesson_id: "saving",
@@ -110,11 +113,33 @@ describe("ApiLesson", () => {
     expect(screen.getByText("Correct. Deposits are insured.")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Finish" }));
 
+    expect(saveLessonResult).toHaveBeenCalledWith({
+      lesson_id: "saving",
+      correct: 0,
+      total: 1,
+      completed: true,
+    });
     expect(useApp.getState().completed).toContain("saving");
     expect(router.replace).toHaveBeenCalledWith({
       pathname: "/success",
       params: { id: "saving", rewarded: "true" },
     });
+  });
+
+  it("keeps progress unchanged when the backend rejects completion", async () => {
+    jest.mocked(saveLessonResult).mockRejectedValueOnce(new Error("offline"));
+    const oneCard = { ...lesson, cards: [lesson.cards[0]] };
+    await showLesson({ isPending: false, isError: false, data: oneCard });
+    await fireEvent.press(screen.getByRole("button", { name: "Finish" }));
+
+    expect(useApp.getState().completed).toEqual([]);
+    expect(useApp.getState().coins).toBe(0);
+    expect(router.replace).not.toHaveBeenCalled();
+    expect(
+      screen.getByText(
+        "This lesson could not load. Check your connection and try again.",
+      ),
+    ).toBeTruthy();
   });
 
   it("reads each card's voice text aloud in read-aloud mode", async () => {

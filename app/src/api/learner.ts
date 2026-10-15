@@ -8,6 +8,7 @@ import type {
   Goal,
   Language,
   LifeStage,
+  LearnerProfile,
   OnboardingRequest,
   OnboardingResponse,
   QuizSkipResponse,
@@ -48,7 +49,7 @@ const CONFIDENCE_TOPICS: Topic[] = [
   "budget",
 ];
 // Languages the API offers per country; the first is the default.
-const LANGUAGES_BY_COUNTRY: Record<Country, Language[]> = {
+export const LANGUAGES_BY_COUNTRY: Record<Country, Language[]> = {
   US: ["en", "es"],
   MX: ["es", "en"],
   KE: ["en", "sw"],
@@ -102,7 +103,8 @@ let pendingLearner: Promise<string> | null = null;
 
 /**
  * Return the server user_id for the current answers, creating the learner
- * if there is none or the answers changed since it was created. The app has
+ * if there is none or core answers changed; language/accessibility changes
+ * update the same profile. The app has
  * no baseline quiz, so it is skipped and proficiency equals confidence.
  */
 export function ensureLearner(): Promise<string> {
@@ -112,10 +114,51 @@ export function ensureLearner(): Promise<string> {
   if (state.learnerId && state.learnerKey === key) {
     return Promise.resolve(state.learnerId);
   }
-  pendingLearner ??= createLearner(request, key).finally(() => {
+  if (pendingLearner) return pendingLearner.then(() => ensureLearner());
+  pendingLearner = syncLearner(request, key).finally(() => {
     pendingLearner = null;
   });
   return pendingLearner;
+}
+
+function identityKey(request: OnboardingRequest): string {
+  const { language, accessibility, ...answers } = request;
+  return JSON.stringify(answers);
+}
+
+async function syncLearner(
+  request: OnboardingRequest,
+  key: string,
+): Promise<string> {
+  const state = useApp.getState();
+  const previous = state.learnerKey
+    ? (JSON.parse(state.learnerKey) as OnboardingRequest)
+    : null;
+  if (
+    !state.learnerId ||
+    !previous ||
+    identityKey(previous) !== identityKey(request)
+  ) {
+    return createLearner(request, key);
+  }
+  const path = `/v1/profile/${encodeURIComponent(state.learnerId)}`;
+  if (previous.language !== request.language) {
+    await apiRequest<LearnerProfile>(`${path}/language`, {
+      method: "PATCH",
+      body: { language: request.language },
+    });
+  }
+  if (
+    JSON.stringify(previous.accessibility) !==
+    JSON.stringify(request.accessibility)
+  ) {
+    await apiRequest<LearnerProfile>(`${path}/accessibility`, {
+      method: "PATCH",
+      body: request.accessibility,
+    });
+  }
+  useApp.getState().set({ learnerKey: key });
+  return state.learnerId;
 }
 
 async function createLearner(

@@ -30,7 +30,7 @@ function isErrorResponse(body: unknown): body is ErrorResponse {
 /** Send a JSON request and return the parsed body, or throw ApiError. */
 export async function apiRequest<T>(
   path: string,
-  init: { method?: "GET" | "POST"; body?: unknown } = {},
+  init: { method?: "GET" | "POST" | "PATCH"; body?: unknown } = {},
 ): Promise<T> {
   const baseUrl = process.env.EXPO_PUBLIC_API_URL;
   if (!baseUrl) throw new ApiError(0, "api_not_configured", "No API URL set");

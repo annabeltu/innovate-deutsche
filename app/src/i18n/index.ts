@@ -2,6 +2,8 @@ import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
 const i18n = createInstance();
 const en = {
+  languageHint: "Change language while keeping your progress",
+  saving: "Saving…",
   welcome: "Welcome to Kompass",
   tagline: "Let’s find your way.",
   language: "Choose your language",
@@ -46,6 +48,54 @@ const en = {
     "Kiko could not make a lesson right now. Please try again.",
   turnIntoLesson: "✦ Turn this into a lesson",
   addedToRoadmap: "✓ Added to your roadmap",
+};
+const es = {
+  ...en,
+  welcome: "Bienvenido a Kompass",
+  tagline: "Encontremos tu camino.",
+  language: "Elige tu idioma",
+  country: "¿En qué país estás?",
+  access: "Adapta Kompass a ti",
+  go: "Vamos",
+  getStarted: "Comenzar",
+  continue: "Continuar",
+  build: "Crear mi camino",
+  path: "Camino",
+  practice: "Practicar",
+  ask: "Preguntar",
+  leagues: "Ligas",
+  shop: "Tienda",
+  ready: "¡Tu camino está listo!",
+  roadmap: "Ver mi camino",
+  about: "Sobre ti",
+  where: "¿Dónde estás",
+  now: "ahora?",
+  grow: "Tu camino crecerá contigo.",
+  goals: "¿Qué es lo más importante para ti?",
+  feels: "El dinero se siente…",
+  confidence: "Confianza",
+  confident: "¿Qué confianza tienes con…",
+  noWrong: "No hay respuestas incorrectas. Es tu punto de partida.",
+  keep: "Seguir",
+  check: "Comprobar",
+  wallet: "TU MONEDERO",
+  shopSub: "Usa monedas para seguir aprendiendo.",
+  lessonLoading: "Kiko está preparando tu lección…",
+  lessonError:
+    "No se pudo cargar la lección. Revisa tu conexión e inténtalo de nuevo.",
+  tryAgain: "Intentar de nuevo",
+  next: "Siguiente",
+  finish: "Terminar",
+  makingLesson: "Kiko está creando tu lección…",
+  lessonMatched: "Kiko encontró esta lección:",
+  openLesson: "Abrir lección",
+  lessonOffTopic:
+    "Kiko solo enseña sobre dinero. Pregunta sobre ahorro, préstamos, pagos o estafas.",
+  lessonRequestError: "Kiko no pudo crear una lección. Inténtalo de nuevo.",
+  turnIntoLesson: "✦ Convertir en lección",
+  addedToRoadmap: "✓ Añadida a tu camino",
+  languageHint: "Cambia el idioma conservando tu progreso",
+  saving: "Guardando…",
 };
 const hi = {
   ...en,
@@ -94,6 +144,8 @@ const hi = {
 };
 const sw = {
   ...en,
+  languageHint: "Badilisha lugha bila kupoteza maendeleo",
+  saving: "Inahifadhi…",
   getStarted: "Anza",
   welcome: "Karibu Kompass",
   tagline: "Tutafute njia yako.",
@@ -188,6 +240,7 @@ const de = {
 void i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
+    es: { translation: es },
     hi: { translation: hi },
     sw: { translation: sw },
     de: { translation: de },

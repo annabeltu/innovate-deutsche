@@ -5,7 +5,23 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, isApiConfigured } from "./client";
 import { ensureLearner, toOnboardingRequest } from "./learner";
 import { useApp } from "../state/useApp";
-import type { BonusLessonResponse, Lesson } from "../types/api";
+import type {
+  BonusLessonResponse,
+  Lesson,
+  LessonResultRequest,
+  LessonResultResponse,
+} from "../types/api";
+
+/** Persist a finished lesson before awarding local completion and coins. */
+export async function saveLessonResult(
+  result: LessonResultRequest,
+): Promise<void> {
+  const userId = await ensureLearner();
+  await apiRequest<LessonResultResponse>(
+    `/v1/profile/${encodeURIComponent(userId)}/lesson-results`,
+    { method: "POST", body: result },
+  );
+}
 
 const BONUS_ROUTE_PREFIX = "bonus-";
 

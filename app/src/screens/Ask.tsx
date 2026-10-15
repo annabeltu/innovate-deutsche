@@ -40,38 +40,15 @@ export default function Ask() {
   );
   async function ask(text: string) {
     if (!text.trim()) return;
-    setBusy(true);
     setError("");
     setAdded(false);
-    try {
-      const base = process.env.EXPO_PUBLIC_API_URL;
-      if (!base) {
-        setAnswer(
-          "You can use a trusted bank or mobile money service. Compare the fee, check the exchange rate, and never share your PIN.",
-        );
-        return;
-      }
-      const response = await fetch(`${base}/v1/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: text,
-          country: s.country,
-          language: s.language,
-        }),
-      });
-      if (!response.ok)
-        throw new Error("Kiko could not connect. Please try again.");
-      const data = await response.json();
-      if (typeof data.answer !== "string")
-        throw new Error("Kiko received an unexpected response.");
-      setAnswer(data.answer);
-      if (s.readAloud) Speech.speak(data.answer, { language: s.language });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
-    } finally {
-      setBusy(false);
+    if (isApiConfigured()) {
+      setQuestion(text);
+      return;
     }
+    setAnswer(
+      "You can use a trusted bank or mobile money service. Compare the fee, check the exchange rate, and never share your PIN.",
+    );
   }
   async function record() {
     setError("");
@@ -183,11 +160,13 @@ export default function Ask() {
           textAlignVertical: "top",
         }}
       />
-      <Button
-        title={busy ? "Thinking…" : "Ask Kiko →"}
-        disabled={busy || !question.trim() || recording.isRecording}
-        onPress={() => void ask(question)}
-      />
+      {!isApiConfigured() && (
+        <Button
+          title={busy ? "Thinking…" : "Ask Kiko →"}
+          disabled={busy || !question.trim() || recording.isRecording}
+          onPress={() => void ask(question)}
+        />
+      )}
       {isApiConfigured() && <LessonRequest question={question} />}
       {!process.env.EXPO_PUBLIC_API_URL && (
         <>

@@ -30,3 +30,16 @@ Expo app ──HTTP /v1──▶ FastAPI
 ## Contracts
 
 `docs/API_CONTRACTS.md`, `api/app/schemas/shared.py` and `app/src/types/api.ts` must stay in sync and are owned jointly by Faraz and Will.
+
+## Frontend lesson integration
+
+Expo uses `EXPO_PUBLIC_API_URL` for customized lessons and lesson requests.
+The learner is created once from onboarding; language and accessibility changes
+patch that learner instead of recreating it. The roadmap language chooser
+refreshes lesson queries after saving. Lesson completion is posted to the
+profile API before local coins and completion are awarded. Generation errors
+are shown without adding a local placeholder lesson.
+
+Persisted app state version 3 clears the old preview's seeded progress once
+(including its learner linkage and bonus lessons). New learners start at zero
+coins, zero streak and no completions; version 3 progress persists normally.
