@@ -1,5 +1,11 @@
 import React from "react";
-import { Pressable, Text, View, useWindowDimensions } from "react-native";
+import {
+  Image,
+  Pressable,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -77,14 +83,14 @@ export function PersonalizedPath() {
         </View>
       }
       footer={
-        <View
-          className="self-center px-6 pb-3 pt-2"
-          style={{ width: Math.min(width, 540) }}
-        >
+        <View className="self-center px-6 pb-3 pt-2" style={{ width }}>
           <Action
             title={t("pathPreview.start")}
-            hint={t("pathPreview.openHint")}
-            onPress={() => openLesson(path[0].topic)}
+            hint={t("pathPreview.previewHint")}
+            onPress={() => {
+              useApp.getState().set({ onboarded: true });
+              router.push("/roadmap");
+            }}
           />
         </View>
       }
@@ -99,9 +105,6 @@ export function PersonalizedPath() {
             width={164 * unit}
             height={61 * unit}
           />
-          <Text className="rounded-xl bg-ice px-3 py-2 font-bold text-brand">
-            {t("confidenceStep")}
-          </Text>
         </View>
         <View style={{ height: 7 * unit }}>
           <Progress value={0.7} />
@@ -111,10 +114,11 @@ export function PersonalizedPath() {
           style={{ minHeight: 174 * unit, marginTop: 12 * unit }}
         >
           <View className="absolute right-0 top-0" pointerEvents="none">
-            <ReferenceArt
-              region="487 267 348 382"
-              width={158 * unit}
-              height={174 * unit}
+            <Image
+              source={require("../../assets/challenges/kiko-happy-transparent.png")}
+              resizeMode="contain"
+              accessible={false}
+              style={{ width: 158 * unit, height: 174 * unit }}
             />
           </View>
           <View style={{ width: "57%" }}>
