@@ -8,6 +8,8 @@ export type { Language } from "../types/api";
 export type Country = "US" | "MX" | "KE";
 type State = {
   language: Language;
+  /** False until the learner picks a language; the welcome screen cycles until then. */
+  languageChosen: boolean;
   country: Country;
   stage: string;
   goal: string;
@@ -48,6 +50,7 @@ export const useApp = create<State>()(
   persist(
     (set, get) => ({
       language: "en",
+      languageChosen: false,
       country: "US",
       stage: "First job",
       goal: "Save more",
@@ -118,6 +121,8 @@ export const useApp = create<State>()(
         const state = persisted as Partial<State>;
         return {
           ...state,
+          // Anyone who already used the app has been through language setup.
+          languageChosen: state.languageChosen ?? true,
           // Earlier versions seeded demo progress; start this preview clean once.
           completed: [],
           coins: 0,

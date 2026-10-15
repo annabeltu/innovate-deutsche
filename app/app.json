@@ -8,7 +8,8 @@
     "scheme": "kompass",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.innovatedeutsche.kompass"
     },
     "android": {
       "adaptiveIcon": {

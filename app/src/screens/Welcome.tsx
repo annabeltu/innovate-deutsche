@@ -7,20 +7,28 @@ import {
   StyleSheet,
   Switch,
   View,
-  useWindowDimensions,
 } from "react-native";
+import { useWindowSize } from "../hooks/use-window-size";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
-import * as Speech from "expo-speech";
-import Svg, { Image as SvgImage, Path, Rect } from "react-native-svg";
+import Svg, { Image as SvgImage } from "react-native-svg";
 import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
+import {
+  ROTATING_LANGUAGES,
+  useRotatingLanguage,
+} from "../i18n/use-rotating-language";
 import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { ACCESSIBILITY_OPTIONS } from "../onboarding/options";
+import { stopSpeaking } from "../voice/speech";
+import { useNarration } from "../voice/narration";
+import { ReadAloudDock } from "../components/ReadAloudBubble";
+import { KompassLogo } from "../components/KompassLogo";
 
 const blue = "#0012B3";
 const ink = "#000C62";
@@ -59,7 +67,16 @@ function ReferenceArt({ crop }: { crop: string }) {
 export function Welcome() {
   const s = useApp();
   const { t } = useTranslation();
-  const { width, height, fontScale } = useWindowDimensions();
+  const rotating = useRotatingLanguage(!s.languageChosen);
+  /** Visible text: cycles through every language until the learner picks one. */
+  const shown = (key: string) =>
+    rotating ? i18n.getFixedT(rotating)(key) : t(key);
+  /** Screen-reader text: names all three languages at once instead of cycling. */
+  const spoken = (key: string) =>
+    s.languageChosen
+      ? t(key)
+      : ROTATING_LANGUAGES.map((lang) => i18n.getFixedT(lang)(key)).join(". ");
+  const { width, height, fontScale } = useWindowSize();
   const insets = useSafeAreaInsets();
   const pageWidth = width - insets.left - insets.right;
   const availableHeight = height - insets.top - insets.bottom;
@@ -72,20 +89,13 @@ export function Welcome() {
     fontSize: s.large ? 18 : 12.5 * unit,
     lineHeight: s.large ? 25 : 19 * unit,
   };
-  const speak = useCallback(() => {
-    void Speech.stop();
-    Speech.speak(
-      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`onboarding.country.${s.country}`)}. ${t("access")}. ${t("getStarted")}`,
-      { language: s.language },
-    );
-  }, [s.country, s.language, t]);
+  const narration = `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`onboarding.country.${s.country}`)}. ${t("access")}. ${t("getStarted")}.`;
   useFocusEffect(
     useCallback(() => {
-      if (s.readAloud) speak();
-      return () => {
-        void Speech.stop();
-      };
-    }, [s.readAloud, speak]),
+      // Nothing plays by itself: the read-aloud bubble reads this on request.
+      useNarration.getState().setText(narration);
+      return stopSpeaking;
+    }, [narration]),
   );
 
   return (
@@ -109,7 +119,7 @@ export function Welcome() {
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
               accessible
-              accessibilityLabel={t(
+              accessibilityLabel={spoken(
                 `app.${{ US: "usaScene", MX: "mexicoScene", KE: "kenyaScene" }[s.country]}`,
               )}
             />
@@ -130,8 +140,6 @@ export function Welcome() {
               }}
             />
             <View
-              accessibilityRole="header"
-              accessibilityLabel="Deutsche Bank. Kompass"
               style={{
                 position: "absolute",
                 left: padding,
@@ -140,54 +148,7 @@ export function Welcome() {
                 height: pageWidth * 0.188,
               }}
             >
-              <View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6 * unit,
-                  }}
-                >
-                  <Svg
-                    width={20 * unit}
-                    height={20 * unit}
-                    viewBox="0 0 30 30"
-                    accessible={false}
-                  >
-                    <Rect
-                      x="2"
-                      y="2"
-                      width="26"
-                      height="26"
-                      stroke={blue}
-                      strokeWidth="3"
-                      fill="none"
-                    />
-                    <Path d="M8 23 L18 7 H24 L14 23Z" fill={blue} />
-                  </Svg>
-                  <Txt
-                    style={{
-                      fontSize: 15 * unit,
-                      lineHeight: 22 * unit,
-                      color: blue,
-                      fontWeight: "700",
-                    }}
-                  >
-                    Deutsche Bank
-                  </Txt>
-                </View>
-                <Txt
-                  style={{
-                    fontSize: 42 * unit,
-                    lineHeight: 50 * unit,
-                    letterSpacing: -2,
-                    color: blue,
-                    fontWeight: "800",
-                  }}
-                >
-                  Kompass
-                </Txt>
-              </View>
+              <KompassLogo size={42 * unit} />
             </View>
           </View>
           <View
@@ -202,17 +163,17 @@ export function Welcome() {
               },
             ]}
           >
-            <Txt style={[styles.label, labelStyle]}>{t("language")}</Txt>
+            <Txt style={[styles.label, labelStyle]}>{shown("language")}</Txt>
             <LanguageSelector stacked={narrow} />
             <Txt style={[styles.label, labelStyle, { marginTop: 17 * unit }]}>
-              {t("country")}
+              {shown("country")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
               {(Object.keys(countries) as Country[]).map((code) => (
                 <Pressable
                   key={code}
                   accessibilityRole="button"
-                  accessibilityLabel={t(`onboarding.country.${code}`)}
+                  accessibilityLabel={spoken(`onboarding.country.${code}`)}
                   accessibilityHint={t("app.selectHint")}
                   accessibilityState={{ selected: s.country === code }}
                   onPress={() =>
@@ -259,7 +220,7 @@ export function Welcome() {
                         },
                       ]}
                     >
-                      {t(`onboarding.country.${code}`)}
+                      {shown(`onboarding.country.${code}`)}
                     </Txt>
                     <Feather
                       name="chevron-right"
@@ -271,7 +232,7 @@ export function Welcome() {
               ))}
             </View>
             <Txt style={[styles.label, labelStyle, { marginTop: 18 * unit }]}>
-              {t("access")}
+              {shown("access")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
               {ACCESSIBILITY_OPTIONS.map((option) => {
@@ -281,7 +242,7 @@ export function Welcome() {
                   largerText: { key: "large", icon: "type" },
                 } as const;
                 const { key, icon } = controls[option.id];
-                const name = t(option.labelKey);
+                const name = shown(option.labelKey);
                 return (
                   <View
                     key={key}
@@ -330,7 +291,7 @@ export function Welcome() {
                       }}
                     >
                       <Switch
-                        accessibilityLabel={name}
+                        accessibilityLabel={spoken(option.labelKey)}
                         accessibilityHint={t(option.helperKey)}
                         value={s[key]}
                         onValueChange={(value) => s.set({ [key]: value })}
@@ -347,17 +308,6 @@ export function Welcome() {
                 );
               })}
             </View>
-            {s.readAloud && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t("app.repeat")}
-                accessibilityHint={t("app.repeatHint")}
-                onPress={speak}
-                style={styles.extraAction}
-              >
-                <Txt style={styles.option}>{t("app.repeat")}</Txt>
-              </Pressable>
-            )}
             {s.onboarded && (
               <Pressable
                 accessibilityRole="button"
@@ -372,6 +322,7 @@ export function Welcome() {
           </View>
         </View>
       </ScrollView>
+      <ReadAloudDock />
       <View style={[styles.footer, { paddingBottom: 10 + insets.bottom }]}>
         <View
           style={{
@@ -382,7 +333,7 @@ export function Welcome() {
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t("getStarted")}
+            accessibilityLabel={spoken("getStarted")}
             accessibilityHint={t("actionHint")}
             onPress={() => router.push("/onboarding")}
             style={[
@@ -400,7 +351,7 @@ export function Welcome() {
                 fontWeight: "600",
               }}
             >
-              {t("getStarted")}
+              {shown("getStarted")}
             </Txt>
             <Feather name="arrow-right" size={25 * unit} color="#FFFFFF" />
           </Pressable>

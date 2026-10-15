@@ -98,7 +98,10 @@
       "notAdded": "I did not add the lesson. You can ask me again at any time.",
       "error": "Sorry, something went wrong. Please try again.",
       "addFailed": "Sorry, I could not add the lesson. Please try again later."
-    }
+    },
+    "readScreen": "Read this screen aloud",
+    "stopReading": "Stop reading",
+    "readScreenHint": "Reads everything on this screen in your language"
   },
   "onboarding": {
     "country": {

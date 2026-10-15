@@ -87,7 +87,7 @@ describe("ApiLesson", () => {
   beforeEach(async () => {
     await i18n.changeLanguage("en");
     jest.clearAllMocks();
-    jest.mocked(recognizeIntent).mockImplementation(async (text) => ({
+    jest.mocked(recognizeIntent).mockImplementation(async (text: string) => ({
       intent:
         text === "a" || text === "b"
           ? "option"

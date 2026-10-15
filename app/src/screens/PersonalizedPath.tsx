@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  Image,
-  Pressable,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
+import { useWindowSize } from "../hooks/use-window-size";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -52,7 +47,7 @@ function ReferenceArt({
 export function PersonalizedPath() {
   const confidence = useApp((state) => state.confidence);
   const large = useApp((state) => state.large);
-  const { width, height, fontScale } = useWindowDimensions();
+  const { width, height, fontScale } = useWindowSize();
   const { t } = useTranslation();
   const result = usePath();
   if (result.isPending)

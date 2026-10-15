@@ -54,6 +54,32 @@ class Settings(BaseSettings):
 
     voice_provider_timeout_seconds: float = 20.0
 
+    # Voice via Gemini (see docs/adr/0007-gemini-for-speech.md). When a Gemini key
+    # is set it serves both speech-to-text and text-to-speech, ahead of Whisper/OpenAI.
+    gemini_api_key: SecretStr | None = None
+    gemini_interactions_url: str = (
+        "https://generativelanguage.googleapis.com/v1beta/interactions"
+    )
+    # Tried in order. On a Swahili clip 3.5 Flash-Lite answered in about 2 s
+    # (500 free a day); the dedicated transcribe model took about 9 s (25 a day).
+    gemini_transcribe_models: list[str] = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-transcribe",
+        "gemini-3.1-flash-lite",
+        "gemini-3.8-flash",
+    ]
+    # 10 free requests a day each. Swahili needs a full Flash TTS model, so
+    # Flash-Lite TTS is the last resort (English and Spanish only).
+    gemini_tts_models: list[str] = [
+        "gemini-3.8-flash-tts",
+        "gemini-3.1-flash-tts-preview",
+        "gemini-2.5-flash-preview-tts",
+        "gemini-3.8-flash-lite-tts",
+    ]
+    gemini_tts_voice: str = "Kore"
+    # Generated speech is reused for repeated text, which saves the small TTS quota.
+    speech_cache_max_bytes: int = 50_000_000
+
 
 @lru_cache
 def get_settings() -> Settings:

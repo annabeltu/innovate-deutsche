@@ -98,7 +98,10 @@
       "notAdded": "No agregué la lección. Puedes preguntarme otra vez cuando quieras.",
       "error": "Perdón, algo salió mal. Por favor, inténtalo otra vez.",
       "addFailed": "Perdón, no pude agregar la lección. Inténtalo más tarde."
-    }
+    },
+    "readScreen": "Leer esta pantalla en voz alta",
+    "stopReading": "Dejar de leer",
+    "readScreenHint": "Lee todo lo que hay en esta pantalla en tu idioma"
   },
   "onboarding": {
     "country": {
