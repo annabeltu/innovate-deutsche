@@ -70,12 +70,13 @@ def test_customize_lesson_fills_findex_facts_in_text_and_voice(
     )
     bridge = next(card for card in lesson.cards if card.card_id == "people-like-you")
 
+    # Kenyan 15-24 year olds: 20% saved at a bank vs 54% (Findex 2025).
     assert bridge.text == (
-        "Saved at a bank in the past year: 38% of people like you, "
-        "compared with 60% overall."
+        "In your country, 20% of people your age saved at a bank in the past year. "
+        "In upper-middle-income countries, it is 54%."
     )
-    assert "38 percent" in bridge.voice.speak_text
-    assert "60 percent" in bridge.voice.speak_text
+    assert "20 percent" in bridge.voice.speak_text
+    assert "54 percent" in bridge.voice.speak_text
     assert all("{" not in card.text for card in lesson.cards)
 
 

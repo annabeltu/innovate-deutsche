@@ -10,13 +10,14 @@ from collections.abc import Mapping
 
 from app.schemas.lesson_template import CardTemplate, LessonTemplate
 from app.schemas.shared import (
+    AgeGroup,
     Country,
     Difficulty,
     LearnerNeeds,
     LearnerProfile,
     Lesson,
     LessonCard,
-    TopicNeed,
+    Topic,
     VoiceBlock,
 )
 from app.services.lesson_templates import BASE_LESSON_LANGUAGE
@@ -24,6 +25,11 @@ from app.services.proficiency import difficulty_band
 from app.services.question_bank import QuestionBank
 
 PERCENT = 100
+WHO_BY_AGE_GROUP = {
+    AgeGroup.YOUNG: "people your age",
+    AgeGroup.OLDER: "people your age",
+    AgeGroup.ALL_ADULTS: "adults",
+}
 
 
 def customize_lesson(
@@ -55,7 +61,7 @@ def customize_lesson(
         )
 
     difficulty = difficulty_band(profile.topic_scores[template.topic].proficiency)
-    facts = _merge_facts(country_facts, lesson_facts(needs.topic_needs[template.topic]))
+    facts = _merge_facts(country_facts, lesson_facts(needs, template.topic))
     cards = [
         _fill_card(card, facts, template.lesson_id)
         for card in template.cards
@@ -87,13 +93,23 @@ def card_fits_learner(
     )
 
 
-def lesson_facts(need: TopicNeed) -> dict[str, str]:
-    """Facts a base lesson may reference as {placeholders}, as display text."""
-    return {
-        "indicator": need.indicator,
-        "group_percent": _as_percent(need.group_rate),
-        "benchmark_percent": _as_percent(need.benchmark_rate),
+def lesson_facts(needs: LearnerNeeds, topic: Topic) -> dict[str, str]:
+    """Findex facts a base lesson may use as {placeholders}, as display text.
+
+    They describe the topic's headline signal, the one with the biggest gap.
+    benchmark_percent is left out when Findex publishes no benchmark, so a
+    lesson that needs it fails loudly instead of showing a wrong number.
+    """
+    headline = needs.topic_needs[topic].signals[0]
+    facts = {
+        "indicator": headline.label,
+        "group_percent": _as_percent(headline.group_rate),
+        "who": WHO_BY_AGE_GROUP[headline.age_group],
+        "benchmark_name": needs.benchmark_name,
     }
+    if headline.benchmark_rate is not None:
+        facts["benchmark_percent"] = _as_percent(headline.benchmark_rate)
+    return facts
 
 
 def country_facts_for(bank: QuestionBank, country: Country) -> dict[str, str]:

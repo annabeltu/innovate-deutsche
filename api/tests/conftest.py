@@ -23,11 +23,13 @@ from app.schemas.shared import (
     Lesson,
     OnboardingRequest,
 )
+from app.services.needs import build_learner_needs, load_findex
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
 
 SEED = 1234
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
+FINDEX = load_findex()
 
 
 @pytest.fixture
@@ -97,9 +99,9 @@ def learner_profile(profile_json: dict[str, Any]) -> LearnerProfile:
 
 
 @pytest.fixture
-def learner_needs() -> LearnerNeeds:
-    """Stand-in for the data teammate's needs object; not built yet."""
-    return LearnerNeeds.model_validate(_load_fixture("learner_needs_ke_student.json"))
+def learner_needs(learner_profile: LearnerProfile) -> LearnerNeeds:
+    """The sample learner's needs, built from the real data/findex files."""
+    return build_learner_needs(learner_profile, FINDEX[learner_profile.country])
 
 
 @pytest.fixture

@@ -133,19 +133,45 @@ export interface ErrorResponse {
 
 // Path + Lessons API (Faraz)
 
-/** How far the learner's group trails the Findex benchmark on one topic. */
-export interface TopicNeed {
-  indicator: string;
+/** Findex age group a learner's numbers come from, set by life stage. */
+export type AgeGroup = 'ages_15_24' | 'age_25_plus' | 'all';
+
+export type NeedKind = 'struggle' | 'lacking' | 'could_use' | 'exposure';
+
+/** One Findex number about people like the learner, compared to a benchmark. */
+export interface NeedSignal {
+  indicator_id: string;
+  /** Completes "N% of people your age ...". */
+  label: string;
+  kind: NeedKind;
   group_rate: number;
-  benchmark_rate: number;
-  findex_gap: number;
+  age_group: AgeGroup;
+  benchmark_rate: number | null;
+  /** 0 (no gap) to 1; for exposure, the share exposed. */
+  gap: number;
+  survey_year: number;
 }
 
-/** What a learner is likely to struggle with, from the Findex data. */
+/** Everything the Findex data says the learner needs on one topic. */
+export interface TopicNeed {
+  topic: Topic;
+  findex_gap: number;
+  /** Biggest gap first; the first is the headline. */
+  signals: NeedSignal[];
+}
+
+/** What a learner likely needs, from Global Findex data for people like them. */
 export interface LearnerNeeds {
   user_id: string;
   country: Country;
+  age_group: AgeGroup;
+  benchmark_name: string;
+  source: string;
   topic_needs: Record<Topic, TopicNeed>;
+  priorities: Topic[];
+  struggles: NeedSignal[];
+  lacking: NeedSignal[];
+  could_use: NeedSignal[];
 }
 
 export type CardType =

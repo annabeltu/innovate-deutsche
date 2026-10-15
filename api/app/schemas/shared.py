@@ -8,7 +8,14 @@ from datetime import datetime
 from enum import IntEnum, StrEnum
 from typing import Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 UnitInterval = Annotated[float, Field(ge=0.0, le=1.0)]
 
@@ -298,31 +305,79 @@ class ErrorResponse(BaseModel):
 # Path + Lessons API (Faraz)
 
 
-class TopicNeed(BaseModel):
-    """How far the learner's group trails the Findex benchmark on one topic."""
+class AgeGroup(StrEnum):
+    """Findex age group a learner's numbers come from, set by life stage."""
+
+    YOUNG = "ages_15_24"
+    OLDER = "age_25_plus"
+    ALL_ADULTS = "all"
+
+
+class NeedKind(StrEnum):
+    """What a Findex number says the learner's group needs."""
+
+    STRUGGLE = "struggle"
+    LACKING = "lacking"
+    COULD_USE = "could_use"
+    EXPOSURE = "exposure"
+
+
+class NeedSignal(BaseModel):
+    """One Findex number about people like the learner, compared to a benchmark."""
 
     model_config = ConfigDict(extra="forbid")
 
-    indicator: str = Field(min_length=1, description="Findex indicator name.")
-    group_rate: float = Field(
-        ge=0, le=1, description="Share of the learner's group meeting the indicator."
+    indicator_id: str = Field(min_length=1, description="Findex series code.")
+    label: str = Field(
+        min_length=1, description='Completes "N% of people your age ...".'
     )
-    benchmark_rate: float = Field(
-        ge=0, le=1, description="Benchmark share the group is compared against."
+    kind: NeedKind = Field(description="Struggle, lacking, could use or exposure.")
+    group_rate: UnitInterval = Field(description="Share of the learner's group.")
+    age_group: AgeGroup = Field(
+        description="Group group_rate is for; all adults when Findex has no age split."
     )
-    findex_gap: float = Field(
-        ge=0, le=1, description="How far the group trails the benchmark, 0 to 1."
+    benchmark_rate: UnitInterval | None = Field(
+        description="Upper-middle-income average, or null if not published."
+    )
+    gap: UnitInterval = Field(
+        description="How far the group is from the benchmark, 0 (none) to 1. "
+        "For exposure, the share exposed."
+    )
+    survey_year: int = Field(description="Findex survey year the rates come from.")
+
+
+class TopicNeed(BaseModel):
+    """Everything the Findex data says the learner needs on one topic."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    topic: Topic
+    findex_gap: UnitInterval = Field(
+        description="Mean gap of the topic's signals; feeds path priority."
+    )
+    signals: list[NeedSignal] = Field(
+        min_length=1, description="Biggest gap first; the first is the headline."
     )
 
 
 class LearnerNeeds(BaseModel):
-    """What a learner is likely to struggle with, from the Findex data."""
+    """What a learner likely needs, from Global Findex data for people like them.
+
+    Built by Faraz's API from the learner's country and life stage; read
+    together with Will's LearnerProfile to customize lessons and the path.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     user_id: str = Field(min_length=1, description="Learner these needs belong to.")
-    country: Country = Field(description="Country the Findex data comes from.")
+    country: Country
+    age_group: AgeGroup = Field(description="Findex age group for the learner.")
+    benchmark_name: str = Field(
+        description='For example "upper-middle-income countries".'
+    )
+    source: str = Field(description="Data citation.")
     topic_needs: dict[Topic, TopicNeed] = Field(description="One entry per topic.")
+    priorities: list[Topic] = Field(description="Topics by findex_gap, biggest first.")
 
     @field_validator("topic_needs")
     @classmethod
@@ -334,6 +389,34 @@ class LearnerNeeds(BaseModel):
         if missing:
             raise ValueError(f"missing topic needs: {sorted(missing)}")
         return topic_needs
+
+    @computed_field
+    @property
+    def struggles(self) -> list[NeedSignal]:
+        """Places the learner's group struggles, biggest gap first."""
+        return self._signals_of(NeedKind.STRUGGLE)
+
+    @computed_field
+    @property
+    def lacking(self) -> list[NeedSignal]:
+        """Things the learner's group lacks, biggest gap first."""
+        return self._signals_of(NeedKind.LACKING)
+
+    @computed_field
+    @property
+    def could_use(self) -> list[NeedSignal]:
+        """Things the learner's group could benefit from, biggest gap first."""
+        return self._signals_of(NeedKind.COULD_USE)
+
+    def _signals_of(self, kind: NeedKind) -> list[NeedSignal]:
+        """Signals of one kind across all topics with a real gap, biggest first."""
+        signals = [
+            signal
+            for need in self.topic_needs.values()
+            for signal in need.signals
+            if signal.kind == kind and signal.gap > 0
+        ]
+        return sorted(signals, key=lambda signal: signal.gap, reverse=True)
 
 
 class CardType(StrEnum):

@@ -16,9 +16,9 @@
     {
       "card_id": "people-like-you",
       "type": "bridge",
-      "text": "{indicator}: {group_percent}% of people like you, compared with {benchmark_percent}% overall.",
+      "text": "In your country, {group_percent}% of {who} {indicator}. The more we pay by phone and online, the more chances scammers get.",
       "voice": {
-        "speak_text": "{indicator}: {group_percent} percent of people like you, compared with {benchmark_percent} percent overall. Say next to continue.",
+        "speak_text": "In your country, {group_percent} percent of {who} {indicator}. The more we pay by phone and online, the more chances scammers get. Say next to continue.",
         "answer_mode": "say_next"
       }
     },
