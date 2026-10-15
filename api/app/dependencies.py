@@ -1,11 +1,14 @@
 """FastAPI dependencies, kept separate so tests can swap them with dependency_overrides."""
 
 import random
+from functools import lru_cache
 from typing import Annotated
 
+import httpx
 from fastapi import Depends
 
 from app.config import Settings, get_settings
+from app.llm.client import EchoLlmClient, LlmClient, OpenAiClient
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
 
@@ -25,3 +28,28 @@ def get_question_bank(settings: SettingsDep) -> QuestionBank:
 def get_rng() -> random.Random:
     """Return the randomness source for question selection; tests pass a seeded one."""
     return random.SystemRandom()
+
+
+def get_llm_client(settings: SettingsDep) -> LlmClient:
+    """Return the OpenAI client, or the echo client when no key is configured.
+
+    Raises:
+        ValueError: If LLM_API_KEY is set without LLM_MODEL.
+    """
+    api_key = settings.llm_api_key.get_secret_value() if settings.llm_api_key else ""
+    if not api_key:
+        return EchoLlmClient()
+    if not settings.llm_model:
+        raise ValueError("LLM_MODEL must be set when LLM_API_KEY is set")
+    return _openai_client(
+        api_key, settings.llm_model, settings.llm_base_url, settings.llm_timeout_seconds
+    )
+
+
+@lru_cache
+def _openai_client(
+    api_key: str, model_name: str, base_url: str, timeout_seconds: float
+) -> OpenAiClient:
+    """Build one OpenAI client per configuration so connections are reused."""
+    http_client = httpx.Client(base_url=base_url, timeout=timeout_seconds)
+    return OpenAiClient(api_key, model_name, http_client)

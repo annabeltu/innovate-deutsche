@@ -3,6 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -15,6 +16,11 @@ class Settings(BaseSettings):
 
     database_path: Path = Path("kompass.db")
     question_bank_dir: Path = REPO_ROOT / "data" / "question_bank"
+    # LLM (OpenAI). With no key, lessons keep their original English wording.
+    llm_api_key: SecretStr | None = None
+    llm_model: str | None = None
+    llm_base_url: str = "https://api.openai.com/v1"
+    llm_timeout_seconds: float = Field(default=20.0, gt=0)
 
 
 @lru_cache
