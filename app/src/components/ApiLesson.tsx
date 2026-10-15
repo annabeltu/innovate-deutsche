@@ -5,6 +5,8 @@ import { router } from "expo-router";
 import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
 import { useLesson, saveLessonResult } from "../api/lessons";
+import { VoiceInput } from "./VoiceInput";
+import { recognizeIntent } from "../api/voice";
 import { lessonLanguage } from "../api/learner";
 import { useApp } from "../state/useApp";
 import type { LessonCard } from "../types/api";
@@ -94,6 +96,9 @@ export function ApiLesson({
       progress={(index + 1) / cards.length}
       isLast={isLast}
       onNext={() => void next()}
+      onBack={() =>
+        index > 0 ? setIndex(index - 1) : router.replace("/roadmap")
+      }
       saving={saving}
       saveFailed={saveFailed}
       onWrong={() =>
@@ -127,6 +132,7 @@ function LessonCardView({
   saving,
   saveFailed,
   onWrong,
+  onBack,
 }: {
   title: string;
   card: LessonCard;
@@ -136,8 +142,10 @@ function LessonCardView({
   saving: boolean;
   saveFailed: boolean;
   onWrong: () => void;
+  onBack: () => void;
 }) {
   const { t } = useTranslation();
+  const language = useApp((state) => state.language);
   const hearts = useApp((s) => s.hearts);
   const [answer, setAnswer] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
@@ -149,6 +157,40 @@ function LessonCardView({
   const feedback = isCorrect
     ? card.voice.correct_feedback
     : card.voice.incorrect_feedback;
+  async function spokenReply(text: string) {
+    const command = await recognizeIntent(text, language);
+    if (command.intent === "back") {
+      onBack();
+      return;
+    }
+    if (command.intent === "next" && canContinue && !saving) {
+      onNext();
+      return;
+    }
+    if (
+      command.intent === "option" &&
+      command.option_id &&
+      command.option_id in card.options
+    ) {
+      const correct = command.option_id === card.correct_option;
+      setAnswer(command.option_id);
+      setChecked(true);
+      if (!correct) onWrong();
+      Speech.speak(
+        (correct
+          ? card.voice.correct_feedback
+          : card.voice.incorrect_feedback) ?? t("voice.lesson.sayNext"),
+        { language },
+      );
+      return;
+    }
+    Speech.speak(
+      command.intent === "help"
+        ? t("voice.lesson.help")
+        : card.voice.speak_text,
+      { language },
+    );
+  }
   return (
     <Screen>
       <Row>
@@ -199,6 +241,7 @@ function LessonCardView({
           }}
         />
       )}
+      <VoiceInput onText={spokenReply} />
       {saveFailed && (
         <Txt accessibilityLiveRegion="polite">{t("lessonError")}</Txt>
       )}

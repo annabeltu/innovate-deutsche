@@ -2,11 +2,29 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { router } from "expo-router";
 import { ApiLesson } from "../ApiLesson";
+import { recognizeIntent } from "../../api/voice";
 import { useLesson, saveLessonResult } from "../../api/lessons";
 import { useApp } from "../../state/useApp";
 import type { Lesson } from "../../types/api";
 import "../../i18n";
 
+jest.mock("../../api/voice", () => ({ recognizeIntent: jest.fn() }));
+jest.mock("../VoiceInput", () => {
+  const { Button, View } = jest.requireActual("react-native");
+  return {
+    VoiceInput: ({ onText }: { onText: (text: string) => Promise<void> }) => (
+      <View>
+        {["a", "b", "next", "back", "repeat", "help"].map((text) => (
+          <Button
+            key={text}
+            title={`Say ${text}`}
+            onPress={() => onText(text)}
+          />
+        ))}
+      </View>
+    ),
+  };
+});
 jest.mock("expo-router", () => ({
   router: { replace: jest.fn(), push: jest.fn() },
   useFocusEffect: jest.fn(),
@@ -67,7 +85,22 @@ async function showLesson(result: object) {
 describe("ApiLesson", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    useApp.setState({ completed: [], coins: 0, readAloud: false });
+    jest.mocked(recognizeIntent).mockImplementation(async (text) => ({
+      intent:
+        text === "a" || text === "b"
+          ? "option"
+          : (text as "next" | "back" | "repeat" | "help"),
+      option_id: text === "a" || text === "b" ? text : null,
+      number: null,
+      confidence: 1,
+      normalized_text: text,
+    }));
+    useApp.setState({
+      completed: [],
+      coins: 0,
+      readAloud: false,
+      language: "en",
+    });
   });
 
   it("shows a loading message while the lesson is prepared", async () => {
@@ -140,6 +173,33 @@ describe("ApiLesson", () => {
         "This lesson could not load. Check your connection and try again.",
       ),
     ).toBeTruthy();
+  });
+
+  it("answers lesson questions by voice and saves their actual first-attempt score", async () => {
+    await showLesson({ isPending: false, isError: false, data: lesson });
+    await fireEvent.press(screen.getByRole("button", { name: "Say next" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Say b" }));
+    expect(screen.getByText("Not quite. The answer is A.")).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: "Say a" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Say next" }));
+    expect(saveLessonResult).toHaveBeenCalledWith({
+      lesson_id: "saving",
+      correct: 0,
+      total: 1,
+      completed: true,
+    });
+    expect(useApp.getState().completed).toContain("saving");
+  });
+
+  it("supports spoken repeat, help and back during a lesson", async () => {
+    await showLesson({ isPending: false, isError: false, data: lesson });
+    await fireEvent.press(screen.getByRole("button", { name: "Say repeat" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Say help" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Say next" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Say back" }));
+    expect(screen.getByText(lesson.cards[0].text)).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: "Say back" }));
+    expect(router.replace).toHaveBeenCalledWith("/roadmap");
   });
 
   it("reads each card's voice text aloud in read-aloud mode", async () => {

@@ -1,3 +1,7 @@
+import { integrationCopy } from "./integration";
+import voiceEn from "../voice/locales/en.json";
+import voiceEs from "../voice/locales/es.json";
+import voiceSw from "../voice/locales/sw.json";
 import { confidenceCopy } from "./confidence";
 import { pathPreviewCopy } from "./path-preview";
 import { createInstance } from "i18next";
@@ -156,6 +160,8 @@ void i18n.use(initReactI18next).init({
       translation: {
         ...en,
         ...confidenceCopy.en,
+        ...integrationCopy.en,
+        ...voiceEn,
         pathPreview: pathPreviewCopy.en,
       },
     },
@@ -163,6 +169,8 @@ void i18n.use(initReactI18next).init({
       translation: {
         ...es,
         ...confidenceCopy.es,
+        ...integrationCopy.es,
+        ...voiceEs,
         pathPreview: pathPreviewCopy.es,
       },
     },
@@ -170,6 +178,8 @@ void i18n.use(initReactI18next).init({
       translation: {
         ...sw,
         ...confidenceCopy.sw,
+        ...integrationCopy.sw,
+        ...voiceSw,
         pathPreview: pathPreviewCopy.sw,
       },
     },

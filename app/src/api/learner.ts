@@ -83,6 +83,7 @@ export function toOnboardingRequest(
     language: lessonLanguage(answers.country, answers.language),
     accessibility: {
       read_aloud: answers.readAloud,
+      voice_mode: answers.readAloud,
       simple_mode: answers.simple,
       large_text: answers.large,
     },

@@ -2,6 +2,7 @@
 // (generation). Uses TanStack Query; nothing here is copied into Zustand
 // except the ids the roadmap needs to find a generated lesson again.
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "./query-client";
 import { apiRequest, isApiConfigured } from "./client";
 import { ensureLearner, toOnboardingRequest } from "./learner";
 import { useApp } from "../state/useApp";
@@ -21,6 +22,7 @@ export async function saveLessonResult(
     `/v1/profile/${encodeURIComponent(userId)}/lesson-results`,
     { method: "POST", body: result },
   );
+  await queryClient.invalidateQueries({ queryKey: ["path"] });
 }
 
 const BONUS_ROUTE_PREFIX = "bonus-";

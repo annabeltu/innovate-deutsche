@@ -235,3 +235,18 @@ export interface BonusLessonResponse {
   generated: boolean;
   matched_topic: Topic | null;
 }
+
+/** One server-ranked core lesson. */
+export interface PathNode {
+  lesson_id: string;
+  topic: Topic;
+  priority: number;
+  difficulty: Difficulty;
+  completed: boolean;
+}
+
+/** GET /v1/path/{user_id}. */
+export interface LearningPath {
+  user_id: string;
+  lessons: PathNode[];
+}

@@ -23,11 +23,32 @@ import {
 import { lessons } from "./Onboarding";
 import { ApiLesson } from "../components/ApiLesson";
 import { isApiConfigured } from "../api/client";
+import { usePath } from "../api/path";
 import { serverLessonId } from "../api/lessons";
 import { LanguageChooser } from "../components/LanguageChooser";
 const money = { US: "$", MX: "MX$", KE: "KSh" };
 export function Roadmap() {
   const s = useApp();
+  const { t } = useTranslation();
+  const path = usePath();
+  if (path.isPending)
+    return (
+      <Screen>
+        <Txt>{t("quizLoading")}</Txt>
+      </Screen>
+    );
+  if (path.isError)
+    return (
+      <Screen>
+        <Txt>{t("apiUnavailable")}</Txt>
+        <Button title={t("tryAgain")} onPress={() => void path.refetch()} />
+      </Screen>
+    );
+  const orderedLessons = path.data.lessons.map((node) => ({
+    id: node.lesson_id,
+    title: t(`confidenceTopics.${node.topic}`),
+    completed: node.completed,
+  }));
   return (
     <Screen dark footer={<Nav active="path" />}>
       <LanguageChooser />
@@ -79,13 +100,18 @@ export function Roadmap() {
           </Svg>
         </View>
         {[
-          ...lessons,
+          ...orderedLessons,
           ...s.bonus.map((title, i) => ({ id: `bonus-${i}`, title })),
         ].map((lesson, i) => {
-          const done = s.completed.includes(lesson.id);
+          const done =
+            s.completed.includes(lesson.id) ||
+            path.data.lessons.some(
+              (node) => node.lesson_id === lesson.id && node.completed,
+            );
           const locked =
             i > 0 &&
-            !s.completed.includes(lessons[i - 1]?.id) &&
+            !s.completed.includes(orderedLessons[i - 1]?.id) &&
+            !orderedLessons[i - 1]?.completed &&
             !lesson.id.startsWith("bonus");
           return (
             <Pressable

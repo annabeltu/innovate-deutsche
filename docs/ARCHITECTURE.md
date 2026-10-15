@@ -34,7 +34,7 @@ Expo app ──HTTP /v1──▶ FastAPI
 ## Frontend lesson integration
 
 Expo uses `EXPO_PUBLIC_API_URL` for customized lessons and lesson requests.
-The learner is created once from onboarding; language and accessibility changes
+The learner is created once from onboarding (quiz submission or explicit quiz skip); language and accessibility changes
 patch that learner instead of recreating it. The roadmap language chooser
 refreshes lesson queries after saving. Lesson completion is posted to the
 profile API before local coins and completion are awarded. Generation errors
@@ -43,3 +43,21 @@ are shown without adding a local placeholder lesson.
 Persisted app state version 3 clears the old preview's seeded progress once
 (including its learner linkage and bonus lessons). New learners start at zero
 coins, zero streak and no completions; version 3 progress persists normally.
+
+### Integration of the latest onboarding and voice updates
+
+The confidence screen offers a baseline quiz or a direct path. Quiz submission
+stores its learner id for subsequent path and lesson requests; direct path
+creation skips the quiz explicitly. Both paths share the typed fetch client
+and the root TanStack Query provider. `GET /v1/path/{user_id}` joins the stored
+profile with Findex needs and the existing pure scoring service. The new path
+preview keeps its design while using this server ordering.
+
+VoiceInput records on demand with Expo SDK 54, uploads `audio` and `language`
+through the same client, and labels development fixture transcripts. Ask Kiko
+requests real bonus lessons after typed submission or spoken confirmation.
+Quiz and lesson replies use the merged multilingual intent endpoint for
+options, next/back, repeat and help. Read-aloud uses expo-speech; the hosted
+TTS endpoint remains available as an optional service. CORS is configured once,
+accepting both CORS_ALLOWED_ORIGINS and the voice branch's CORS_ALLOW_ORIGINS
+alias. Microphone/device checks are still needed before a release.

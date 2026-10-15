@@ -17,7 +17,12 @@ describe("toOnboardingRequest", () => {
     expect(toOnboardingRequest(answers)).toEqual({
       country: "KE",
       language: "sw",
-      accessibility: { read_aloud: true, simple_mode: true, large_text: false },
+      accessibility: {
+        read_aloud: true,
+        voice_mode: true,
+        simple_mode: true,
+        large_text: false,
+      },
       life_stage: "parent",
       goal: "handle_emergencies",
       comfort: 2,

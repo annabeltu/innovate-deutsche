@@ -11,7 +11,7 @@ export const languageOptions: { code: Language; name: string }[] = [
   { code: "sw", name: "Kiswahili" },
 ];
 
-/** Three evenly sized choices, stacked for small screens and larger text. */
+/** Country-supported choices, stacked for small screens and larger text. */
 export function LanguageSelector({ stacked = false }: { stacked?: boolean }) {
   const country = useApp((state) => state.country);
   const language = useApp((state) => state.language);

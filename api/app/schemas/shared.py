@@ -521,3 +521,20 @@ class BonusLessonResponse(BaseModel):
     matched_topic: Topic | None = Field(
         description="The core lesson's topic when generated is false; otherwise null."
     )
+
+
+class PathNode(BaseModel):
+    """One core topic ordered by the learner's profile and Findex needs."""
+
+    lesson_id: str = Field(description="Core lesson id to open.")
+    topic: Topic = Field(description="Money skill taught by this lesson.")
+    priority: UnitInterval = Field(description="Personalized priority, highest first.")
+    difficulty: Difficulty = Field(description="Difficulty from learner proficiency.")
+    completed: bool = Field(description="Whether this learner completed the topic.")
+
+
+class LearningPath(BaseModel):
+    """Server-personalized core roadmap; bonus ids remain on the learner profile."""
+
+    user_id: str = Field(description="Learner who owns this path.")
+    lessons: list[PathNode] = Field(description="Core lessons in personalized order.")

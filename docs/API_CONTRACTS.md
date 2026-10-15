@@ -269,3 +269,18 @@ Unknown learner: `404 profile_not_found`; unsupported country/language pair:
 Subsequent GET lesson and POST bonus-lesson requests use the saved language,
 including question text, options and voice text, through `reword_lesson`.
 Translation failures still fall back to the original English lesson.
+
+## Server-personalized learning path
+
+`GET /v1/path/{user_id}` returns `LearningPath`:
+
+```json
+{"user_id":"u_example","lessons":[{"lesson_id":"saving","topic":"saving","priority":0.7,"difficulty":1,"completed":false}]}
+```
+
+The response includes all five core lessons, scored from Findex gaps, saved
+confidence/quiz proficiency, and the learner's goal. Completed topics appear
+after unfinished topics. `404 profile_not_found` means onboarding has not
+finished for this id. New profiles have no completed topics. The frontend
+preview and roadmap fetch this response; completing a lesson invalidates it.
+Bonus lessons retain their existing ids and stay linked to the same profile.

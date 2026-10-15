@@ -1,0 +1,28 @@
+{
+  "voice": {
+    "microphoneDenied": "Necesito el micrófono para escucharte. Permite el acceso al micrófono en los ajustes del teléfono y vuelve a intentarlo.",
+    "lesson": {
+      "intro": "Esta lección tiene {{count}} tarjetas. Di siguiente para avanzar, atrás para volver o repite para escuchar una tarjeta otra vez. Di ayuda en cualquier momento.",
+      "help": "Puedes decir siguiente, atrás, repite o ayuda. Para responder, di la letra de tu opción, como A o B. En las tarjetas de estafas, di estafa o legítimo.",
+      "notUnderstood": "Perdón, no te entendí. Di repite para escuchar la tarjeta otra vez, o di ayuda.",
+      "atFirstCard": "Esta es la primera tarjeta.",
+      "complete": "¡Muy bien! Terminaste la lección. Di atrás para escuchar la última tarjeta otra vez.",
+      "optionNotAvailable": "Por favor, di una de estas letras: {{letters}}.",
+      "sayNext": "Di siguiente para avanzar, o repite para escuchar la tarjeta otra vez.",
+      "correct": "¡Correcto!",
+      "incorrect": "No exactamente."
+    },
+    "askKiko": {
+      "prompt": "Hazme cualquier pregunta sobre dinero ahora.",
+      "thinking": "Déjame pensarlo.",
+      "nothingHeard": "No escuché nada. Intentemos otra vez cuando quieras.",
+      "confirmRetry": "Por favor, di sí para agregar la lección, o no para omitirla.",
+      "confirmHelp": "Di sí para agregar esta lección a tu camino. Di no para omitirla. Di repite para escuchar la pregunta otra vez.",
+      "adding": "De acuerdo. Estoy agregando la lección a tu camino.",
+      "declined": "De acuerdo. No agregaré la lección.",
+      "notAdded": "No agregué la lección. Puedes preguntarme otra vez cuando quieras.",
+      "error": "Perdón, algo salió mal. Por favor, inténtalo otra vez.",
+      "addFailed": "Perdón, no pude agregar la lección. Inténtalo más tarde."
+    }
+  }
+}

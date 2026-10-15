@@ -7,15 +7,24 @@ from typing import Annotated
 
 import httpx
 from fastapi import Depends
+from pydantic import SecretStr
 
 from app.config import Settings, get_settings
 from app.llm.client import EchoLlmClient, LlmClient, OpenAiClient
 from app.services.bonus_lesson_store import BonusLessonStore
+from app.services.errors import VoiceUnavailableError
 from app.services.lesson_service import LessonSources, LessonStores
 from app.services.lesson_templates import load_lesson_templates
 from app.services.needs import load_findex
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
+from app.services.speech_to_text import (
+    FixtureTranscriber,
+    SpeechToTextProvider,
+    WhisperTranscriber,
+)
+from app.services.text_to_speech import OpenAISpeechSynthesizer, TextToSpeechProvider
+from app.services.voice_provider_http import ProviderEndpoint
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 
@@ -102,3 +111,46 @@ def get_lesson_stores(
 ) -> LessonStores:
     """Return the learner and bonus lesson stores together."""
     return LessonStores(profiles=profiles, bonus_lessons=bonus_lessons)
+
+
+def get_transcriber(settings: SettingsDep) -> SpeechToTextProvider:
+    """Return Whisper when a key is set, the labeled fixture in development, else 503.
+
+    Raises:
+        VoiceUnavailableError: If no key is set and development fixtures are off.
+    """
+    whisper_key = _configured(settings.whisper_api_key)
+    if whisper_key:
+        endpoint = ProviderEndpoint(
+            url=settings.whisper_api_url,
+            api_key=whisper_key,
+            model=settings.whisper_model,
+            timeout_seconds=settings.voice_provider_timeout_seconds,
+        )
+        return WhisperTranscriber(endpoint)
+    if settings.voice_dev_fixtures:
+        return FixtureTranscriber()
+    raise VoiceUnavailableError("Speech-to-text is not configured on this server")
+
+
+def get_synthesizer(settings: SettingsDep) -> TextToSpeechProvider:
+    """Return the hosted voice, or 503 so the app speaks on-device instead.
+
+    Raises:
+        VoiceUnavailableError: If no text-to-speech key is set.
+    """
+    tts_key = _configured(settings.tts_api_key)
+    if not tts_key:
+        raise VoiceUnavailableError("Hosted text-to-speech is not configured")
+    endpoint = ProviderEndpoint(
+        url=settings.tts_api_url,
+        api_key=tts_key,
+        model=settings.tts_model,
+        timeout_seconds=settings.voice_provider_timeout_seconds,
+    )
+    return OpenAISpeechSynthesizer(endpoint, settings.tts_voice)
+
+
+def _configured(secret: SecretStr | None) -> str:
+    """The key's value, or "" when unset or left blank as in .env.example."""
+    return secret.get_secret_value().strip() if secret else ""

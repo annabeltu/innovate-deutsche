@@ -21,6 +21,7 @@ export function LanguageChooser() {
     try {
       await ensureLearner();
       await client.invalidateQueries({ queryKey: ["lesson"] });
+      await client.invalidateQueries({ queryKey: ["path"] });
     } catch {
       useApp.getState().set({ language });
       setFailed(true);

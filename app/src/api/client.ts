@@ -34,10 +34,15 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const baseUrl = process.env.EXPO_PUBLIC_API_URL;
   if (!baseUrl) throw new ApiError(0, "api_not_configured", "No API URL set");
-  const response = await fetch(`${baseUrl}${path}`, {
+  const multipart = init.body instanceof FormData;
+  const response = await fetch(`${baseUrl.replace(/\/+$/, "")}${path}`, {
     method: init.method ?? "GET",
-    headers: { "Content-Type": "application/json" },
-    body: init.body === undefined ? undefined : JSON.stringify(init.body),
+    headers: multipart ? {} : { "Content-Type": "application/json" },
+    body: multipart
+      ? (init.body as FormData)
+      : init.body === undefined
+        ? undefined
+        : JSON.stringify(init.body),
   });
   const body: unknown = await response.json().catch(() => null);
   if (!response.ok) {

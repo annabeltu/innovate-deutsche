@@ -1,227 +1,75 @@
-import React, { useEffect, useState } from "react";
-import { TextInput, View, Platform } from "react-native";
+import React, { useState } from "react";
+import { TextInput } from "react-native";
 import { router } from "expo-router";
-import {
-  AudioModule,
-  RecordingPresets,
-  setAudioModeAsync,
-  useAudioRecorder,
-  useAudioRecorderState,
-} from "expo-audio";
 import * as Speech from "expo-speech";
-import { useApp } from "../state/useApp";
-import { isApiConfigured } from "../api/client";
+import { useTranslation } from "react-i18next";
 import { LessonRequest } from "../components/LessonRequest";
-import {
-  Screen,
-  Txt,
-  Label,
-  Row,
-  Button,
-  Kiko,
-  Card,
-  c,
-} from "../components/ui";
-const example = "How do I send money to my mom in another country?";
+import { VoiceInput } from "../components/VoiceInput";
+import { recognizeIntent } from "../api/voice";
+import { useApp } from "../state/useApp";
+import { Screen, Txt, Button, Kiko } from "../components/ui";
+
+/** Ask for a real lesson by typing or recording, with no local sample answers. */
 export default function Ask() {
-  const s = useApp();
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [added, setAdded] = useState(false);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const recording = useAudioRecorderState(recorder);
-  useEffect(
-    () => () => {
-      void Speech.stop();
-    },
-    [],
-  );
-  async function ask(text: string) {
-    if (!text.trim()) return;
-    setError("");
-    setAdded(false);
-    if (isApiConfigured()) {
-      setQuestion(text);
+  const [confirmed, setConfirmed] = useState(false);
+  const language = useApp((state) => state.language);
+  const { t } = useTranslation();
+  async function spokenQuestion(text: string) {
+    const command = await recognizeIntent(text, language);
+    if (command.intent === "back") {
+      router.replace("/roadmap");
       return;
     }
-    setAnswer(
-      "You can use a trusted bank or mobile money service. Compare the fee, check the exchange rate, and never share your PIN.",
-    );
-  }
-  async function record() {
-    setError("");
-    try {
-      if (recording.isRecording) {
-        await recorder.stop();
-        await setAudioModeAsync({ allowsRecording: false });
-        const base = process.env.EXPO_PUBLIC_API_URL;
-        if (!base) {
-          setError(
-            "Recording saved for this session. Connect the voice API to transcribe it, or type your question below.",
-          );
-          return;
-        }
-        setBusy(true);
-        const body = new FormData();
-        if (Platform.OS === "web") {
-          const blob = await (await fetch(recorder.uri!)).blob();
-          body.append("file", blob, "question.webm");
-        } else
-          body.append("file", {
-            uri: recorder.uri,
-            name: "question.m4a",
-            type: "audio/mp4",
-          } as unknown as Blob);
-        const response = await fetch(`${base}/v1/voice/transcribe`, {
-          method: "POST",
-          body,
-        });
-        if (!response.ok)
-          throw new Error("Transcription failed. Please type your question.");
-        const data = await response.json();
-        if (typeof data.text !== "string")
-          throw new Error("No transcript was returned.");
-        setQuestion(data.text);
-        await ask(data.text);
-      } else {
-        const permission = await AudioModule.requestRecordingPermissionsAsync();
-        if (!permission.granted) {
-          setError(
-            "Microphone access is off. You can still type your question.",
-          );
-          return;
-        }
-        await setAudioModeAsync({
-          allowsRecording: true,
-          playsInSilentMode: true,
-        });
-        await recorder.prepareToRecordAsync();
-        recorder.record();
-      }
-    } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : "Recording failed. Please type your question.",
-      );
-    } finally {
-      setBusy(false);
+    if (command.intent === "help" || command.intent === "repeat") {
+      Speech.speak(t("voice.askKiko.prompt"), { language });
+      return;
     }
+    if (command.intent === "yes" && question) {
+      setConfirmed(true);
+      return;
+    }
+    if (command.intent === "no" && question) {
+      setQuestion("");
+      setConfirmed(false);
+      return;
+    }
+    if (command.intent === "next" && confirmed) {
+      router.replace("/roadmap");
+      return;
+    }
+    setConfirmed(false);
+    setQuestion(text);
+    Speech.speak(t("confirmLesson"), { language });
   }
   return (
-    <Screen dark>
-      <Row>
-        <Txt style={{ color: c.white, fontSize: 22, fontWeight: "700" }}>
-          Ask Kiko
-        </Txt>
-        <Button
-          secondary
-          title="×"
-          onPress={() => router.replace("/roadmap")}
-        />
-      </Row>
-      <View style={{ paddingVertical: 20, gap: 20 }}>
-        <Kiko pulse={recording.isRecording} size={180} />
-        <Txt
-          accessibilityLiveRegion="polite"
-          style={{ textAlign: "center", color: c.lightBlue }}
-        >
-          {recording.isRecording
-            ? "Kiko is listening…"
-            : busy
-              ? "Kiko is thinking…"
-              : "Big questions. Small, helpful steps."}
-        </Txt>
-      </View>
+    <Screen>
+      <Txt accessibilityRole="header">{t("ask")}</Txt>
+      <Kiko size={140} />
+      <Txt>{t("voice.askKiko.prompt")}</Txt>
+      <VoiceInput onText={spokenQuestion} />
+      <TextInput
+        accessibilityLabel={t("voice.askKiko.prompt")}
+        accessibilityHint={t("questionHint")}
+        placeholder={t("questionPlaceholder")}
+        value={question}
+        onChangeText={(text) => {
+          setConfirmed(false);
+          setQuestion(text);
+        }}
+        multiline
+        className="min-h-28 rounded-2xl bg-white p-5 text-lg text-ink"
+      />
+      <LessonRequest
+        key={question}
+        question={question}
+        confirmedByVoice={confirmed}
+      />
       <Button
         secondary
-        title={
-          recording.isRecording ? "■ Stop recording" : "♩ Record a question"
-        }
-        disabled={busy}
-        onPress={() => void record()}
+        title={t("roadmap")}
+        onPress={() => router.replace("/roadmap")}
       />
-      <TextInput
-        accessibilityLabel="Your question for Kiko"
-        placeholder={example}
-        placeholderTextColor={c.midBlue}
-        value={question}
-        onChangeText={setQuestion}
-        multiline
-        style={{
-          backgroundColor: c.white,
-          borderRadius: 20,
-          padding: 20,
-          minHeight: 110,
-          color: c.darkBlue,
-          fontSize: 18,
-          textAlignVertical: "top",
-        }}
-      />
-      {!isApiConfigured() && (
-        <Button
-          title={busy ? "Thinking…" : "Ask Kiko →"}
-          disabled={busy || !question.trim() || recording.isRecording}
-          onPress={() => void ask(question)}
-        />
-      )}
-      {isApiConfigured() && <LessonRequest question={question} />}
-      {!process.env.EXPO_PUBLIC_API_URL && (
-        <>
-          <Label light>DEMO MODE · SAMPLE ANSWER</Label>
-          <Button
-            secondary
-            title="Try the example question"
-            onPress={() => {
-              setQuestion(example);
-              void ask(example);
-            }}
-          />
-        </>
-      )}
-      {error && (
-        <Txt accessibilityLiveRegion="polite" style={{ color: "#FFE08A" }}>
-          {error}
-        </Txt>
-      )}
-      {answer && (
-        <>
-          <Card>
-            <Txt accessibilityLiveRegion="polite">{answer}</Txt>
-            <Label>
-              {process.env.EXPO_PUBLIC_API_URL
-                ? "KIKO RESPONSE"
-                : "SAMPLE · COUNTRY GUIDE"}
-            </Label>
-            <Button
-              secondary
-              title="Read answer aloud"
-              onPress={() => Speech.speak(answer, { language: s.language })}
-            />
-          </Card>
-          {!isApiConfigured() && (
-            <Button
-              title={
-                added ? "✓ Added to your roadmap" : "✦ Turn this into a lesson"
-              }
-              disabled={added}
-              onPress={() => {
-                s.addBonus("Sending money abroad");
-                setAdded(true);
-              }}
-            />
-          )}
-          {added && (
-            <Button
-              secondary
-              title="See my roadmap →"
-              onPress={() => router.replace("/roadmap")}
-            />
-          )}
-        </>
-      )}
     </Screen>
   );
 }

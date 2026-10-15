@@ -5,6 +5,15 @@ import { Confidence } from "../Confidence";
 import { useApp } from "../../state/useApp";
 import { router } from "expo-router";
 
+jest.mock("../../api/path", () => ({
+  usePath: () => ({
+    isPending: false,
+    isError: false,
+    data: {
+      lessons: [{ topic: "scams", lesson_id: "scams", completed: false }],
+    },
+  }),
+}));
 jest.mock("expo-router", () => ({ router: { push: jest.fn() } }));
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),

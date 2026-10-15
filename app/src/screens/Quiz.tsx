@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import * as Speech from "expo-speech";
+import { recognizeIntent } from "../api/voice";
+import { VoiceInput } from "../components/VoiceInput";
+import React, { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -56,6 +59,16 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
   const submit = useSubmitQuiz(session.quiz.quiz_id);
   const question = session.quiz.questions[index];
   const selected = answers[question.question_id];
+  const readAloud = useApp((state) => state.readAloud);
+  useEffect(() => {
+    if (readAloud)
+      Speech.speak(question.voice.speak_text, {
+        language: session.quiz.language,
+      });
+    return () => {
+      void Speech.stop();
+    };
+  }, [question, readAloud, session.quiz.language]);
   const last = index === session.quiz.questions.length - 1;
   const finish = () => {
     const payload: QuizAnswer[] = session.quiz.questions.map((entry) => ({
@@ -72,6 +85,31 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
       },
     );
   };
+  async function spokenReply(text: string) {
+    const command = await recognizeIntent(text, session.quiz.language);
+    if (
+      command.intent === "option" &&
+      command.option_id &&
+      question.options.some((option) => option.option_id === command.option_id)
+    ) {
+      setAnswers((previous) => ({
+        ...previous,
+        [question.question_id]: command.option_id!,
+      }));
+    } else if (command.intent === "next" && selected && !submit.isPending) {
+      if (last) finish();
+      else setIndex(index + 1);
+    } else if (command.intent === "back" && !submit.isPending) {
+      if (index > 0) setIndex(index - 1);
+      else router.back();
+    } else
+      Speech.speak(
+        command.intent === "help"
+          ? t("voice.lesson.help")
+          : question.voice.speak_text,
+        { language: session.quiz.language },
+      );
+  }
   return (
     <Screen>
       <Txt accessibilityRole="header" className="text-2xl font-bold">
@@ -112,6 +150,7 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
           </Txt>
         </Pressable>
       ))}
+      <VoiceInput onText={spokenReply} />
       {submit.isError && (
         <Txt accessibilityRole="alert">{t("apiUnavailable")}</Txt>
       )}

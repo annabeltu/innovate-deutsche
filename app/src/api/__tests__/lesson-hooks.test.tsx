@@ -6,6 +6,8 @@ import { useLesson, useRequestLesson, saveLessonResult } from "../lessons";
 import { apiRequest } from "../client";
 import { ensureLearner } from "../learner";
 import { useApp } from "../../state/useApp";
+import { usePath } from "../path";
+import { useStartQuiz, useSubmitQuiz } from "../onboarding";
 
 jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
 jest.mock("../client", () => ({
@@ -54,6 +56,7 @@ it("adds a generated API lesson to the roadmap with its backend id", async () =>
     method: "POST",
     body: { user_id: "u_test", request: "Teach me about insurance" },
   });
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
   expect(useApp.getState().bonusLessonIds.Insurance).toBe("bonus_new");
 });
 
@@ -65,6 +68,7 @@ it("does not add fake lessons when generation fails", async () => {
       "unavailable",
     );
   });
+  await waitFor(() => expect(result.current.isError).toBe(true));
   expect(useApp.getState().bonus).toEqual([]);
 });
 
@@ -80,5 +84,66 @@ it("posts completion using the backend lesson id", async () => {
   expect(request).toHaveBeenCalledWith("/v1/profile/u_test/lesson-results", {
     method: "POST",
     body: result,
+  });
+});
+
+it("loads the preview from the backend for the same learner", async () => {
+  request.mockResolvedValue({
+    user_id: "u_test",
+    lessons: [{ lesson_id: "scams", topic: "scams", completed: false }],
+  });
+  const { result } = await renderHook(() => usePath(), { wrapper });
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  expect(request).toHaveBeenCalledWith("/v1/path/u_test");
+  expect(result.current.data?.lessons[0].topic).toBe("scams");
+});
+
+it("retains the quiz learner for subsequent lesson requests", async () => {
+  request.mockResolvedValue({ profile: { user_id: "u_quiz" }, results: [] });
+  const { result } = await renderHook(() => useSubmitQuiz("q_test"), {
+    wrapper,
+  });
+  await act(() =>
+    result.current.mutateAsync({
+      user_id: "u_quiz",
+      answers: [{ question_id: "question-1", option_id: "a" }],
+    }),
+  );
+  expect(request).toHaveBeenCalledWith("/v1/quiz/q_test/submit", {
+    method: "POST",
+    body: {
+      user_id: "u_quiz",
+      answers: [{ question_id: "question-1", option_id: "a" }],
+    },
+  });
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  expect(useApp.getState().learnerId).toBe("u_quiz");
+  expect(useApp.getState().learnerKey).toBe(JSON.stringify({ language: "en" }));
+  expect(useApp.getState().completed).toEqual([]);
+});
+
+it("starts a baseline quiz through the shared API client", async () => {
+  request.mockResolvedValue({ user_id: "u_new", quiz: { quiz_id: "q_new" } });
+  const { result } = await renderHook(() => useStartQuiz(), { wrapper });
+  const body = {
+    country: "KE",
+    language: "sw",
+    life_stage: "student",
+    goal: "save_more",
+    comfort: 1,
+    savings_habit: "none",
+    confidence: {
+      accounts: 0.5,
+      saving: 0.5,
+      borrowing: 0.5,
+      scams: 0.5,
+      budget: 0.5,
+    },
+  } as const;
+  await act(() => result.current.mutateAsync(body));
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  expect(request).toHaveBeenCalledWith("/v1/onboarding", {
+    method: "POST",
+    body,
   });
 });

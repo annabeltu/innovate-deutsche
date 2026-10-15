@@ -51,7 +51,9 @@ in `app/.env` for the browser preview. Use your Mac's LAN address for a physical
 phone. Restart Expo after changing this value. Configure `LLM_API_KEY` and
 `LLM_MODEL` in `api/.env` for generation and translation.
 
-Opening a lesson fetches its personalized cards. In Ask Kiko, type a request
+After choosing confidence, take the baseline quiz or build a path directly.
+The path preview and roadmap use server rankings; the same learner id is used
+for quiz results and subsequent lessons. Opening a lesson fetches its personalized cards. In Ask Kiko, type a request
 and choose **Turn this into a lesson**; generated lessons appear on the roadmap.
 The roadmap language chooser saves the language on the same learner. Finishing
 a lesson saves its result before awarding local progress. API errors offer a

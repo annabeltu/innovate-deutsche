@@ -95,11 +95,12 @@ export function Button({
   secondary?: boolean;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      accessibilityHint="Activates this action"
+      accessibilityHint={t("actionHint")}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [

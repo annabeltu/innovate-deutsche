@@ -60,3 +60,17 @@ describe("apiRequest", () => {
     expect(isApiConfigured()).toBe(false);
   });
 });
+
+it("leaves multipart content type to the runtime so its boundary is correct", async () => {
+  process.env.EXPO_PUBLIC_API_URL = API_URL;
+  respond(200, { text: "hello" });
+  const form = new FormData();
+  form.append("language", "en");
+  await apiRequest("/v1/voice/transcribe", { method: "POST", body: form });
+  expect(global.fetch).toHaveBeenCalledWith(`${API_URL}/v1/voice/transcribe`, {
+    method: "POST",
+    headers: {},
+    body: form,
+  });
+  delete process.env.EXPO_PUBLIC_API_URL;
+});

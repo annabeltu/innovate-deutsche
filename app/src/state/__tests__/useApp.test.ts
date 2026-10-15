@@ -51,3 +51,14 @@ it("removes persisted demo progress when upgrading the preview", async () => {
     bonusLessonIds: {},
   });
 });
+
+it("does not grant shop items without earned coins and charges each purchase once", () => {
+  useApp.setState(useApp.getInitialState());
+  expect(useApp.getState().buy("heart", 60)).toBe(false);
+  expect(useApp.getState().hearts).toBe(5);
+  useApp.setState({ coins: 60 });
+  expect(useApp.getState().buy("heart", 60)).toBe(true);
+  expect(useApp.getState().coins).toBe(0);
+  expect(useApp.getState().hearts).toBe(6);
+  expect(useApp.getState().buy("heart", 60)).toBe(false);
+});
