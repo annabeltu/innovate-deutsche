@@ -14,6 +14,11 @@ import { useStartQuiz, useSubmitQuiz } from "../api/onboarding";
 import { buildOnboardingRequest } from "../onboarding/request";
 import type { OnboardingResponse, QuizAnswer } from "../types/api";
 
+// Fixed sizes: className width/height on Image is not applied on web, which
+// let Kiko render at full resolution and squeeze the question into one column.
+const KIKO_INTRO_SIZE = { width: 144, height: 144 };
+const KIKO_QUESTION_SIZE = { width: 96, height: 112 };
+
 /** Restore the baseline quiz between confidence sliders and the path preview. */
 export function QuizScreen() {
   const language = useApp((state) => state.language);
@@ -56,7 +61,7 @@ function QuizSession() {
           source={require("../../assets/challenges/kiko-happy-transparent.png")}
           resizeMode="contain"
           accessible={false}
-          className="h-36 w-36"
+          style={KIKO_INTRO_SIZE}
         />
         <Text
           accessibilityRole="header"
@@ -228,10 +233,11 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
           </Text>
         </View>
         <Image
+          testID="quiz-kiko"
           source={require("../../assets/challenges/kiko-thoughtful-transparent.png")}
           resizeMode="contain"
           accessible={false}
-          className="h-28 w-24"
+          style={KIKO_QUESTION_SIZE}
         />
       </View>
       <View className="gap-4 rounded-3xl bg-white p-5">
