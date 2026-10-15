@@ -288,6 +288,10 @@
     "kenyaScene": "Sabana de Kenia, acacias y el monte Kenia",
     "noTranslation": "Esta lección no está disponible en tu idioma ahora. Inténtalo de nuevo en un momento.",
     "speechBrand": "Deutsche Bank. Kompass.",
-    "kikoDescription": "Kiko, tu simpática brújula guía"
+    "kikoDescription": "Kiko, tu simpática brújula guía",
+    "kikoNoteHint": "Escucha a Kiko decir esto",
+    "upNext": "Lo siguiente",
+    "pathLoading": "Kiko está dibujando tu camino…",
+    "pathError": "Tu camino no se pudo cargar. Comprueba tu conexión e inténtalo de nuevo."
   }
 }

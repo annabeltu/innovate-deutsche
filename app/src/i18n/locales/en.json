@@ -288,6 +288,10 @@
     "kenyaScene": "Kenyan savannah, acacia trees and Mount Kenya",
     "noTranslation": "This lesson is not available in your language right now. Try again shortly.",
     "speechBrand": "Deutsche Bank. Kompass.",
-    "kikoDescription": "Kiko, your friendly compass guide"
+    "kikoDescription": "Kiko, your friendly compass guide",
+    "kikoNoteHint": "Hear Kiko say this",
+    "upNext": "Up next",
+    "pathLoading": "Kiko is drawing your path…",
+    "pathError": "Your path couldn't load. Check your connection and try again."
   }
 }

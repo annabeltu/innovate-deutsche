@@ -288,6 +288,10 @@
     "kenyaScene": "Savanna ya Kenya, miti ya mikunga na Mlima Kenya",
     "noTranslation": "Somo hili halipatikani kwa lugha yako sasa. Tafadhali jaribu tena baada ya muda mfupi.",
     "speechBrand": "Deutsche Bank. Kompass.",
-    "kikoDescription": "Kiko, dira yako rafiki inayokuongoza"
+    "kikoDescription": "Kiko, dira yako rafiki inayokuongoza",
+    "kikoNoteHint": "Msikilize Kiko akisema hivi",
+    "upNext": "Inayofuata",
+    "pathLoading": "Kiko anachora njia yako…",
+    "pathError": "Njia yako haikupakia. Angalia muunganisho wako na ujaribu tena."
   }
 }
