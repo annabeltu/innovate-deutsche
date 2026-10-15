@@ -281,6 +281,29 @@ class LessonResultResponse(BaseModel):
     )
 
 
+MAX_SPOKEN_TEXT_CHARS = 1000
+
+
+class TranscriptionResponse(BaseModel):
+    """Returned by POST /v1/voice/transcribe."""
+
+    text: str = Field(description="What the learner said, in their own words.")
+    language: Language = Field(description="The language hint the app sent.")
+
+
+class SpeakQuery(BaseModel):
+    """Query parameters of GET /v1/voice/speak, which returns audio/wav."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(
+        min_length=1,
+        max_length=MAX_SPOKEN_TEXT_CHARS,
+        description="Text to read aloud; the language is detected from the text.",
+    )
+    language: Language = Field(description="Language of the text, used for logging.")
+
+
 class ErrorDetail(BaseModel):
     """Body of every error response."""
 
