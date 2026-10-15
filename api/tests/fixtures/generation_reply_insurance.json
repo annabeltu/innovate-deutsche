@@ -1,0 +1,41 @@
+{
+  "lesson": {
+    "topic": "budget",
+    "title": "Insurance Basics",
+    "goal": "Understand how insurance protects you from big, sudden costs.",
+    "cards": [
+      {
+        "card_id": "what-is-insurance",
+        "type": "concept",
+        "text": "Insurance means paying a small amount regularly so a big, sudden cost does not fall on you alone. Prices are in {cur}.",
+        "voice": {
+          "speak_text": "Insurance means paying a small amount regularly so a big, sudden cost does not fall on you alone. Say next to continue.",
+          "answer_mode": "say_next"
+        }
+      },
+      {
+        "card_id": "premium-quiz",
+        "type": "mc_quiz",
+        "text": "What is the regular payment for insurance called?",
+        "options": {"a": "A premium", "b": "A loan", "c": "A tip"},
+        "correct_option": "a",
+        "voice": {
+          "speak_text": "What is the regular payment for insurance called? A: a premium. B: a loan. C: a tip. Say A, B or C.",
+          "answer_mode": "say_option",
+          "spoken_options": {"a": "a premium", "b": "a loan", "c": "a tip"},
+          "correct_feedback": "Correct. The regular payment is called a premium.",
+          "incorrect_feedback": "Not quite. The answer is A, a premium."
+        }
+      },
+      {
+        "card_id": "takeaway",
+        "type": "takeaway",
+        "text": "Insurance turns a big surprise cost into small, planned payments.",
+        "voice": {
+          "speak_text": "Remember: insurance turns a big surprise cost into small, planned payments. Say next to finish the lesson.",
+          "answer_mode": "say_next"
+        }
+      }
+    ]
+  }
+}

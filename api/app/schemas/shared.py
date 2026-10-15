@@ -419,6 +419,19 @@ class LearnerNeeds(BaseModel):
         return sorted(signals, key=lambda signal: signal.gap, reverse=True)
 
 
+class BonusLessonRequest(BaseModel):
+    """Body of POST /v1/bonus-lessons: what the learner asked to learn about."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    user_id: str = Field(min_length=1)
+    request: str = Field(
+        min_length=1,
+        max_length=300,
+        description="The learner's question as text (typed or transcribed), any language.",
+    )
+
+
 class CardType(StrEnum):
     """Lesson card layouts; final designs come from the front end."""
 
@@ -488,3 +501,15 @@ class Lesson(BaseModel):
     goal: str = Field(min_length=1, description="What the learner will be able to do.")
     difficulty: Difficulty = Field(description="Difficulty served, 1 to 3.")
     cards: list[LessonCard] = Field(min_length=1, description="Cards in order.")
+
+
+class BonusLessonResponse(BaseModel):
+    """Returned by POST /v1/bonus-lessons."""
+
+    lesson: Lesson = Field(description="Customized for the learner, in their language.")
+    generated: bool = Field(
+        description="True for a new bonus lesson; false when a core lesson covered it."
+    )
+    matched_topic: Topic | None = Field(
+        description="The core lesson's topic when generated is false; otherwise null."
+    )

@@ -215,3 +215,18 @@ export interface Lesson {
   difficulty: Difficulty;
   cards: LessonCard[];
 }
+
+/** Body of POST /v1/bonus-lessons: what the learner asked to learn about. */
+export interface BonusLessonRequest {
+  user_id: string;
+  /** Typed or transcribed question, any supported language, 1–300 characters. */
+  request: string;
+}
+
+/** Returned by POST /v1/bonus-lessons. */
+export interface BonusLessonResponse {
+  lesson: Lesson;
+  /** True for a new bonus lesson; false when a core lesson covered the request. */
+  generated: boolean;
+  matched_topic: Topic | null;
+}

@@ -14,7 +14,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings
-from app.dependencies import get_profile_store, get_rng
+from app.dependencies import get_bonus_lesson_store, get_profile_store, get_rng
 from app.main import app
 from app.schemas.lesson_template import LessonTemplate
 from app.schemas.shared import (
@@ -23,6 +23,7 @@ from app.schemas.shared import (
     Lesson,
     OnboardingRequest,
 )
+from app.services.bonus_lesson_store import BonusLessonStore
 from app.services.needs import build_learner_needs, load_findex
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
@@ -78,9 +79,16 @@ def onboarding_request(onboarding_body: dict[str, object]) -> OnboardingRequest:
 
 
 @pytest.fixture
-def client(store: ProfileStore) -> Iterator[TestClient]:
-    """An API client wired to the temporary store and seeded RNG."""
+def bonus_store(tmp_path: Path) -> BonusLessonStore:
+    """A fresh bonus lesson store in the same throwaway SQLite file."""
+    return BonusLessonStore(tmp_path / "test.db")
+
+
+@pytest.fixture
+def client(store: ProfileStore, bonus_store: BonusLessonStore) -> Iterator[TestClient]:
+    """An API client wired to the temporary stores and seeded RNG."""
     app.dependency_overrides[get_profile_store] = lambda: store
+    app.dependency_overrides[get_bonus_lesson_store] = lambda: bonus_store
     app.dependency_overrides[get_rng] = lambda: random.Random(SEED)
     yield TestClient(app)
     app.dependency_overrides.clear()

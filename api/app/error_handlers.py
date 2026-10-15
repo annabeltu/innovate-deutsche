@@ -19,6 +19,8 @@ STATUS_BY_CODE = {
     "lesson_not_found": status.HTTP_404_NOT_FOUND,
     "quiz_already_submitted": status.HTTP_409_CONFLICT,
     "unsupported_language": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "off_topic_request": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "lesson_generation_failed": status.HTTP_503_SERVICE_UNAVAILABLE,
 }
 
 

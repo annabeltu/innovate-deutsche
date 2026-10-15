@@ -48,6 +48,18 @@ class LessonBuildError(KompassError):
     code = "lesson_build_failed"
 
 
+class LessonGenerationError(KompassError):
+    """The LLM could not produce a valid lesson for the request, even after a retry."""
+
+    code = "lesson_generation_failed"
+
+
+class OffTopicRequestError(KompassError):
+    """The learner asked for a lesson that is not about personal money."""
+
+    code = "off_topic_request"
+
+
 class UnsupportedLanguageError(KompassError):
     """The language is valid but not offered for the chosen country."""
 

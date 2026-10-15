@@ -10,7 +10,8 @@ from fastapi import Depends
 
 from app.config import Settings, get_settings
 from app.llm.client import EchoLlmClient, LlmClient, OpenAiClient
-from app.services.lesson_service import LessonSources
+from app.services.bonus_lesson_store import BonusLessonStore
+from app.services.lesson_service import LessonSources, LessonStores
 from app.services.lesson_templates import load_lesson_templates
 from app.services.needs import load_findex
 from app.services.profile_store import ProfileStore
@@ -88,3 +89,16 @@ def get_lesson_sources(
         question_bank=question_bank,
         llm=llm,
     )
+
+
+def get_bonus_lesson_store(settings: SettingsDep) -> BonusLessonStore:
+    """Return the store for generated lessons, in the same SQLite file."""
+    return BonusLessonStore(settings.database_path)
+
+
+def get_lesson_stores(
+    profiles: Annotated[ProfileStore, Depends(get_profile_store)],
+    bonus_lessons: Annotated[BonusLessonStore, Depends(get_bonus_lesson_store)],
+) -> LessonStores:
+    """Return the learner and bonus lesson stores together."""
+    return LessonStores(profiles=profiles, bonus_lessons=bonus_lessons)

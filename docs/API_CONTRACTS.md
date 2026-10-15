@@ -223,6 +223,22 @@ Submitting or skipping a finished quiz returns `409 quiz_already_submitted`; a q
 
 Errors (contract error shape): unknown `user_id` → `404 profile_not_found`; unknown `lesson_id` → `404 lesson_not_found`; missing `user_id` → `400 validation_error`; a stored lesson or data file that cannot be customized → `500 lesson_build_failed`. If the LLM rewrite fails twice, the lesson is still served (`200`) in its original English wording.
 
+## Bonus lessons
+
+`POST /v1/bonus-lessons` answers "teach me about X". The app sends the learner's question as text (typed, or transcribed by `/v1/voice/transcribe`), in any supported language:
+
+```json
+{"user_id": "u_8f3c2a91", "request": "Nifundishe kuhusu bima"}
+```
+
+One LLM call (prompt `lesson_generation_v1`) decides between:
+
+- **A core lesson covers it** → that lesson, customized: `{"lesson": Lesson, "generated": false, "matched_topic": "saving"}`
+- **A new money topic** → a new English base lesson (3–6 cards, `concept` / `bridge` / `mc_quiz` / `takeaway`, ending with a takeaway, at least one quiz, a `voice` block on every card). It is validated, stored, added to the learner's `bonus_lesson_ids`, customized with both models like a core lesson, and reworded into their language: `{"lesson": Lesson, "generated": true, "matched_topic": null}`. Its id starts with `bonus_`; `GET /v1/lessons/{lesson_id}` serves it again to the same learner only.
+- **Not about personal money** → `422 off_topic_request`.
+
+Generated lessons may not contain digits: every number or local fact must be a placeholder code fills (country facts such as `{cur}` and `{mobile_money}`, and the `LearnerNeeds` facts). Invalid replies are retried once, then `503 lesson_generation_failed`. Status `201` on success; unknown learner `404 profile_not_found`; empty or over-300-character request `400 validation_error`.
+
 ## Lesson cards
 
 Card types: `concept`, `bridge`, `mc_quiz`, `drag_match`, `compare_chart`, `clause_tap`, `scam_swipe`, `budget_sim`, `takeaway`.

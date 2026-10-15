@@ -25,6 +25,11 @@ from app.services.proficiency import difficulty_band
 from app.services.question_bank import QuestionBank
 
 PERCENT = 100
+# Names lesson_facts() can fill; generated lessons may use only these and
+# the country facts.
+NEED_FACT_NAMES = frozenset(
+    {"indicator", "group_percent", "who", "benchmark_name", "benchmark_percent"}
+)
 WHO_BY_AGE_GROUP = {
     AgeGroup.YOUNG: "people your age",
     AgeGroup.OLDER: "people your age",
