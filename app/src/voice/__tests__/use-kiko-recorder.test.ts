@@ -5,6 +5,7 @@ import { useKikoRecorder } from "../use-kiko-recorder";
 import { useApp } from "../../state/useApp";
 
 jest.mock("react-i18next", () => ({
+  ...jest.requireActual("react-i18next"),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.mock("expo-speech", () => ({ stop: jest.fn(), speak: jest.fn() }));
@@ -31,7 +32,7 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 );
 it("requests permission only at recording time and speaks a denied-permission explanation", async () => {
   useApp.getState().set({ readAloud: true, language: "en" });
-  const { result } = renderHook(() => useKikoRecorder(jest.fn()));
+  const { result } = await renderHook(() => useKikoRecorder(jest.fn()));
   expect(AudioModule.requestRecordingPermissionsAsync).not.toHaveBeenCalled();
   await act(async () => result.current.record());
   expect(result.current.error).toBe("askScreen.permissionDenied");

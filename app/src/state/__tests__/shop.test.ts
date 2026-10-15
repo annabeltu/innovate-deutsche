@@ -7,16 +7,14 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   ),
 );
 beforeEach(() =>
-  useApp
-    .getState()
-    .set({
-      coins: 500,
-      hearts: 5,
-      purchases: [],
-      bonus: [],
-      pendingBonus: null,
-      equippedOutfit: null,
-    }),
+  useApp.getState().set({
+    coins: 500,
+    hearts: 5,
+    purchases: [],
+    bonus: [],
+    pendingBonus: null,
+    equippedOutfit: null,
+  }),
 );
 it("charges the catalog price and adds one heart, once", () => {
   expect(useApp.getState().buy("heart", 1)).toBe(false);
@@ -55,16 +53,17 @@ it("never charges for a lesson already added through Ask Kiko", () => {
   expect(useApp.getState().buy("transfer", 200)).toBe(false);
   expect(useApp.getState().coins).toBe(500);
 });
-it("migrates existing balances without creating an old notification", async () => {
+it("migrates old saves without creating an old notification", async () => {
   const migrate = useApp.persist.getOptions().migrate;
   if (!migrate) throw new Error("Missing persistence migration");
   const state = await migrate(
     { coins: 80, purchases: ["heart"], country: "US", language: "en" },
     2,
   );
+  // Saves before v3 held seeded demo progress, which main resets once.
   expect(state).toMatchObject({
-    coins: 80,
-    purchases: ["heart"],
+    coins: 0,
+    purchases: [],
     pendingBonus: null,
     equippedOutfit: null,
   });

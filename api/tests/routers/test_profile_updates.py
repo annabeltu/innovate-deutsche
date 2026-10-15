@@ -151,3 +151,53 @@ def test_lesson_result_rejects_impossible_scores(
     response = client.post(f"/v1/profile/{user_id}/lesson-results", json=body)
 
     assert_error(response, 400, "validation_error")
+
+
+def test_language_change_preserves_profile_progress_and_bonus_lessons(
+    client: TestClient, user_id: str, store: ProfileStore
+) -> None:
+    """Language switching retains identity and all earned progress."""
+    profile = store.get_profile(user_id)
+    store.update_profile(
+        profile.model_copy(update={"bonus_lesson_ids": ["bonus_test"]})
+    )
+    client.post(
+        f"/v1/profile/{user_id}/lesson-results",
+        json={"lesson_id": "saving", "correct": 1, "total": 1, "completed": True},
+    )
+    before = client.get(f"/v1/profile/{user_id}").json()
+
+    response = client.patch(f"/v1/profile/{user_id}/language", json={"language": "en"})
+
+    assert response.status_code == 200
+    after = response.json()
+    assert after["language"] == "en"
+    assert after["user_id"] == before["user_id"]
+    assert after["topic_scores"] == before["topic_scores"]
+    assert after["bonus_lesson_ids"] == ["bonus_test"]
+    assert client.get(f"/v1/profile/{user_id}").json() == after
+
+
+@pytest.mark.parametrize(
+    ("body", "status_code"),
+    [
+        ({"language": "de"}, 400),
+        ({"language": "es"}, 422),
+        ({}, 400),
+        ({"language": "en", "extra": True}, 400),
+    ],
+)
+def test_language_change_rejects_invalid_or_unavailable_languages(
+    client: TestClient, user_id: str, body: dict[str, object], status_code: int
+) -> None:
+    """A Kenyan learner cannot select a language the country does not offer."""
+    before = client.get(f"/v1/profile/{user_id}").json()
+    response = client.patch(f"/v1/profile/{user_id}/language", json=body)
+    assert response.status_code == status_code
+    assert client.get(f"/v1/profile/{user_id}").json() == before
+
+
+def test_language_change_for_unknown_learner(client: TestClient) -> None:
+    """Missing learners receive a useful 404."""
+    response = client.patch("/v1/profile/u_missing/language", json={"language": "en"})
+    assert_error(response, 404, "profile_not_found")

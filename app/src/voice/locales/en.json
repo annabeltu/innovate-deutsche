@@ -1,0 +1,28 @@
+{
+  "voice": {
+    "microphoneDenied": "I need the microphone to hear you. Please allow microphone access in your phone settings, then try again.",
+    "lesson": {
+      "intro": "This lesson has {{count}} cards. Say next to go on, back to go back, or repeat to hear a card again. Say help at any time.",
+      "help": "You can say next, back, repeat or help. To answer, say the letter of your choice, like A or B. On scam cards, say scam or legit.",
+      "notUnderstood": "Sorry, I did not catch that. Say repeat to hear the card again, or say help.",
+      "atFirstCard": "This is the first card.",
+      "complete": "Well done. You finished the lesson. Say back to hear the last card again.",
+      "optionNotAvailable": "Please say one of these letters: {{letters}}.",
+      "sayNext": "Say next to go on, or repeat to hear the card again.",
+      "correct": "That is right.",
+      "incorrect": "Not quite."
+    },
+    "askKiko": {
+      "prompt": "Ask me any money question now.",
+      "thinking": "Let me think about that.",
+      "nothingHeard": "I did not hear anything. Let's try again when you are ready.",
+      "confirmRetry": "Please say yes to add the lesson, or no to skip it.",
+      "confirmHelp": "Say yes to add this lesson to your path. Say no to skip it. Say repeat to hear the question again.",
+      "adding": "Okay. I am adding the lesson to your path.",
+      "declined": "Okay. I will not add the lesson.",
+      "notAdded": "I did not add the lesson. You can ask me again at any time.",
+      "error": "Sorry, something went wrong. Please try again.",
+      "addFailed": "Sorry, I could not add the lesson. Please try again later."
+    }
+  }
+}

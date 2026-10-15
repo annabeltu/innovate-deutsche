@@ -4,16 +4,18 @@
   "accessibility": {
     "read_aloud": false,
     "simple_mode": true,
-    "large_text": false
+    "large_text": false,
+    "voice_mode": false
   },
   "life_stage": "student",
   "goal": "avoid_debt",
-  "comfort": "beginner",
+  "comfort": 1,
   "confidence": {
-    "accounts": 3,
-    "saving": 1,
-    "borrowing": 1,
-    "scams": 4,
-    "budget": 2
-  }
+    "accounts": 0.5,
+    "saving": 0.0,
+    "borrowing": 0.0,
+    "scams": 0.75,
+    "budget": 0.25
+  },
+  "savings_habit": "none"
 }

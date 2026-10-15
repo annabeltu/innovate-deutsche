@@ -15,6 +15,8 @@ import { colors } from "../theme/tokens";
 import { TRANSFER_LESSON } from "../shop/catalog";
 import { useKikoAnswer } from "../api/assistant";
 import { useKikoRecorder } from "../voice/use-kiko-recorder";
+import { LessonRequest } from "../components/LessonRequest";
+import { isApiConfigured } from "../api/client";
 
 /** Voice and text assistant with an honest sample conversation and bonus-lesson action. */
 export default function Ask() {
@@ -133,6 +135,10 @@ export default function Ask() {
           onPress={() => ask(question)}
         />
       </View>
+      {/* Turn the learner's own question into a real lesson from the API. */}
+      {isApiConfigured() && (
+        <LessonRequest key={`${language}-${question}`} question={question} />
+      )}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t("askScreen.tryExample")}

@@ -12,6 +12,7 @@ from app.dependencies import get_profile_store, get_question_bank, get_rng
 from app.schemas.shared import (
     AccessibilityUpdate,
     ErrorResponse,
+    LanguageUpdate,
     LearnerProfile,
     LessonResultRequest,
     LessonResultResponse,
@@ -92,6 +93,23 @@ def post_quiz_skip(
 def get_profile(user_id: str, store: StoreDep) -> LearnerProfile:
     """Return the profile, or 404 profile_not_found if onboarding never finished."""
     return store.get_profile(user_id)
+
+
+@router.patch(
+    "/profile/{user_id}/language",
+    response_model=LearnerProfile,
+    summary="Change language while keeping the learner's progress",
+    responses={
+        **VALIDATION_ERROR,
+        status.HTTP_404_NOT_FOUND: {"model": ErrorResponse},
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": ErrorResponse},
+    },
+)
+def patch_language(
+    user_id: str, update: LanguageUpdate, store: StoreDep, bank: BankDep
+) -> LearnerProfile:
+    """Save the language used by subsequent customized and generated lessons."""
+    return profile_updates.update_language(user_id, update, store, bank)
 
 
 @router.patch(

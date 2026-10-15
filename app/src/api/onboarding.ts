@@ -1,44 +1,41 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "./client";
+import { toOnboardingRequest } from "./learner";
+import { useApp } from "../state/useApp";
 import type {
   OnboardingRequest,
   OnboardingResponse,
   QuizSubmitRequest,
   QuizSubmitResponse,
 } from "../types/api";
-export const onboardingClient = new QueryClient();
 
-/** Shared JSON POST client for validated API services. */
-export async function postJson<Response>(
-  path: string,
-  body: unknown,
-): Promise<Response> {
-  const baseUrl = process.env.EXPO_PUBLIC_API_URL;
-  if (!baseUrl) throw new Error("apiUnavailable");
-  const response = await fetch(`${baseUrl.replace(/\/$/, "")}/v1${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error("apiUnavailable");
-  return response.json() as Promise<Response>;
-}
-/** Create a baseline quiz; its answer key stays on the API. */
+/** Create a baseline quiz through the shared API client; answers stay server-side. */
 export function useStartQuiz() {
-  return useMutation(
-    {
-      mutationFn: (request: OnboardingRequest) =>
-        postJson<OnboardingResponse>("/onboarding", request),
-    },
-    onboardingClient,
-  );
+  return useMutation({
+    mutationFn: (request: OnboardingRequest) =>
+      apiRequest<OnboardingResponse>("/v1/onboarding", {
+        method: "POST",
+        body: request,
+      }),
+  });
 }
-/** Grade answers and save confidence-weighted proficiency on the API. */
+
+/** Save quiz results and reuse that exact learner for the path and lessons. */
 export function useSubmitQuiz(quizId: string) {
-  return useMutation(
-    {
-      mutationFn: (request: QuizSubmitRequest) =>
-        postJson<QuizSubmitResponse>(`/quiz/${quizId}/submit`, request),
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (request: QuizSubmitRequest) =>
+      apiRequest<QuizSubmitResponse>(
+        `/v1/quiz/${encodeURIComponent(quizId)}/submit`,
+        { method: "POST", body: request },
+      ),
+    onSuccess: (result) => {
+      useApp.getState().set({
+        learnerId: result.profile.user_id,
+        learnerKey: JSON.stringify(toOnboardingRequest(useApp.getState())),
+        onboarded: true,
+      });
+      void client.invalidateQueries({ queryKey: ["path"] });
     },
-    onboardingClient,
-  );
+  });
 }

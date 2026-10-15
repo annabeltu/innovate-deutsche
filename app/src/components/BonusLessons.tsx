@@ -3,16 +3,33 @@ import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
+import { useBonusLessons } from "../api/lessons";
+import { ApiError } from "../api/client";
 
 /** Highlight actual extra lessons on a branch of the learner’s roadmap. */
 export function BonusLessons() {
   const bonus = useApp((state) => state.bonus);
   const completed = useApp((state) => state.completed);
   const { t } = useTranslation();
+  // API lessons reload in the active language; local ones use an i18n key.
+  const lessons = useBonusLessons();
+  const labelFor = (title: string, index: number) => {
+    const lesson = lessons[index];
+    if (lesson?.data?.title) return lesson.data.title;
+    if (title.startsWith("i18n:")) return t(title.slice(5));
+    if (!lesson?.isError)
+      return lesson?.fetchStatus === "fetching" ? t("app.loadingBonus") : title;
+    return t(
+      lesson.error instanceof ApiError &&
+        lesson.error.code === "lesson_translation_failed"
+        ? "app.bonusError"
+        : "lessonError",
+    );
+  };
   return (
     <View className="gap-3 py-2">
       {bonus.map((title, index) => {
-        const label = title.startsWith("i18n:") ? t(title.slice(5)) : title;
+        const label = labelFor(title, index);
         const id = `bonus-${index}`;
         return (
           <View

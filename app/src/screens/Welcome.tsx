@@ -1,4 +1,3 @@
-import { LanguageSelector } from "../components/LanguageSelector";
 import React, { useCallback } from "react";
 import {
   Image,
@@ -17,30 +16,27 @@ import { router, useFocusEffect } from "expo-router";
 import * as Speech from "expo-speech";
 import Svg, { Image as SvgImage, Path, Rect } from "react-native-svg";
 import { useTranslation } from "react-i18next";
+import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
+import { LanguageSelector } from "../components/LanguageSelector";
+import { ACCESSIBILITY_OPTIONS } from "../onboarding/options";
 
 const blue = "#0012B3";
 const ink = "#000C62";
 const reference = require("../../assets/welcome/reference.png");
 const countries = {
   US: {
-    name: "United States",
     crop: "120 1085 185 132",
     image: require("../../assets/welcome/us.png"),
-    scene: "Statue of Liberty and the New York skyline",
   },
   MX: {
-    name: "Mexico",
     crop: "349 1085 186 132",
     image: require("../../assets/welcome/mx.png"),
-    scene: "Mexican colonial architecture, blue tiled domes and palm trees",
   },
   KE: {
-    name: "Kenya",
     crop: "578 1085 187 132",
     image: require("../../assets/welcome/ke.png"),
-    scene: "Kenyan savannah, acacia trees and Mount Kenya at sunrise",
   },
 };
 
@@ -79,7 +75,7 @@ export function Welcome() {
   const speak = useCallback(() => {
     void Speech.stop();
     Speech.speak(
-      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${countries[s.country].name}. ${t("access")}. ${t("getStarted")}`,
+      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`onboarding.country.${s.country}`)}. ${t("access")}. ${t("getStarted")}`,
       { language: s.language },
     );
   }, [s.country, s.language, t]);
@@ -106,46 +102,33 @@ export function Welcome() {
           ]}
         >
           <View style={{ height: heroHeight, overflow: "hidden" }}>
-            {s.country === "US" ? (
-              <>
-                <LinearGradient
-                  colors={["#F6F4F5", "#BED8FC", "#8ABCF8"]}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ height: 87 * unit }}
-                />
-                <View style={{ flex: 1 }}>
-                  <ReferenceArt crop="54 270 776 465" />
-                </View>
-              </>
-            ) : (
-              <>
-                <Image
-                  key={s.country}
-                  source={countries[s.country].image}
-                  resizeMode="cover"
-                  style={{ width: "100%", height: "100%" }}
-                  accessible
-                  accessibilityLabel={countries[s.country].scene}
-                />
-                <LinearGradient
-                  pointerEvents="none"
-                  colors={[
-                    "rgba(244,248,255,0.94)",
-                    "rgba(244,248,255,0.45)",
-                    "rgba(244,248,255,0)",
-                  ]}
-                  locations={[0, 0.55, 1]}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 130 * unit,
-                  }}
-                />
-              </>
-            )}
+            {/* One continuous scene per country, so no sky strip or crop seam. */}
+            <Image
+              key={s.country}
+              source={countries[s.country].image}
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+              accessible
+              accessibilityLabel={t(
+                `app.${{ US: "usaScene", MX: "mexicoScene", KE: "kenyaScene" }[s.country]}`,
+              )}
+            />
+            <LinearGradient
+              pointerEvents="none"
+              colors={[
+                "rgba(244,248,255,0.94)",
+                "rgba(244,248,255,0.45)",
+                "rgba(244,248,255,0)",
+              ]}
+              locations={[0, 0.55, 1]}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 130 * unit,
+              }}
+            />
             <View
               accessibilityRole="header"
               accessibilityLabel="Deutsche Bank. Kompass"
@@ -157,58 +140,54 @@ export function Welcome() {
                 height: pageWidth * 0.188,
               }}
             >
-              {s.country === "US" ? (
-                <ReferenceArt crop="103 133 370 145" />
-              ) : (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 6 * unit,
-                    }}
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6 * unit,
+                  }}
+                >
+                  <Svg
+                    width={20 * unit}
+                    height={20 * unit}
+                    viewBox="0 0 30 30"
+                    accessible={false}
                   >
-                    <Svg
-                      width={20 * unit}
-                      height={20 * unit}
-                      viewBox="0 0 30 30"
-                      accessible={false}
-                    >
-                      <Rect
-                        x="2"
-                        y="2"
-                        width="26"
-                        height="26"
-                        stroke={blue}
-                        strokeWidth="3"
-                        fill="none"
-                      />
-                      <Path d="M8 23 L18 7 H24 L14 23Z" fill={blue} />
-                    </Svg>
-                    <Txt
-                      style={{
-                        fontSize: 15 * unit,
-                        lineHeight: 22 * unit,
-                        color: blue,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Deutsche Bank
-                    </Txt>
-                  </View>
+                    <Rect
+                      x="2"
+                      y="2"
+                      width="26"
+                      height="26"
+                      stroke={blue}
+                      strokeWidth="3"
+                      fill="none"
+                    />
+                    <Path d="M8 23 L18 7 H24 L14 23Z" fill={blue} />
+                  </Svg>
                   <Txt
                     style={{
-                      fontSize: 42 * unit,
-                      lineHeight: 50 * unit,
-                      letterSpacing: -2,
+                      fontSize: 15 * unit,
+                      lineHeight: 22 * unit,
                       color: blue,
-                      fontWeight: "800",
+                      fontWeight: "700",
                     }}
                   >
-                    Kompass
+                    Deutsche Bank
                   </Txt>
                 </View>
-              )}
+                <Txt
+                  style={{
+                    fontSize: 42 * unit,
+                    lineHeight: 50 * unit,
+                    letterSpacing: -2,
+                    color: blue,
+                    fontWeight: "800",
+                  }}
+                >
+                  Kompass
+                </Txt>
+              </View>
             </View>
           </View>
           <View
@@ -233,9 +212,15 @@ export function Welcome() {
                 <Pressable
                   key={code}
                   accessibilityRole="button"
-                  accessibilityLabel={countries[code].name}
+                  accessibilityLabel={t(`onboarding.country.${code}`)}
+                  accessibilityHint={t("app.selectHint")}
                   accessibilityState={{ selected: s.country === code }}
-                  onPress={() => s.set({ country: code })}
+                  onPress={() =>
+                    s.set({
+                      country: code,
+                      language: lessonLanguage(code, s.language),
+                    })
+                  }
                   style={[
                     styles.tile,
                     {
@@ -274,7 +259,7 @@ export function Welcome() {
                         },
                       ]}
                     >
-                      {countries[code].name}
+                      {t(`onboarding.country.${code}`)}
                     </Txt>
                     <Feather
                       name="chevron-right"
@@ -289,87 +274,95 @@ export function Welcome() {
               {t("access")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
-              {(
-                [
-                  ["readAloud", "Read aloud", "volume-2"],
-                  ["simple", "Simple mode", "help-circle"],
-                  ["large", "Larger text", "type"],
-                ] as const
-              ).map(([key, name, icon]) => (
-                <View
-                  key={key}
-                  style={[
-                    styles.accessTile,
-                    {
-                      flexBasis: narrow ? "100%" : "28%",
-                      flexGrow: 1,
-                      minHeight: 82 * unit,
-                      paddingVertical: 8 * unit,
-                      gap: 5 * unit,
-                    },
-                  ]}
-                >
-                  {key === "large" ? (
-                    <Txt
-                      style={{
-                        color: ink,
-                        fontSize: 22 * unit,
-                        lineHeight: 25 * unit,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Aa
-                    </Txt>
-                  ) : (
-                    <Feather name={icon} size={23 * unit} color={ink} />
-                  )}
-                  <Txt
+              {ACCESSIBILITY_OPTIONS.map((option) => {
+                const controls = {
+                  readAloud: { key: "readAloud", icon: "volume-2" },
+                  simpleMode: { key: "simple", icon: "help-circle" },
+                  largerText: { key: "large", icon: "type" },
+                } as const;
+                const { key, icon } = controls[option.id];
+                const name = t(option.labelKey);
+                return (
+                  <View
+                    key={key}
                     style={[
-                      styles.accessName,
+                      styles.accessTile,
                       {
-                        fontSize: s.large ? 17 : 10.5 * unit,
-                        lineHeight: s.large ? 24 : 15 * unit,
+                        flexBasis: narrow ? "100%" : "28%",
+                        flexGrow: 1,
+                        minHeight: 82 * unit,
+                        paddingVertical: 8 * unit,
+                        gap: 5 * unit,
                       },
                     ]}
                   >
-                    {name}
-                  </Txt>
-                  <View
-                    style={{
-                      height: 24,
-                      minWidth: 44,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Switch
-                      accessibilityLabel={name}
-                      value={s[key]}
-                      onValueChange={(value) => s.set({ [key]: value })}
-                      trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
-                      thumbColor="#FFFFFF"
-                      style={
-                        Platform.OS === "ios"
-                          ? { transform: [{ scale: 0.72 }] }
-                          : undefined
-                      }
-                    />
+                    {key === "large" ? (
+                      <Txt
+                        style={{
+                          color: ink,
+                          fontSize: 22 * unit,
+                          lineHeight: 25 * unit,
+                          fontWeight: "700",
+                        }}
+                      >
+                        Aa
+                      </Txt>
+                    ) : (
+                      <Feather name={icon} size={23 * unit} color={ink} />
+                    )}
+                    <Txt
+                      style={[
+                        styles.accessName,
+                        {
+                          fontSize: s.large ? 17 : 10.5 * unit,
+                          lineHeight: s.large ? 24 : 15 * unit,
+                        },
+                      ]}
+                    >
+                      {name}
+                    </Txt>
+                    <View
+                      style={{
+                        height: 24,
+                        minWidth: 44,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Switch
+                        accessibilityLabel={name}
+                        accessibilityHint={t(option.helperKey)}
+                        value={s[key]}
+                        onValueChange={(value) => s.set({ [key]: value })}
+                        trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
+                        thumbColor="#FFFFFF"
+                        style={
+                          Platform.OS === "ios"
+                            ? { transform: [{ scale: 0.72 }] }
+                            : undefined
+                        }
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
             {s.readAloud && (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t("app.repeat")}
+                accessibilityHint={t("app.repeatHint")}
                 onPress={speak}
                 style={styles.extraAction}
               >
-                <Txt style={styles.option}>Repeat screen aloud</Txt>
+                <Txt style={styles.option}>{t("app.repeat")}</Txt>
               </Pressable>
             )}
             {s.onboarded && (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t("roadmap")}
+                accessibilityHint={t("app.navHint", { screen: t("path") })}
                 onPress={() => router.replace("/roadmap")}
                 style={styles.extraAction}
               >
@@ -390,6 +383,7 @@ export function Welcome() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t("getStarted")}
+            accessibilityHint={t("actionHint")}
             onPress={() => router.push("/onboarding")}
             style={[
               styles.go,

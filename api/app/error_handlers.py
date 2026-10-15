@@ -19,6 +19,14 @@ STATUS_BY_CODE = {
     "lesson_not_found": status.HTTP_404_NOT_FOUND,
     "quiz_already_submitted": status.HTTP_409_CONFLICT,
     "unsupported_language": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "off_topic_request": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "lesson_translation_failed": status.HTTP_503_SERVICE_UNAVAILABLE,
+    "lesson_generation_failed": status.HTTP_503_SERVICE_UNAVAILABLE,
+    "audio_too_large": status.HTTP_413_CONTENT_TOO_LARGE,
+    "unsupported_audio": status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+    "voice_provider_error": status.HTTP_502_BAD_GATEWAY,
+    "voice_unavailable": status.HTTP_503_SERVICE_UNAVAILABLE,
+    "voice_provider_timeout": status.HTTP_504_GATEWAY_TIMEOUT,
 }
 
 
