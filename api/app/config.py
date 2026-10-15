@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     question_bank_dir: Path = REPO_ROOT / "data" / "question_bank"
     lesson_templates_dir: Path = REPO_ROOT / "data" / "lesson_templates"
     findex_dir: Path = REPO_ROOT / "data" / "findex"
+    # Local-only test pages under /dev; off unless explicitly enabled.
+    dev_tools_enabled: bool = False
     # LLM (OpenAI). With no key, lessons keep their original English wording.
     llm_api_key: SecretStr | None = None
     llm_model: str | None = None

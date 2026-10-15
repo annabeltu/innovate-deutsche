@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from app.llm.client import LlmClient
 from app.schemas.findex import FindexCountry
 from app.schemas.lesson_template import LessonTemplate
-from app.schemas.shared import Country, Lesson, Topic
+from app.schemas.shared import Country, LearnerNeeds, Lesson, Topic
 from app.services.errors import LessonBuildError, LessonNotFoundError
 from app.services.lesson_builder import country_facts_for, customize_lesson
 from app.services.lesson_wording import reword_lesson
@@ -33,6 +33,18 @@ class LessonSources:
     llm: LlmClient
 
 
+def learner_needs_for(
+    user_id: str, store: ProfileStore, sources: LessonSources
+) -> LearnerNeeds:
+    """Build a stored learner's Findex needs.
+
+    Raises:
+        ProfileNotFoundError: If the learner has no profile.
+    """
+    profile = store.get_profile(user_id)
+    return build_learner_needs(profile, sources.findex[profile.country])
+
+
 def serve_lesson(
     lesson_id: str, user_id: str, store: ProfileStore, sources: LessonSources
 ) -> Lesson:
@@ -44,7 +56,7 @@ def serve_lesson(
         LessonBuildError: If the stored lesson or data cannot be customized.
     """
     profile = store.get_profile(user_id)
-    template = _core_template(lesson_id, sources.templates)
+    template = core_template(lesson_id, sources.templates)
     try:
         needs = build_learner_needs(profile, sources.findex[profile.country])
         facts = country_facts_for(sources.question_bank, profile.country)
@@ -61,10 +73,14 @@ def serve_lesson(
     )
 
 
-def _core_template(
+def core_template(
     lesson_id: str, templates: Mapping[Topic, LessonTemplate]
 ) -> LessonTemplate:
-    """The base lesson whose id is lesson_id (a core lesson's id is its topic)."""
+    """The base lesson whose id is lesson_id (a core lesson's id is its topic).
+
+    Raises:
+        LessonNotFoundError: If no core lesson has this id.
+    """
     template = next(
         (item for item in templates.values() if item.lesson_id == lesson_id), None
     )
