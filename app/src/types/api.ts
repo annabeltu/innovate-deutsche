@@ -107,6 +107,22 @@ export interface QuizSkipResponse {
   profile: LearnerProfile;
 }
 
+export type AccessibilityUpdate = Partial<Accessibility>;
+
+export interface LessonResultRequest {
+  lesson_id: string;
+  correct: number;
+  total: number;
+  completed: boolean;
+}
+
+export interface LessonResultResponse {
+  topic: Topic | null;
+  proficiency: number | null;
+  completed: boolean;
+  path_refresh_needed: boolean;
+}
+
 export interface ErrorResponse {
   error: {
     code: string;

@@ -6,9 +6,9 @@ Change all three together.
 
 from datetime import datetime
 from enum import IntEnum, StrEnum
-from typing import Annotated
+from typing import Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 UnitInterval = Annotated[float, Field(ge=0.0, le=1.0)]
 
@@ -234,6 +234,51 @@ class QuizSkipResponse(BaseModel):
     """Returned by POST /v1/quiz/{quiz_id}/skip."""
 
     profile: LearnerProfile
+
+
+class AccessibilityUpdate(BaseModel):
+    """Body of PATCH /v1/profile/{user_id}/accessibility. Omitted fields keep their value."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    voice_mode: bool | None = None
+    read_aloud: bool | None = None
+    simple_mode: bool | None = None
+    large_text: bool | None = None
+    speech_rate: float | None = Field(default=None, ge=0.5, le=2.0)
+
+
+class LessonResultRequest(BaseModel):
+    """Body of POST /v1/profile/{user_id}/lesson-results."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    lesson_id: str = Field(min_length=1, description="A topic, or a bonus lesson id.")
+    correct: int = Field(
+        ge=0, description="Questions answered correctly in the lesson."
+    )
+    total: int = Field(ge=1, description="Questions in the lesson.")
+    completed: bool = Field(description="True if the learner finished the lesson.")
+
+    @model_validator(mode="after")
+    def check_correct_within_total(self) -> Self:
+        """A learner cannot get more questions right than the lesson has."""
+        if self.correct > self.total:
+            raise ValueError("correct cannot be greater than total")
+        return self
+
+
+class LessonResultResponse(BaseModel):
+    """Returned by POST /v1/profile/{user_id}/lesson-results."""
+
+    topic: Topic | None = Field(description="Null for bonus lessons.")
+    proficiency: UnitInterval | None = Field(
+        description="0.5 × old proficiency + 0.5 × correct / total; null for bonus lessons."
+    )
+    completed: bool
+    path_refresh_needed: bool = Field(
+        description="True when the topic's difficulty band changed; call POST /v1/path again."
+    )
 
 
 class ErrorDetail(BaseModel):
