@@ -1,6 +1,7 @@
 """FastAPI dependencies, kept separate so tests can swap them with dependency_overrides."""
 
 import random
+from dataclasses import dataclass
 from functools import lru_cache
 from typing import Annotated
 
@@ -45,17 +46,34 @@ def get_llm_client(settings: SettingsDep) -> LlmClient:
     if not settings.llm_model:
         raise ValueError("LLM_MODEL must be set when LLM_API_KEY is set")
     return _openai_client(
-        api_key, settings.llm_model, settings.llm_base_url, settings.llm_timeout_seconds
+        _OpenAiConfig(
+            api_key=api_key,
+            model_name=settings.llm_model,
+            base_url=settings.llm_base_url,
+            timeout_seconds=settings.llm_timeout_seconds,
+            reasoning_effort=settings.llm_reasoning_effort,
+        )
     )
 
 
+@dataclass(frozen=True)
+class _OpenAiConfig:
+    """Hashable OpenAI settings, so one client is cached per configuration."""
+
+    api_key: str
+    model_name: str
+    base_url: str
+    timeout_seconds: float
+    reasoning_effort: str | None
+
+
 @lru_cache
-def _openai_client(
-    api_key: str, model_name: str, base_url: str, timeout_seconds: float
-) -> OpenAiClient:
+def _openai_client(config: _OpenAiConfig) -> OpenAiClient:
     """Build one OpenAI client per configuration so connections are reused."""
-    http_client = httpx.Client(base_url=base_url, timeout=timeout_seconds)
-    return OpenAiClient(api_key, model_name, http_client)
+    http_client = httpx.Client(base_url=config.base_url, timeout=config.timeout_seconds)
+    return OpenAiClient(
+        config.api_key, config.model_name, http_client, config.reasoning_effort
+    )
 
 
 def get_lesson_sources(

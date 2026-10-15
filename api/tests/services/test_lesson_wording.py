@@ -5,9 +5,9 @@ import logging
 
 import pytest
 
-from app.llm.client import EchoLlmClient, LlmError
+from app.llm.client import EchoLlmClient, LlmError, load_prompt
 from app.schemas.shared import Language, Lesson
-from app.services.lesson_wording import reword_lesson
+from app.services.lesson_wording import PROMPT_FILE, PROMPT_VERSION, reword_lesson
 
 SWAHILI_TITLE = "Kuweka Akiba Salama"
 
@@ -94,3 +94,18 @@ def test_echo_client_returns_the_lesson_unchanged(customized_lesson: Lesson) -> 
     result = reword_lesson(customized_lesson, Language.ES, True, EchoLlmClient())
 
     assert result == customized_lesson
+
+
+def test_accepts_a_lesson_wrapped_in_a_lesson_key(customized_lesson: Lesson) -> None:
+    wrapped = json.dumps({"lesson": json.loads(translated(customized_lesson))})
+    llm = FakeLlm(wrapped)
+
+    result = reword_lesson(customized_lesson, Language.SW, False, llm)
+
+    assert result.title == SWAHILI_TITLE
+    assert len(llm.requests) == 1
+
+
+def test_uses_prompt_that_asks_for_an_unwrapped_lesson() -> None:
+    assert PROMPT_VERSION == "lesson_wording_v2"
+    assert "Do not wrap it" in load_prompt(PROMPT_FILE)

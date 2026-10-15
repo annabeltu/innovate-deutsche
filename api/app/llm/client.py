@@ -56,7 +56,11 @@ class OpenAiClient:
     """
 
     def __init__(
-        self, api_key: str, model_name: str, http_client: httpx.Client
+        self,
+        api_key: str,
+        model_name: str,
+        http_client: httpx.Client,
+        reasoning_effort: str | None = None,
     ) -> None:
         """Create a client.
 
@@ -64,10 +68,13 @@ class OpenAiClient:
             api_key: OpenAI API key; only ever sent as the auth header.
             model_name: OpenAI chat model id.
             http_client: Client already set up with the base URL and timeout.
+            reasoning_effort: Effort for reasoning models (e.g. "low"); None
+                leaves the model's default.
         """
         self._api_key = api_key
         self.model_name = model_name
         self._http_client = http_client
+        self._reasoning_effort = reasoning_effort
 
     def complete_json(self, instructions: str, request_json: str) -> str:
         """Ask the model for a JSON reply.
@@ -95,7 +102,7 @@ class OpenAiClient:
 
     def _request_body(self, instructions: str, request_json: str) -> dict[str, object]:
         """Chat Completions body: system instructions, JSON request, JSON mode."""
-        return {
+        body: dict[str, object] = {
             "model": self.model_name,
             "messages": [
                 {"role": "system", "content": instructions},
@@ -103,6 +110,9 @@ class OpenAiClient:
             ],
             "response_format": {"type": "json_object"},
         }
+        if self._reasoning_effort:
+            body["reasoning_effort"] = self._reasoning_effort
+        return body
 
 
 def _reply_content(response: httpx.Response) -> str:

@@ -19,12 +19,14 @@ REPLY = '{"title": "Hola"}'
 Handler = Callable[[httpx.Request], httpx.Response]
 
 
-def openai_client(handler: Handler) -> OpenAiClient:
+def openai_client(
+    handler: Handler, reasoning_effort: str | None = None
+) -> OpenAiClient:
     """An OpenAiClient whose HTTP calls go to handler instead of the network."""
     http_client = httpx.Client(
         base_url=BASE_URL, transport=httpx.MockTransport(handler)
     )
-    return OpenAiClient(API_KEY, MODEL, http_client)
+    return OpenAiClient(API_KEY, MODEL, http_client, reasoning_effort)
 
 
 def chat_reply(
@@ -115,3 +117,28 @@ def test_requires_a_model_when_a_key_is_set() -> None:
 
     with pytest.raises(ValueError, match="LLM_MODEL"):
         get_llm_client(settings)
+
+
+@pytest.mark.parametrize("reasoning_effort", [None, "low"])
+def test_sends_reasoning_effort_only_when_set(reasoning_effort: str | None) -> None:
+    sent: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        sent.append(request)
+        return chat_reply()
+
+    openai_client(handler, reasoning_effort).complete_json("Rewrite it.", "{}")
+
+    body = json.loads(sent[0].content)
+    assert body.get("reasoning_effort") == reasoning_effort
+
+
+def test_passes_reasoning_effort_from_settings() -> None:
+    settings = Settings(
+        llm_api_key=SecretStr(API_KEY), llm_model=MODEL, llm_reasoning_effort="low"
+    )
+
+    client = get_llm_client(settings)
+
+    assert isinstance(client, OpenAiClient)
+    assert client._reasoning_effort == "low"

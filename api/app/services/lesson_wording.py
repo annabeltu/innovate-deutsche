@@ -15,8 +15,9 @@ from app.schemas.shared import Language, Lesson
 from app.services.lesson_templates import BASE_LESSON_LANGUAGE
 from app.services.validation import LessonValidationError, validate_rewrite
 
-PROMPT_FILE = "lesson_wording_v1.md"
-PROMPT_VERSION = "lesson_wording_v1"
+PROMPT_FILE = "lesson_wording_v2.md"
+PROMPT_VERSION = "lesson_wording_v2"
+LESSON_WRAPPER_KEY = "lesson"
 MAX_ATTEMPTS = 2
 
 logger = logging.getLogger(__name__)
@@ -45,9 +46,8 @@ def reword_lesson(
     for attempt in range(1, MAX_ATTEMPTS + 1):
         started = time.perf_counter()
         try:
-            rewritten = validate_rewrite(
-                lesson, llm.complete_json(instructions, request_json)
-            )
+            reply = llm.complete_json(instructions, request_json)
+            rewritten = validate_rewrite(lesson, _unwrap_lesson(reply))
         except (LlmError, LessonValidationError) as error:
             logger.warning(
                 "lesson rewrite failed: lesson=%s model=%s prompt=%s attempt=%d "
@@ -69,6 +69,20 @@ def reword_lesson(
         language,
     )
     return lesson
+
+
+def _unwrap_lesson(reply: str) -> str:
+    """Accept {"lesson": {...}} too, since models sometimes echo the request shape.
+
+    Anything else is returned unchanged for validate_rewrite to judge.
+    """
+    try:
+        parsed = json.loads(reply)
+    except json.JSONDecodeError:
+        return reply
+    if isinstance(parsed, dict) and parsed.keys() == {LESSON_WRAPPER_KEY}:
+        return json.dumps(parsed[LESSON_WRAPPER_KEY])
+    return reply
 
 
 def _build_request(lesson: Lesson, language: Language, simple_mode: bool) -> str:

@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     llm_model: str | None = None
     llm_base_url: str = "https://api.openai.com/v1"
     llm_timeout_seconds: float = Field(default=20.0, gt=0)
+    # Optional reasoning effort for reasoning models, e.g. "low"; unset sends none.
+    llm_reasoning_effort: str | None = None
 
 
 @lru_cache
