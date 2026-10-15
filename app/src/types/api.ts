@@ -53,3 +53,60 @@ export interface LearnerProfile {
   /** ISO 8601 UTC timestamp. */
   updated_at: string;
 }
+
+/** How far the learner's group trails the Findex benchmark on one topic. */
+export interface TopicNeed {
+  indicator: string;
+  group_rate: number;
+  benchmark_rate: number;
+  findex_gap: number;
+}
+
+/** What a learner is likely to struggle with, from the Findex data. */
+export interface LearnerNeeds {
+  user_id: string;
+  country: Country;
+  topic_needs: Record<Topic, TopicNeed>;
+}
+
+export type CardType =
+  | 'concept'
+  | 'bridge'
+  | 'mc_quiz'
+  | 'drag_match'
+  | 'compare_chart'
+  | 'clause_tap'
+  | 'scam_swipe'
+  | 'budget_sim'
+  | 'takeaway';
+
+export type AnswerMode = 'say_option' | 'say_next';
+
+/** Spoken version of a card, so every lesson works by voice alone. */
+export interface VoiceBlock {
+  speak_text: string;
+  answer_mode: AnswerMode;
+  spoken_options: Record<string, string>;
+  correct_feedback: string | null;
+  incorrect_feedback: string | null;
+}
+
+/** One screen of a lesson. */
+export interface LessonCard {
+  card_id: string;
+  type: CardType;
+  text: string;
+  options: Record<string, string>;
+  correct_option: string | null;
+  voice: VoiceBlock;
+}
+
+/** A lesson customized for one learner. */
+export interface Lesson {
+  lesson_id: string;
+  topic: Topic;
+  title: string;
+  goal: string;
+  difficulty: 1 | 2 | 3;
+  cards: LessonCard[];
+}

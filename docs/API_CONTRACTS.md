@@ -59,6 +59,27 @@ Will's API writes it; Faraz's API reads it. It is the only handoff between the t
 
 **proficiency = 0.4 × confidence + 0.6 × quiz_score**
 
+## LearnerNeeds
+
+The data teammate's code writes it; Faraz's API reads it to customize lessons. It says what the learner's group struggles with, from the Findex data. Rates are decimals from 0 to 1.
+
+```json
+{
+  "user_id": "u_8f3c2a91",
+  "country": "IN",
+  "topic_needs": {
+    "saving": {
+      "indicator": "Saved at a bank in the past year",
+      "group_rate": 0.384,
+      "benchmark_rate": 0.6,
+      "findex_gap": 0.36
+    }
+  }
+}
+```
+
+`topic_needs` has one entry per topic. `findex_gap` feeds the path priority formula.
+
 ## Endpoints
 
 ### LearnerProfile API (Will)
@@ -90,6 +111,30 @@ Will's API writes it; Faraz's API reads it. It is the only handoff between the t
 | POST | `/v1/voice/intent` |
 | POST | `/v1/voice/speak` |
 
+## Lesson
+
+`GET /v1/lessons/{lesson_id}` returns a lesson already customized for the learner: only the cards that fit their difficulty, life stage and goal, with Findex facts filled in.
+
+```json
+{
+  "lesson_id": "saving-safe-saving",
+  "topic": "saving",
+  "title": "Safe Saving",
+  "goal": "Compare where money can be kept and understand protection and growth.",
+  "difficulty": 2,
+  "cards": [
+    {
+      "card_id": "protected-quiz",
+      "type": "mc_quiz",
+      "text": "Where is your money protected if something goes wrong?",
+      "options": {"a": "In a licensed bank with deposit insurance", "b": "Under the mattress"},
+      "correct_option": "a",
+      "voice": {"speak_text": "...", "answer_mode": "say_option", "spoken_options": {"a": "...", "b": "..."}}
+    }
+  ]
+}
+```
+
 ## Lesson cards
 
 Card types: `concept`, `bridge`, `mc_quiz`, `drag_match`, `compare_chart`, `clause_tap`, `scam_swipe`, `budget_sim`, `takeaway`.
@@ -99,10 +144,10 @@ Every card has a **required** `voice` block, so every lesson, including AI-gener
 ```json
 "voice": {
   "speak_text": "Full spoken version of the card, including every option with its letter.",
-  "answer_mode": "say_option",
+  "answer_mode": "say_option | say_next",
   "spoken_options": {"a": "option text", "b": "option text"},
-  "correct_feedback": "Spoken feedback when right.",
-  "incorrect_feedback": "Spoken feedback when wrong, including the explanation."
+  "correct_feedback": "Spoken feedback when right (quiz cards only).",
+  "incorrect_feedback": "Spoken feedback when wrong, including the explanation (quiz cards only)."
 }
 ```
 
