@@ -1,4 +1,5 @@
 import { BonusLessons } from "../components/BonusLessons";
+import { SCENERY_FILL } from "../components/AppScenery";
 import { BonusNotification } from "../components/BonusNotification";
 import { KikoAvatar } from "../components/KikoAvatar";
 import React from "react";
@@ -48,7 +49,7 @@ export function Roadmap() {
         <Image
           source={scenes[country]}
           resizeMode="cover"
-          className="absolute h-full w-full"
+          style={SCENERY_FILL}
           accessible={false}
         />
       }
