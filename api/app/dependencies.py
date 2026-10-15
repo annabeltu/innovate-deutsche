@@ -15,6 +15,7 @@ from app.services.speech_to_text import (
     SpeechToTextProvider,
     WhisperTranscriber,
 )
+from app.services.text_to_speech import OpenAISpeechSynthesizer, TextToSpeechProvider
 from app.services.voice_provider_http import ProviderEndpoint
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
@@ -53,6 +54,24 @@ def get_transcriber(settings: SettingsDep) -> SpeechToTextProvider:
     if settings.voice_dev_fixtures:
         return FixtureTranscriber()
     raise VoiceUnavailableError("Speech-to-text is not configured on this server")
+
+
+def get_synthesizer(settings: SettingsDep) -> TextToSpeechProvider:
+    """Return the hosted voice, or 503 so the app speaks on-device instead.
+
+    Raises:
+        VoiceUnavailableError: If no text-to-speech key is set.
+    """
+    tts_key = _configured(settings.tts_api_key)
+    if not tts_key:
+        raise VoiceUnavailableError("Hosted text-to-speech is not configured")
+    endpoint = ProviderEndpoint(
+        url=settings.tts_api_url,
+        api_key=tts_key,
+        model=settings.tts_model,
+        timeout_seconds=settings.voice_provider_timeout_seconds,
+    )
+    return OpenAISpeechSynthesizer(endpoint, settings.tts_voice)
 
 
 def _configured(secret: SecretStr | None) -> str:

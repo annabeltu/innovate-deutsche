@@ -1,25 +1,29 @@
 """Voice API: transcribe, intent, speak. Owner: voice teammate (@voice-placeholder).
 
-HTTP only; logic lives in services/intent.py, services/speech_to_text.py.
+HTTP only; logic lives in services/intent.py, services/speech_to_text.py and
+services/text_to_speech.py.
 """
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Response, UploadFile, status
 
-from app.dependencies import SettingsDep, get_transcriber
+from app.dependencies import SettingsDep, get_synthesizer, get_transcriber
 from app.schemas.shared import ErrorResponse, Language
 from app.schemas.voice import (
     IntentRequest,
     IntentResponse,
+    SpeakRequest,
     TranscriptionResponse,
 )
-from app.services import intent, speech_to_text
+from app.services import intent, speech_to_text, text_to_speech
 from app.services.speech_to_text import SpeechToTextProvider
+from app.services.text_to_speech import MP3_MEDIA_TYPE, TextToSpeechProvider
 
 router = APIRouter(prefix="/v1/voice", tags=["voice"])
 
 TranscriberDep = Annotated[SpeechToTextProvider, Depends(get_transcriber)]
+SynthesizerDep = Annotated[TextToSpeechProvider, Depends(get_synthesizer)]
 
 VALIDATION_ERROR = {status.HTTP_400_BAD_REQUEST: {"model": ErrorResponse}}
 PROVIDER_ERRORS = {
@@ -64,3 +68,24 @@ async def post_transcribe(
         content, audio.content_type, settings.voice_max_audio_bytes
     )
     return await speech_to_text.transcribe(clip, language, transcriber)
+
+
+@router.post(
+    "/speak",
+    response_class=Response,
+    summary="Read text aloud with the hosted voice (MP3)",
+    responses={
+        status.HTTP_200_OK: {
+            "content": {MP3_MEDIA_TYPE: {}},
+            "description": "MP3 audio of the text.",
+        },
+        **PROVIDER_ERRORS,
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {"model": ErrorResponse},
+    },
+)
+async def post_speak(
+    request: SpeakRequest, settings: SettingsDep, synthesizer: SynthesizerDep
+) -> Response:
+    """Return MP3 audio; any error means the app should speak on-device instead."""
+    audio = await text_to_speech.speak(request, synthesizer, settings.tts_languages)
+    return Response(content=audio, media_type=synthesizer.media_type)

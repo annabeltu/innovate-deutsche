@@ -11,6 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.schemas.shared import Language
 
 MAX_INTENT_TEXT_LENGTH = 500
+MAX_SPEAK_TEXT_LENGTH = 1500
+MIN_SPEECH_RATE = 0.5
+MAX_SPEECH_RATE = 2.0
 
 
 class VoiceIntent(StrEnum):
@@ -70,4 +73,23 @@ class TranscriptionResponse(BaseModel):
     is_fixture: bool = Field(
         default=False,
         description="True only in development when no speech-to-text key is set.",
+    )
+
+
+class SpeakRequest(BaseModel):
+    """Body of POST /v1/voice/speak."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(
+        min_length=1,
+        max_length=MAX_SPEAK_TEXT_LENGTH,
+        description="Text to read aloud, usually a card's voice.speak_text.",
+    )
+    language: Language
+    rate: float = Field(
+        default=1.0,
+        ge=MIN_SPEECH_RATE,
+        le=MAX_SPEECH_RATE,
+        description="Speed multiplier; use the learner's accessibility.speech_rate.",
     )

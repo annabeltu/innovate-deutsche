@@ -6,6 +6,8 @@ from pathlib import Path
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.schemas.shared import Language
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEN_MEGABYTES = 10 * 1024 * 1024
 
@@ -25,6 +27,14 @@ class Settings(BaseSettings):
     # Development only: return a labeled fixture transcript when no key is set.
     voice_dev_fixtures: bool = False
     voice_max_audio_bytes: int = TEN_MEGABYTES
+
+    # Voice: text-to-speech (any OpenAI-compatible speech endpoint).
+    tts_api_key: SecretStr | None = None
+    tts_api_url: str = "https://api.openai.com/v1/audio/speech"
+    tts_model: str = "tts-1"
+    tts_voice: str = "alloy"
+    # Languages the hosted voice serves; others get 422 so the app uses expo-speech.
+    tts_languages: list[Language] = [Language.EN, Language.ES, Language.SW]
 
     voice_provider_timeout_seconds: float = 20.0
 

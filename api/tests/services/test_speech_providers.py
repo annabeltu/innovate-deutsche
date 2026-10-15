@@ -1,16 +1,19 @@
-"""The Whisper client, against a fake network. No real provider is called."""
+"""Whisper and hosted TTS clients, against a fake network. No real provider is called."""
 
 import asyncio
+import json
 from collections.abc import Callable
 
 import httpx
 import pytest
 
 from app.schemas.shared import Language
+from app.schemas.voice import SpeakRequest
 from app.services.errors import (
     AudioTooLargeError,
     InvalidRequestError,
     UnsupportedAudioError,
+    UnsupportedLanguageError,
     VoiceProviderError,
     VoiceProviderTimeoutError,
 )
@@ -21,6 +24,7 @@ from app.services.speech_to_text import (
     transcribe,
     validate_audio,
 )
+from app.services.text_to_speech import OpenAISpeechSynthesizer, speak
 from app.services.voice_provider_http import ProviderEndpoint
 
 FAKE_KEY = "test-key-not-real"
@@ -146,3 +150,53 @@ def test_fixture_transcript_is_labeled(language: Language) -> None:
 
     assert result.is_fixture is True
     assert result.text
+
+
+def test_tts_requests_mp3_at_the_learner_speech_rate() -> None:
+    captured: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append(request)
+        return httpx.Response(200, content=b"ID3-mp3-bytes")
+
+    synthesizer = OpenAISpeechSynthesizer(endpoint(handler, model="tts-1"), "alloy")
+    request = SpeakRequest(text="Swali la 1.", language=Language.SW, rate=0.8)
+
+    audio = asyncio.run(speak(request, synthesizer, list(Language)))
+
+    assert audio == b"ID3-mp3-bytes"
+    assert json.loads(captured[0].read()) == {
+        "model": "tts-1",
+        "voice": "alloy",
+        "input": "Swali la 1.",
+        "speed": 0.8,
+        "response_format": "mp3",
+    }
+
+
+def test_tts_refuses_languages_not_enabled_without_calling_provider() -> None:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        raise AssertionError("provider must not be called")
+
+    synthesizer = OpenAISpeechSynthesizer(endpoint(handler), "alloy")
+    request = SpeakRequest(text="Habari", language=Language.SW)
+
+    with pytest.raises(UnsupportedLanguageError):
+        asyncio.run(speak(request, synthesizer, [Language.EN, Language.ES]))
+
+
+@pytest.mark.parametrize(
+    ("handler", "error"),
+    [
+        (lambda _request: httpx.Response(200, content=b""), VoiceProviderError),
+        (lambda _request: httpx.Response(429), VoiceProviderError),
+        (raise_timeout, VoiceProviderTimeoutError),
+    ],
+)
+def test_tts_failures_become_domain_errors(
+    handler: Handler, error: type[Exception]
+) -> None:
+    synthesizer = OpenAISpeechSynthesizer(endpoint(handler), "alloy")
+
+    with pytest.raises(error):
+        asyncio.run(synthesizer.synthesize("Hello", Language.EN, 1.0))
