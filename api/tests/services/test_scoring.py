@@ -5,7 +5,6 @@ import pytest
 from app.schemas.shared import Goal, LearnerProfile, Topic
 from app.services.scoring import (
     GOAL_TOPICS,
-    difficulty_for,
     score_topics,
     topic_priority,
 )
@@ -39,14 +38,6 @@ def test_topic_priority_rejects_values_outside_unit_interval(
 ) -> None:
     with pytest.raises(ValueError):
         topic_priority(findex_gap, proficiency, goal_match=False)
-
-
-@pytest.mark.parametrize(
-    ("proficiency", "expected"),
-    [(0.0, 1), (0.39, 1), (0.4, 2), (0.69, 2), (0.7, 3), (1.0, 3)],
-)
-def test_difficulty_rises_with_proficiency(proficiency: float, expected: int) -> None:
-    assert difficulty_for(proficiency) == expected
 
 
 def test_every_goal_has_matching_topics() -> None:

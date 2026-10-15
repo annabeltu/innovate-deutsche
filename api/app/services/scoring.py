@@ -8,15 +8,12 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
-from app.schemas.shared import Goal, LearnerProfile, Topic
+from app.schemas.shared import Difficulty, Goal, LearnerProfile, Topic
+from app.services.proficiency import difficulty_band
 
 FINDEX_GAP_WEIGHT = 0.4
 LOW_PROFICIENCY_WEIGHT = 0.4
 GOAL_MATCH_WEIGHT = 0.2
-
-# Proficiency below the first bound starts at difficulty 1, below the second
-# at difficulty 2, otherwise 3.
-DIFFICULTY_BOUNDS = (0.4, 0.7)
 
 # Topics that directly serve each onboarding goal get the goal_match bonus.
 GOAL_TOPICS: Mapping[Goal, frozenset[Topic]] = MappingProxyType(
@@ -38,7 +35,7 @@ class TopicPriority:
 
     topic: Topic
     priority: float
-    difficulty: int
+    difficulty: Difficulty
     completed: bool
 
 
@@ -63,17 +60,6 @@ def topic_priority(findex_gap: float, proficiency: float, goal_match: bool) -> f
         + LOW_PROFICIENCY_WEIGHT * (1 - proficiency)
         + GOAL_MATCH_WEIGHT * float(goal_match)
     )
-
-
-def difficulty_for(proficiency: float) -> int:
-    """Map proficiency (0 to 1) to a starting lesson difficulty of 1, 2 or 3."""
-    _require_unit_interval("proficiency", proficiency)
-    lower_bound, upper_bound = DIFFICULTY_BOUNDS
-    if proficiency < lower_bound:
-        return 1
-    if proficiency < upper_bound:
-        return 2
-    return 3
 
 
 def score_topics(
@@ -105,7 +91,7 @@ def score_topics(
             priority=topic_priority(
                 findex_gaps[topic], score.proficiency, topic in goal_topics
             ),
-            difficulty=difficulty_for(score.proficiency),
+            difficulty=difficulty_band(score.proficiency),
             completed=score.completed,
         )
         for topic, score in profile.topic_scores.items()

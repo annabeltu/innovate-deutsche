@@ -9,6 +9,7 @@ from collections.abc import Mapping
 
 from app.schemas.lesson_template import CardTemplate, LessonTemplate
 from app.schemas.shared import (
+    Difficulty,
     LearnerNeeds,
     LearnerProfile,
     Lesson,
@@ -16,7 +17,7 @@ from app.schemas.shared import (
     TopicNeed,
     VoiceBlock,
 )
-from app.services.scoring import difficulty_for
+from app.services.proficiency import difficulty_band
 
 PERCENT = 100
 
@@ -44,7 +45,7 @@ def customize_lesson(
             f"needs for {needs.user_id} cannot customize a lesson for {profile.user_id}"
         )
 
-    difficulty = difficulty_for(profile.topic_scores[template.topic].proficiency)
+    difficulty = difficulty_band(profile.topic_scores[template.topic].proficiency)
     facts = lesson_facts(needs.topic_needs[template.topic])
     cards = [
         _fill_card(card, facts, template.lesson_id)
@@ -67,7 +68,7 @@ def customize_lesson(
 
 
 def card_fits_learner(
-    card: CardTemplate, profile: LearnerProfile, difficulty: int
+    card: CardTemplate, profile: LearnerProfile, difficulty: Difficulty
 ) -> bool:
     """Whether a base card belongs in this learner's version of the lesson."""
     return (
