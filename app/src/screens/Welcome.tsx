@@ -14,11 +14,11 @@ import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
-import * as Speech from "expo-speech";
 import Svg, { Image as SvgImage, Path, Rect } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
+import { speak as speakAloud, stopSpeaking } from "../voice/speech";
 
 const blue = "#0012B3";
 const ink = "#000C62";
@@ -77,18 +77,15 @@ export function Welcome() {
     lineHeight: s.large ? 25 : 19 * unit,
   };
   const speak = useCallback(() => {
-    void Speech.stop();
-    Speech.speak(
+    void speakAloud(
       `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${countries[s.country].name}. ${t("access")}. ${t("getStarted")}`,
-      { language: s.language },
+      { language: s.language, country: s.country },
     );
   }, [s.country, s.language, t]);
   useFocusEffect(
     useCallback(() => {
       if (s.readAloud) speak();
-      return () => {
-        void Speech.stop();
-      };
+      return stopSpeaking;
     }, [s.readAloud, speak]),
   );
 

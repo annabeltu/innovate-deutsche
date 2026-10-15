@@ -1,5 +1,6 @@
 import { pathPreviewCopy } from "./path-preview";
 import { confidenceCopy } from "./confidence";
+import { voiceCopy } from "./voice";
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
 const i18n = createInstance();
@@ -107,6 +108,7 @@ void i18n.use(initReactI18next).init({
         ...en,
         ...confidenceCopy.en,
         pathPreview: pathPreviewCopy.en,
+        voice: voiceCopy.en,
       },
     },
     es: {
@@ -114,6 +116,7 @@ void i18n.use(initReactI18next).init({
         ...es,
         ...confidenceCopy.es,
         pathPreview: pathPreviewCopy.es,
+        voice: voiceCopy.es,
       },
     },
     sw: {
@@ -121,6 +124,7 @@ void i18n.use(initReactI18next).init({
         ...sw,
         ...confidenceCopy.sw,
         pathPreview: pathPreviewCopy.sw,
+        voice: voiceCopy.sw,
       },
     },
   },

@@ -20,10 +20,10 @@ import Animated, {
   cancelAnimation,
 } from "react-native-reanimated";
 import { router, useFocusEffect } from "expo-router";
-import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { colors as c, regionAccents } from "../theme/tokens";
+import { speak as speakAloud, stopSpeaking } from "../voice/speech";
 export { c };
 export function Txt({ style, ...props }: TextProps) {
   const large = useApp((s) => s.large);
@@ -89,17 +89,24 @@ export function Button({
   onPress,
   secondary = false,
   disabled = false,
+  accessibilityLabel,
+  accessibilityHint,
 }: {
   title: string;
   onPress: () => void;
   secondary?: boolean;
   disabled?: boolean;
+  /** Spoken name when the visible title is a symbol, such as "×". */
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={title}
-      accessibilityHint="Activates this action"
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityHint={accessibilityHint ?? t("voice.buttonHint")}
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
@@ -137,13 +144,14 @@ export function Choice({
   icon?: string;
   style?: ViewStyle;
 }) {
+  const { t } = useTranslation();
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
       accessibilityState={{ selected }}
-      accessibilityHint="Selects this option"
+      accessibilityHint={t("voice.choiceHint")}
       style={[
         s.choice,
         selected && { borderColor: c.deepBlue, backgroundColor: "#F7FAFF" },
@@ -203,19 +211,18 @@ export function Screen({
   compact?: boolean;
   background?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   const readAloud = useApp((s) => s.readAloud);
   const language = useApp((s) => s.language);
+  const country = useApp((s) => s.country);
   const narration = spokenText([children, footer]);
   const speak = useCallback(() => {
-    void Speech.stop();
-    Speech.speak(narration, { language });
-  }, [narration, language]);
+    void speakAloud(narration, { language, country });
+  }, [narration, language, country]);
   useFocusEffect(
     useCallback(() => {
       if (readAloud) speak();
-      return () => {
-        void Speech.stop();
-      };
+      return stopSpeaking;
     }, [readAloud, speak]),
   );
   return (
@@ -244,7 +251,7 @@ export function Screen({
         >
           {children}
           {readAloud && (
-            <Button secondary title="Repeat screen aloud" onPress={speak} />
+            <Button secondary title={t("voice.repeatScreen")} onPress={speak} />
           )}
         </View>
       </ScrollView>
@@ -306,6 +313,7 @@ export function Kiko({
   size?: number;
   pulse?: boolean;
 }) {
+  const { t } = useTranslation();
   const scale = useSharedValue(1);
   const [reduce, setReduce] = useState(false);
   const simple = useApp((s) => s.simple);
@@ -329,7 +337,7 @@ export function Kiko({
   return (
     <Animated.View
       accessible
-      accessibilityLabel="Kiko, your friendly compass guide"
+      accessibilityLabel={t("voice.kiko")}
       style={[{ width: size, height: size, alignSelf: "center" }, animated]}
     >
       <Svg width="100%" height="100%" viewBox="0 0 140 140">
