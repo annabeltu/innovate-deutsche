@@ -16,6 +16,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
 import Svg, { Image as SvgImage } from "react-native-svg";
 import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
+import {
+  ROTATING_LANGUAGES,
+  useRotatingLanguage,
+} from "../i18n/use-rotating-language";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 import { speak as speakAloud, stopSpeaking } from "../voice/speech";
@@ -26,22 +31,16 @@ const ink = "#000C62";
 const reference = require("../../assets/welcome/reference.png");
 const countries = {
   US: {
-    name: "United States",
     crop: "120 1085 185 132",
     image: require("../../assets/welcome/us.png"),
-    scene: "Statue of Liberty and the New York skyline",
   },
   MX: {
-    name: "Mexico",
     crop: "349 1085 186 132",
     image: require("../../assets/welcome/mx.png"),
-    scene: "Mexican colonial architecture, blue tiled domes and palm trees",
   },
   KE: {
-    name: "Kenya",
     crop: "578 1085 187 132",
     image: require("../../assets/welcome/ke.png"),
-    scene: "Kenyan savannah, acacia trees and Mount Kenya at sunrise",
   },
 };
 
@@ -64,6 +63,15 @@ function ReferenceArt({ crop }: { crop: string }) {
 export function Welcome() {
   const s = useApp();
   const { t } = useTranslation();
+  const rotating = useRotatingLanguage(!s.languageChosen);
+  /** Visible text: cycles through every language until the learner picks one. */
+  const shown = (key: string) =>
+    rotating ? i18n.getFixedT(rotating)(key) : t(key);
+  /** Screen-reader text: names all three languages at once instead of cycling. */
+  const spoken = (key: string) =>
+    s.languageChosen
+      ? t(key)
+      : ROTATING_LANGUAGES.map((lang) => i18n.getFixedT(lang)(key)).join(". ");
   const { width, height, fontScale } = useWindowSize();
   const insets = useSafeAreaInsets();
   const pageWidth = width - insets.left - insets.right;
@@ -79,7 +87,7 @@ export function Welcome() {
   };
   const speak = useCallback(() => {
     void speakAloud(
-      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${countries[s.country].name}. ${t("access")}. ${t("getStarted")}`,
+      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`setup.countries.${s.country}`)}. ${t("access")}. ${t("getStarted")}`,
       { language: s.language, country: s.country },
     );
   }, [s.country, s.language, t]);
@@ -124,7 +132,7 @@ export function Welcome() {
                   resizeMode="cover"
                   style={{ width: "100%", height: "100%" }}
                   accessible
-                  accessibilityLabel={countries[s.country].scene}
+                  accessibilityLabel={spoken(`setup.scenes.${s.country}`)}
                 />
                 <LinearGradient
                   pointerEvents="none"
@@ -168,17 +176,17 @@ export function Welcome() {
               },
             ]}
           >
-            <Txt style={[styles.label, labelStyle]}>{t("language")}</Txt>
+            <Txt style={[styles.label, labelStyle]}>{shown("language")}</Txt>
             <LanguageSelector stacked={narrow} />
             <Txt style={[styles.label, labelStyle, { marginTop: 17 * unit }]}>
-              {t("country")}
+              {shown("country")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
               {(Object.keys(countries) as Country[]).map((code) => (
                 <Pressable
                   key={code}
                   accessibilityRole="button"
-                  accessibilityLabel={countries[code].name}
+                  accessibilityLabel={spoken(`setup.countries.${code}`)}
                   accessibilityState={{ selected: s.country === code }}
                   onPress={() => s.set({ country: code })}
                   style={[
@@ -219,7 +227,7 @@ export function Welcome() {
                         },
                       ]}
                     >
-                      {countries[code].name}
+                      {shown(`setup.countries.${code}`)}
                     </Txt>
                     <Feather
                       name="chevron-right"
@@ -231,16 +239,16 @@ export function Welcome() {
               ))}
             </View>
             <Txt style={[styles.label, labelStyle, { marginTop: 18 * unit }]}>
-              {t("access")}
+              {shown("access")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
               {(
                 [
-                  ["readAloud", "Read aloud", "volume-2"],
-                  ["simple", "Simple mode", "help-circle"],
-                  ["large", "Larger text", "type"],
+                  ["readAloud", "setup.access.readAloud", "volume-2"],
+                  ["simple", "setup.access.simple", "help-circle"],
+                  ["large", "setup.access.large", "type"],
                 ] as const
-              ).map(([key, name, icon]) => (
+              ).map(([key, labelKey, icon]) => (
                 <View
                   key={key}
                   style={[
@@ -277,7 +285,7 @@ export function Welcome() {
                       },
                     ]}
                   >
-                    {name}
+                    {shown(labelKey)}
                   </Txt>
                   <View
                     style={{
@@ -288,7 +296,7 @@ export function Welcome() {
                     }}
                   >
                     <Switch
-                      accessibilityLabel={name}
+                      accessibilityLabel={spoken(labelKey)}
                       value={s[key]}
                       onValueChange={(value) => s.set({ [key]: value })}
                       trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
@@ -306,10 +314,11 @@ export function Welcome() {
             {s.readAloud && (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={spoken("voice.repeatScreen")}
                 onPress={speak}
                 style={styles.extraAction}
               >
-                <Txt style={styles.option}>Repeat screen aloud</Txt>
+                <Txt style={styles.option}>{shown("voice.repeatScreen")}</Txt>
               </Pressable>
             )}
             {s.onboarded && (
@@ -334,7 +343,7 @@ export function Welcome() {
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t("getStarted")}
+            accessibilityLabel={spoken("getStarted")}
             onPress={() => router.push("/onboarding")}
             style={[
               styles.go,
@@ -351,7 +360,7 @@ export function Welcome() {
                 fontWeight: "600",
               }}
             >
-              {t("getStarted")}
+              {shown("getStarted")}
             </Txt>
             <Feather name="arrow-right" size={25 * unit} color="#FFFFFF" />
           </Pressable>

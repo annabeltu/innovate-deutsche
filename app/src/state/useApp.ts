@@ -5,6 +5,8 @@ export type Language = "en" | "es" | "sw";
 export type Country = "US" | "MX" | "KE";
 type State = {
   language: Language;
+  /** False until the learner picks a language; the welcome screen cycles until then. */
+  languageChosen: boolean;
   country: Country;
   stage: string;
   goal: string;
@@ -31,6 +33,7 @@ export const useApp = create<State>()(
   persist(
     (set, get) => ({
       language: "en",
+      languageChosen: false,
       country: "US",
       stage: "First job",
       goal: "Save more",
@@ -72,11 +75,13 @@ export const useApp = create<State>()(
     {
       name: "kompass-v1",
       storage: createJSONStorage(() => AsyncStorage),
-      version: 2,
+      version: 3,
       migrate: (persisted) => {
         const state = persisted as Partial<State>;
         return {
           ...state,
+          // Anyone who already used the app has been through language setup.
+          languageChosen: state.languageChosen ?? true,
           language: ["en", "es", "sw"].includes(state.language ?? "")
             ? state.language
             : "en",
