@@ -4,16 +4,36 @@ from datetime import UTC, datetime
 
 from app.schemas.shared import (
     AccessibilityUpdate,
+    LanguageUpdate,
     LearnerProfile,
     LessonResultRequest,
     LessonResultResponse,
     Topic,
 )
-from app.services.errors import LessonNotFoundError
+from app.services.errors import LessonNotFoundError, UnsupportedLanguageError
 from app.services.proficiency import difficulty_band, update_after_lesson
 from app.services.profile_store import ProfileStore
+from app.services.question_bank import QuestionBank
 
 CORE_LESSON_IDS = {topic.value for topic in Topic}
+
+
+def update_language(
+    user_id: str, update: LanguageUpdate, store: ProfileStore, bank: QuestionBank
+) -> LearnerProfile:
+    """Change language while preserving scores, completed lessons and bonus ids."""
+    profile = store.get_profile(user_id)
+    supported = bank.languages_for(profile.country)
+    if update.language not in supported:
+        raise UnsupportedLanguageError(
+            f"Language {update.language} is not offered in {profile.country}",
+            {"country": profile.country, "supported_languages": supported},
+        )
+    updated = profile.model_copy(
+        update={"language": update.language, "updated_at": datetime.now(UTC)}
+    )
+    store.update_profile(updated)
+    return updated
 
 
 def update_accessibility(

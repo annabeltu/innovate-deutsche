@@ -1,0 +1,150 @@
+{
+  "lesson_id": "budget",
+  "topic": "budget",
+  "title": "Survive the Month",
+  "goal": "Build a simple budget and understand why an emergency fund matters.",
+  "cards": [
+    {
+      "card_id": "what-is-a-budget",
+      "type": "concept",
+      "text": "A budget is a plan for your money: what comes in, what goes out, and what is left.",
+      "voice": {
+        "speak_text": "A budget is a plan for your money: what comes in, what goes out, and what is left. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "people-like-you",
+      "type": "bridge",
+      "text": "In your country, {group_percent}% of {who} {indicator}. In {benchmark_name}, it is {benchmark_percent}%.",
+      "voice": {
+        "speak_text": "In your country, {group_percent} percent of {who} {indicator}. In {benchmark_name}, it is {benchmark_percent} percent. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "needs-before-wants",
+      "type": "concept",
+      "text": "Pay for needs first, like food, rent and transport. Wants come after.",
+      "voice": {
+        "speak_text": "Pay for needs first, like food, rent and transport. Wants come after. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "track-small-spending",
+      "type": "concept",
+      "text": "Write down every small spend for one week. Small costs add up quickly.",
+      "life_stages": [
+        "student"
+      ],
+      "voice": {
+        "speak_text": "Write down every small spend for one week. Small costs add up quickly. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "first-paycheck",
+      "type": "concept",
+      "text": "When your paycheck arrives, set aside savings first, then plan the rest.",
+      "life_stages": [
+        "first_job"
+      ],
+      "voice": {
+        "speak_text": "When your paycheck arrives, set aside savings first, then plan the rest. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "household-budget",
+      "type": "concept",
+      "text": "A household budget plans for food, health and school costs before anything else.",
+      "life_stages": [
+        "parent",
+        "retired"
+      ],
+      "voice": {
+        "speak_text": "A household budget plans for food, health and school costs before anything else. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "emergency-fund",
+      "type": "concept",
+      "text": "An emergency fund is money saved only for surprises, like a doctor visit. Aim for one month of needs.",
+      "goals": [
+        "handle_emergencies"
+      ],
+      "voice": {
+        "speak_text": "An emergency fund is money saved only for surprises, like a doctor visit. Aim for one month of needs. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "budget-against-debt",
+      "type": "concept",
+      "text": "A budget shows you what you can spare, so you never borrow for everyday costs.",
+      "goals": [
+        "avoid_debt"
+      ],
+      "voice": {
+        "speak_text": "A budget shows you what you can spare, so you never borrow for everyday costs. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "money-left-quiz",
+      "type": "mc_quiz",
+      "text": "You earn {cur}1000 a month and your needs cost {cur}700. How much is left for savings and wants?",
+      "options": {
+        "a": "{cur}300",
+        "b": "{cur}700",
+        "c": "{cur}1700"
+      },
+      "correct_option": "a",
+      "voice": {
+        "speak_text": "You earn {cur}1000 a month and your needs cost {cur}700. How much is left for savings and wants? A: {cur}300. B: {cur}700. C: {cur}1700. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "{cur}300",
+          "b": "{cur}700",
+          "c": "{cur}1700"
+        },
+        "correct_feedback": "Correct. {cur}1000 minus {cur}700 leaves {cur}300.",
+        "incorrect_feedback": "Not quite. The answer is A. {cur}1000 minus {cur}700 leaves {cur}300."
+      }
+    },
+    {
+      "card_id": "emergency-fund-quiz",
+      "type": "mc_quiz",
+      "text": "Why keep an emergency fund?",
+      "options": {
+        "a": "So a surprise cost does not become a loan",
+        "b": "To spend on wants",
+        "c": "Because banks require it"
+      },
+      "correct_option": "a",
+      "min_difficulty": 2,
+      "voice": {
+        "speak_text": "Why keep an emergency fund? A: so a surprise cost does not become a loan. B: to spend on wants. C: because banks require it. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "so a surprise cost does not become a loan",
+          "b": "to spend on wants",
+          "c": "because banks require it"
+        },
+        "correct_feedback": "Correct. An emergency fund pays for surprises without borrowing.",
+        "incorrect_feedback": "Not quite. The answer is A. An emergency fund pays for surprises without borrowing."
+      }
+    },
+    {
+      "card_id": "takeaway",
+      "type": "takeaway",
+      "text": "Plan needs first, track what you spend, and build an emergency fund.",
+      "voice": {
+        "speak_text": "Remember: plan needs first, track what you spend, and build an emergency fund. Say next to finish the lesson.",
+        "answer_mode": "say_next"
+      }
+    }
+  ]
+}

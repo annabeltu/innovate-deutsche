@@ -1,14 +1,15 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "Kompass",
+    "slug": "kompass",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "app",
-    "userInterfaceStyle": "automatic",
+    "scheme": "kompass",
+    "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.innovatedeutsche.kompass"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +34,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Kompass to record your question for Kiko."
+        }
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true

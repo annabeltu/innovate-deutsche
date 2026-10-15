@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson Tester</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --panel: #ffffff; --text: #1d1d1b; --muted: #6b6b66;
+    --line: #e2e2dc; --accent: #2457c5; --accent-text: #ffffff;
+    --tag: #eef1f8; --hole: #fff3c4; --drop: #f6e3e3; --keep: #e3f3e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --panel: #1f1f1d; --text: #ececea; --muted: #a3a39d;
+      --line: #33332f; --accent: #6f95ff; --accent-text: #0d0d0c;
+      --tag: #2a2f3d; --hole: #4a3f12; --drop: #4a2626; --keep: #1f3a29;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1280px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
+  .muted { color: var(--muted); }
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+         gap: 12px; background: var(--panel); border: 1px solid var(--line);
+         border-radius: 8px; padding: 12px; margin: 12px 0; }
+  label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  select, input[type=range], input[type=text] { width: 100%; }
+  input[type=text] { padding: 8px; border-radius: 6px; border: 1px solid var(--line);
+                     background: var(--bg); color: var(--text); font: inherit; }
+  .ask { grid-template-columns: 1fr; }
+  select { padding: 6px; border-radius: 6px; border: 1px solid var(--line);
+           background: var(--bg); color: var(--text); font: inherit; }
+  .check { display: flex; align-items: center; gap: 8px; color: var(--text); }
+  button { grid-column: 1 / -1; padding: 10px 16px; border: 0; border-radius: 6px;
+           background: var(--accent); color: var(--accent-text); font: inherit;
+           font-weight: 600; cursor: pointer; min-height: 44px; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+             gap: 12px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+            padding: 12px; min-width: 0; }
+  .card { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin: 8px 0; }
+  .card.dropped { background: var(--drop); opacity: .75; }
+  .card.kept { background: var(--keep); }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+  .tag { background: var(--tag); border-radius: 4px; padding: 0 6px; font-size: 12px; }
+  .hole { background: var(--hole); border-radius: 3px; padding: 0 2px; font-family: ui-monospace, monospace; font-size: 13px; }
+  .voice { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .options { margin: 4px 0 0; padding-left: 18px; }
+  .correct { font-weight: 600; }
+  details { margin-top: 8px; }
+  pre { overflow: auto; font-size: 12px; background: var(--bg); padding: 8px; border-radius: 6px; max-height: 360px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  td, th { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .error { color: #c62828; white-space: pre-wrap; }
+  #status { min-height: 1.4em; margin: 4px 0 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Lesson tester</h1>
+  <p class="muted">Base lesson before customization, the two models it reads (Will's LearnerProfile and the Findex LearnerNeeds), and the lesson after. Each run creates a real learner through the onboarding API with the quiz skipped, so proficiency equals the confidence slider.</p>
+
+  <form id="inputs">
+    <label>Country
+      <select id="country">
+        <option value="MX">Mexico</option>
+        <option value="US">USA</option>
+        <option value="KE">Kenya</option>
+      </select>
+    </label>
+    <label>Language <select id="language"></select></label>
+    <label>Life stage
+      <select id="life_stage">
+        <option value="student">Student</option>
+        <option value="first_job">First job</option>
+        <option value="parent">Parent</option>
+        <option value="retired">Retired</option>
+      </select>
+    </label>
+    <label>Goal
+      <select id="goal">
+        <option value="save_more">Save more</option>
+        <option value="avoid_debt">Avoid debt</option>
+        <option value="stay_safe_online">Stay safe online</option>
+        <option value="handle_emergencies">Handle emergencies</option>
+      </select>
+    </label>
+    <label>Lesson
+      <select id="topic">
+        <option value="accounts">1. Your Money, Your Account</option>
+        <option value="saving" selected>2. Safe Saving</option>
+        <option value="borrowing">3. Borrowing Without Getting Burned</option>
+        <option value="scams">4. Spot the Scam</option>
+        <option value="budget">5. Survive the Month</option>
+      </select>
+    </label>
+    <label>Confidence in this topic: <span id="confidence_value"></span>
+      <input id="confidence" type="range" min="0" max="1" step="0.05" value="0.5">
+    </label>
+    <label class="check"><input id="simple_mode" type="checkbox"> Simple mode</label>
+    <button id="customize" type="submit">Customize lesson</button>
+  </form>
+
+  <form id="ask_form" class="ask">
+    <label>Ask for a lesson (any language). Uses the learner settings above.
+      <input id="ask" type="text" maxlength="300" placeholder="e.g. teach me about insurance / ¿cómo ahorro dinero? / nifundishe kuhusu bima">
+    </label>
+    <button id="generate" type="submit">Generate lesson</button>
+  </form>
+
+  <div id="status" role="status" aria-live="polite"></div>
+
+  <div class="columns">
+    <section aria-labelledby="before_title">
+      <h2 id="before_title">Before: base lesson</h2>
+      <div id="before" class="muted">Loading…</div>
+    </section>
+    <section aria-labelledby="models_title">
+      <h2 id="models_title">The two models</h2>
+      <div id="models" class="muted">Press "Customize lesson".</div>
+    </section>
+    <section aria-labelledby="after_title">
+      <h2 id="after_title">After: customized lesson</h2>
+      <div id="after" class="muted">Press "Customize lesson".</div>
+    </section>
+  </div>
+</main>
+
+<script>
+const LANGUAGES_BY_COUNTRY = { US: ["en", "es"], MX: ["es", "en"], KE: ["en", "sw"] };
+const LANGUAGE_NAMES = { en: "English", es: "Spanish", sw: "Swahili" };
+const TOPICS = ["accounts", "saving", "borrowing", "scams", "budget"];
+const OTHER_TOPIC_CONFIDENCE = 0.5;
+const COMFORT_MEDIUM = 2;
+const DIFFICULTY_BOUNDS = [0.4, 0.7];
+
+const $ = (id) => document.getElementById(id);
+let baseLesson = null;
+
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (key === "class") node.className = value; else node.setAttribute(key, value);
+  }
+  for (const child of children.flat()) {
+    if (child !== null && child !== undefined) {
+      node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+  }
+  return node;
+}
+
+function withHoles(text) {
+  return text.split(/(\{[a-z_]+\})/g).map((part) =>
+    /^\{[a-z_]+\}$/.test(part) ? el("span", { class: "hole" }, part) : part);
+}
+
+function percent(rate) { return rate === null ? "—" : `${Math.round(rate * 100)}%`; }
+
+function difficultyFor(proficiency) {
+  if (proficiency < DIFFICULTY_BOUNDS[0]) return 1;
+  return proficiency < DIFFICULTY_BOUNDS[1] ? 2 : 3;
+}
+
+function fillLanguages() {
+  const languages = LANGUAGES_BY_COUNTRY[$("country").value];
+  $("language").replaceChildren(...languages.map((code) =>
+    el("option", { value: code }, LANGUAGE_NAMES[code])));
+}
+
+function showConfidence() {
+  const value = Number($("confidence").value);
+  $("confidence_value").textContent = `${value.toFixed(2)} → difficulty ${difficultyFor(value)}`;
+}
+
+async function api(path, options = {}) {
+  const response = await fetch(path, {
+    headers: { "content-type": "application/json" }, ...options,
+  });
+  const body = await response.json();
+  if (!response.ok) {
+    const error = body.error || {};
+    throw new Error(`${options.method || "GET"} ${path} → ${response.status} ${error.code || ""}\n${error.message || ""}\n${JSON.stringify(error.details || {})}`);
+  }
+  return body;
+}
+
+function cardView(card, extraClass = "", withRules = false) {
+  const tags = [el("span", { class: "tag" }, card.type)];
+  if (withRules) {
+    if (card.min_difficulty > 1) tags.push(el("span", { class: "tag" }, `difficulty ≥ ${card.min_difficulty}`));
+    if (card.life_stages) tags.push(el("span", { class: "tag" }, `only: ${card.life_stages.join(", ")}`));
+    if (card.goals) tags.push(el("span", { class: "tag" }, `goal: ${card.goals.join(", ")}`));
+  }
+  const options = Object.entries(card.options || {}).map(([letter, text]) =>
+    el("li", { class: letter === card.correct_option ? "correct" : "" }, `${letter.toUpperCase()}: `, withHoles(text)));
+  return el("div", { class: `card ${extraClass}` },
+    el("div", { class: "meta" }, el("strong", {}, card.card_id), tags),
+    el("div", {}, withHoles(card.text)),
+    options.length ? el("ul", { class: "options" }, options) : null,
+    el("div", { class: "voice" }, "🔊 ", withHoles(card.voice.speak_text)));
+}
+
+async function loadBaseLesson() {
+  $("before").replaceChildren("Loading…");
+  try {
+    baseLesson = await api(`/dev/base-lessons/${$("topic").value}`);
+    $("before").replaceChildren(
+      el("p", {}, el("strong", {}, baseLesson.title), el("br"), baseLesson.goal),
+      el("p", { class: "muted" }, `${baseLesson.cards.length} cards. Highlighted {placeholders} are filled by code from the models and country facts.`),
+      baseLesson.cards.map((card) => cardView(card, "", true)));
+  } catch (error) {
+    $("before").replaceChildren(el("p", { class: "error" }, error.message));
+  }
+}
+
+function onboardingBody() {
+  const confidence = Object.fromEntries(TOPICS.map((topic) => [topic, OTHER_TOPIC_CONFIDENCE]));
+  confidence[$("topic").value] = Number($("confidence").value);
+  return {
+    country: $("country").value,
+    language: $("language").value,
+    accessibility: { simple_mode: $("simple_mode").checked },
+    life_stage: $("life_stage").value,
+    goal: $("goal").value,
+    comfort: COMFORT_MEDIUM,
+    savings_habit: "bank",
+    confidence,
+  };
+}
+
+function profileView(profile, topic) {
+  const score = profile.topic_scores[topic];
+  return el("div", {},
+    el("h3", {}, "LearnerProfile (Will)"),
+    el("table", {}, el("tbody", {},
+      [["country / language", `${profile.country} / ${profile.language}`],
+       ["life stage", profile.life_stage], ["goal", profile.goal],
+       ["simple mode", String(profile.accessibility.simple_mode)],
+       [`${topic} proficiency`, `${score.proficiency} → difficulty ${difficultyFor(score.proficiency)}`]]
+        .map(([key, value]) => el("tr", {}, el("th", {}, key), el("td", {}, value))))),
+    el("details", {}, el("summary", {}, "Full JSON"), el("pre", {}, JSON.stringify(profile, null, 2))));
+}
+
+function signalRows(signals) {
+  return signals.map((signal) => el("tr", {},
+    el("td", {}, signal.label),
+    el("td", {}, `${percent(signal.group_rate)} vs ${percent(signal.benchmark_rate)}`),
+    el("td", {}, `gap ${signal.gap.toFixed(2)}`),
+    el("td", { class: "muted" }, `${signal.age_group}, ${signal.survey_year}`)));
+}
+
+function needsView(needs, topic) {
+  const topicNeed = needs.topic_needs[topic];
+  const list = (title, signals) => signals.length
+    ? [el("h4", {}, title), el("table", {}, el("tbody", {}, signalRows(signals.slice(0, 3))))]
+    : [];
+  return el("div", {},
+    el("h3", {}, "LearnerNeeds (Findex)"),
+    el("p", { class: "muted" }, `${needs.country}, ${needs.age_group}, compared with ${needs.benchmark_name}. Priorities: ${needs.priorities.join(" → ")}`),
+    el("h4", {}, `This lesson (${topic}): findex_gap ${topicNeed.findex_gap.toFixed(2)}, headline first`),
+    el("table", {}, el("tbody", {}, signalRows(topicNeed.signals))),
+    list("Struggles (all topics)", needs.struggles),
+    list("Lacking", needs.lacking),
+    list("Could use", needs.could_use),
+    el("details", {}, el("summary", {}, "Full JSON"), el("pre", {}, JSON.stringify(needs, null, 2))));
+}
+
+function afterView(lesson, seconds, language, base) {
+  const keptIds = new Set(lesson.cards.map((card) => card.card_id));
+  const dropped = base ? base.cards.filter((card) => !keptIds.has(card.card_id)) : [];
+  const englishOnly = language === "en" && !$("simple_mode").checked;
+  const wording = englishOnly ? "English without simple mode: no LLM rewording needed."
+    : !base ? "Reworded into the learner's language unless the rewrite failed (check the API log)."
+    : lesson.title !== base.title ? "Reworded by the LLM."
+    : "Not reworded: no OpenAI key, or the rewrite failed validation twice (check the API log).";
+  const kept = base ? `${lesson.cards.length} of ${base.cards.length} cards kept.` : `${lesson.cards.length} cards.`;
+  return el("div", {},
+    el("p", {}, el("strong", {}, lesson.title), el("br"), lesson.goal),
+    el("p", { class: "muted" }, `${lesson.lesson_id}, topic ${lesson.topic}, difficulty ${lesson.difficulty}. ${kept} ${wording} Took ${seconds.toFixed(1)} s.`),
+    lesson.cards.map((card) => cardView(card, "kept")),
+    dropped.length ? [el("h3", {}, "Dropped for this learner"), dropped.map((card) => cardView(card, "dropped", true))] : null);
+}
+
+async function createLearner() {
+  const started = await api("/v1/onboarding", { method: "POST", body: JSON.stringify(onboardingBody()) });
+  const userId = started.user_id;
+  const { profile } = await api(`/v1/quiz/${started.quiz.quiz_id}/skip`, { method: "POST", body: JSON.stringify({ user_id: userId }) });
+  const needs = await api(`/dev/needs/${userId}`);
+  return { userId, profile, needs, showModels: (shownTopic) =>
+    $("models").replaceChildren(profileView(profile, shownTopic), needsView(needs, shownTopic)) };
+}
+
+async function run(work) {
+  for (const id of ["customize", "generate"]) $(id).disabled = true;
+  try {
+    await work();
+  } catch (error) {
+    $("status").replaceChildren(el("span", { class: "error" }, error.message));
+  } finally {
+    for (const id of ["customize", "generate"]) $(id).disabled = false;
+  }
+}
+
+function customize(event) {
+  event.preventDefault();
+  run(async () => {
+    const topic = $("topic").value;
+    $("status").textContent = "Creating learner, building needs, customizing…";
+    const learner = await createLearner();
+    learner.showModels(topic);
+    $("status").textContent = "Customizing and rewording (this calls OpenAI when a key is set)…";
+    const startedAt = performance.now();
+    const lesson = await api(`/v1/lessons/${topic}?user_id=${encodeURIComponent(learner.userId)}`);
+    $("after").replaceChildren(afterView(lesson, (performance.now() - startedAt) / 1000, learner.profile.language, baseLesson));
+    $("status").textContent = `Done for learner ${learner.userId}.`;
+  });
+}
+
+function askForLesson(event) {
+  event.preventDefault();
+  const request = $("ask").value.trim();
+  if (!request) { $("status").textContent = "Type what you want to learn about first."; return; }
+  run(async () => {
+    $("status").textContent = "Creating learner…";
+    const learner = await createLearner();
+    $("status").textContent = "Asking OpenAI: core lesson, new lesson, or off topic? (about 10–20 s)…";
+    const startedAt = performance.now();
+    const result = await api("/v1/bonus-lessons", { method: "POST", body: JSON.stringify({ user_id: learner.userId, request }) });
+    const seconds = (performance.now() - startedAt) / 1000;
+    learner.showModels(result.lesson.topic);
+    if (result.generated) {
+      baseLesson = null;
+      $("before").replaceChildren(el("p", {}, "No base lesson existed: a new one was generated for this request, checked, stored as ",
+        el("strong", {}, result.lesson.lesson_id), `, and filed under topic "${result.lesson.topic}".`));
+    } else {
+      $("topic").value = result.matched_topic;
+      await loadBaseLesson();
+    }
+    $("after").replaceChildren(afterView(result.lesson, seconds, learner.profile.language, baseLesson));
+    $("status").textContent = result.generated
+      ? `Generated a new lesson for learner ${learner.userId}.`
+      : `A core lesson covers this: ${result.matched_topic}. Customized for learner ${learner.userId}.`;
+  });
+}
+
+$("country").addEventListener("change", fillLanguages);
+$("confidence").addEventListener("input", showConfidence);
+$("topic").addEventListener("change", loadBaseLesson);
+$("inputs").addEventListener("submit", customize);
+$("ask_form").addEventListener("submit", askForLesson);
+fillLanguages();
+showConfidence();
+loadBaseLesson();
+</script>
+</body>
+</html>

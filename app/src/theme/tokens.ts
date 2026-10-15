@@ -1,23 +1,38 @@
 // Kompass brand tokens. The UI chrome always uses these blues.
 export const colors = {
-  deepBlue: '#0018A8',
-  darkBlue: '#000E5C',
-  midBlue: '#2A5BD7',
-  brightBlue: '#3D8BFF',
-  lightBlue: '#A9C8FF',
-  iceBlue: '#E8F0FF',
-  grey: '#C9D1E0',
-  white: '#FFFFFF',
-  success: '#1FA463',
-  error: '#E5484D',
-  coinGold: '#F5B700',
+  deepBlue: "#0018A8",
+  darkBlue: "#000E5C",
+  midBlue: "#2A5BD7",
+  // Top of the dark screen gradient.
+  duskBlue: "#294DB3",
+  brightBlue: "#3D8BFF",
+  lightBlue: "#A9C8FF",
+  iceBlue: "#E8F0FF",
+  grey: "#C9D1E0",
+  white: "#FFFFFF",
+  welcomePanel: "#F5F7FE",
+  welcomePanelTransparent: "rgba(245,247,254,0)",
+  success: "#1FA463",
+  successSoft: "#EAF8EF",
+  error: "#E5484D",
+  errorSoft: "#FFF1F1",
+  warningSurface: "#FFE4DE",
+  successSurface: "#E1F5ED",
+  successText: "#076835",
+  errorText: "#A51D24",
+  coinGold: "#F5B700",
+  coinGoldSoft: "#FFF5CF",
+  // Readable gold text on white or coinGoldSoft (contrast >= 4.5:1).
+  coinGoldText: "#8C6200",
+  // Readable warning text on dark backgrounds.
+  noticeOnDark: "#FFE08A",
 } as const;
 
-// Regional accents: only the roadmap background changes by country.
+// Country scenery accents; interface controls retain the brand blues.
 export const regionAccents = {
-  IN: '#F39C12', // India
-  KE: '#E0A82E', // Kenya
-  DE: '#2E7D4F', // Germany
+  US: "#739FD5", // United States
+  KE: "#E0A82E", // Kenya
+  MX: "#59A995", // Mexico
 } as const;
 
 export type ColorToken = keyof typeof colors;
