@@ -16,9 +16,10 @@ import { router, useFocusEffect } from "expo-router";
 import * as Speech from "expo-speech";
 import Svg, { Image as SvgImage, Path, Rect } from "react-native-svg";
 import { useTranslation } from "react-i18next";
-import { LANGUAGES_BY_COUNTRY, lessonLanguage } from "../api/learner";
+import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
+import { LanguageSelector } from "../components/LanguageSelector";
 
 const blue = "#0012B3";
 const ink = "#000C62";
@@ -224,41 +225,7 @@ export function Welcome() {
             ]}
           >
             <Txt style={[styles.label, labelStyle]}>{t("language")}</Txt>
-            <View style={[styles.grid, { gap, marginTop: 8 * unit }]}>
-              {LANGUAGES_BY_COUNTRY[s.country].map((code) => {
-                const name = { en: "English", es: "Español", sw: "Kiswahili" }[
-                  code
-                ];
-                return (
-                  <Pressable
-                    key={code}
-                    accessibilityRole="button"
-                    accessibilityLabel={name}
-                    accessibilityState={{ selected: s.language === code }}
-                    onPress={() => s.set({ language: code })}
-                    style={[
-                      styles.tile,
-                      {
-                        flexBasis: "46%",
-                        flexGrow: 1,
-                        minHeight: Math.max(44, 43 * unit),
-                        borderRadius: 13 * unit,
-                      },
-                      s.language === code && styles.selected,
-                    ]}
-                  >
-                    <Txt
-                      style={[
-                        styles.option,
-                        { fontSize: s.large ? 18 : 13 * unit },
-                      ]}
-                    >
-                      {name}
-                    </Txt>
-                  </Pressable>
-                );
-              })}
-            </View>
+            <LanguageSelector stacked={narrow} />
             <Txt style={[styles.label, labelStyle, { marginTop: 17 * unit }]}>
               {t("country")}
             </Txt>

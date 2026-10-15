@@ -151,3 +151,9 @@ Kompass must be fully usable by blind and low-vision users. **Every screen and e
 - Every interactive element has an accessibility label, role and hint. Text contrast is at least 4.5:1 and tap targets are at least 44 points.
 
 The PR template includes an accessibility checklist; fill it in on every PR.
+
+### Confidence check and baseline quiz
+
+The third setup screen saves five confidence sliders and uses the selected country scenery. “Build my path” opens a five-lesson preview ordered by slider confidence, lowest first. Each explanation reflects a low, medium, or high confidence rating. The preview uses self-reported confidence, not a World Bank data calculation. Its primary action begins the first recommended lesson. The baseline quiz remains available at `/quiz`, served from `data/question_bank/questions.json` by the API. Set `EXPO_PUBLIC_API_URL` in the app environment (use your computer’s LAN address on a physical phone). Start the API before starting the quiz. The server keeps answer keys and combines confidence with quiz results when saving proficiency.
+
+The baseline uses one easy and one hard question per topic, as required by the API contract. Confidence does not change baseline difficulty. The language selector offers English, Español, and Kiswahili to match the bank. Kiswahili quizzes require Kenya; English and Spanish quizzes support the United States and Mexico. Current setup defaults the goal to saving more and savings habit to none until those choices have controls.

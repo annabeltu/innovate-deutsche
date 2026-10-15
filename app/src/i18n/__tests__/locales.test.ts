@@ -1,6 +1,6 @@
 import i18n from "..";
 
-const LANGUAGES = ["es", "hi", "sw", "de"];
+const LANGUAGES = ["es", "sw"];
 
 describe("locales", () => {
   const englishKeys = Object.keys(

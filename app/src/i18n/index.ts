@@ -1,7 +1,10 @@
+import { confidenceCopy } from "./confidence";
+import { pathPreviewCopy } from "./path-preview";
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
 const i18n = createInstance();
 const en = {
+  languageSelectHint: "Choose this language for Kompass and the quiz.",
   languageHint: "Change language while keeping your progress",
   saving: "Saving…",
   welcome: "Welcome to Kompass",
@@ -51,6 +54,7 @@ const en = {
 };
 const es = {
   ...en,
+  languageSelectHint: "Elige este idioma para Kompass y el cuestionario.",
   welcome: "Bienvenido a Kompass",
   tagline: "Encontremos tu camino.",
   language: "Elige tu idioma",
@@ -97,55 +101,11 @@ const es = {
   languageHint: "Cambia el idioma conservando tu progreso",
   saving: "Guardando…",
 };
-const hi = {
-  ...en,
-  getStarted: "शुरू करें",
-  welcome: "Kompass में आपका स्वागत है",
-  tagline: "आइए अपना रास्ता खोजें।",
-  language: "अपनी भाषा चुनें",
-  country: "आप कहाँ हैं?",
-  go: "शुरू करें",
-  continue: "आगे बढ़ें",
-  build: "मेरा रास्ता बनाएँ",
-  path: "रास्ता",
-  practice: "अभ्यास",
-  ask: "पूछें",
-  leagues: "लीग",
-  shop: "दुकान",
-  ready: "आपका रास्ता तैयार है!",
-  roadmap: "मेरा रास्ता देखें",
-  about: "आपके बारे में",
-  where: "आप अभी",
-  now: "कहाँ हैं?",
-  grow: "आपका रास्ता आपके साथ बढ़ेगा।",
-  goals: "आपके लिए क्या ज़रूरी है?",
-  feels: "पैसों के बारे में कैसा लगता है?",
-  confidence: "आत्मविश्वास जाँच",
-  confident: "आप कितने आश्वस्त हैं…",
-  noWrong: "कोई गलत जवाब नहीं।",
-  keep: "आगे बढ़ें",
-  check: "जाँचें",
-  wallet: "आपका बटुआ",
-  shopSub: "सीखते रहने के लिए सिक्के खर्च करें।",
-  lessonLoading: "कीको आपका पाठ तैयार कर रहा है…",
-  lessonError:
-    "यह पाठ लोड नहीं हो सका। अपना कनेक्शन जाँचें और फिर से कोशिश करें।",
-  tryAgain: "फिर से कोशिश करें",
-  next: "आगे",
-  finish: "पूरा करें",
-  makingLesson: "कीको आपका पाठ बना रहा है…",
-  lessonMatched: "कीको को इसके लिए एक पाठ मिला:",
-  openLesson: "पाठ खोलें",
-  lessonOffTopic:
-    "कीको सिर्फ़ पैसों के बारे में सिखा सकता है। बचत, उधार, भुगतान या धोखाधड़ी के बारे में पूछें।",
-  lessonRequestError: "कीको अभी पाठ नहीं बना सका। कृपया फिर से कोशिश करें।",
-  turnIntoLesson: "✦ इसे पाठ बनाएँ",
-  addedToRoadmap: "✓ आपके रोडमैप में जोड़ा गया",
-};
 const sw = {
   ...en,
   languageHint: "Badilisha lugha bila kupoteza maendeleo",
   saving: "Inahifadhi…",
+  languageSelectHint: "Chagua lugha hii kwa Kompass na maswali.",
   getStarted: "Anza",
   welcome: "Karibu Kompass",
   tagline: "Tutafute njia yako.",
@@ -190,60 +150,29 @@ const sw = {
   turnIntoLesson: "✦ Ligeuze kuwa somo",
   addedToRoadmap: "✓ Limeongezwa kwenye ramani yako",
 };
-const de = {
-  ...en,
-  getStarted: "Loslegen",
-  welcome: "Willkommen bei Kompass",
-  tagline: "Finde deinen Weg.",
-  language: "Wähle deine Sprache",
-  country: "Wo beginnt dein Weg?",
-  access: "Kompass für dich anpassen",
-  go: "Los geht’s",
-  continue: "Weiter",
-  build: "Meinen Weg erstellen",
-  path: "Pfad",
-  practice: "Üben",
-  ask: "Fragen",
-  leagues: "Ligen",
-  shop: "Shop",
-  ready: "Dein Weg ist bereit!",
-  roadmap: "Meinen Lernpfad ansehen",
-  about: "Über dich",
-  where: "Wo stehst du",
-  now: "gerade?",
-  grow: "Dein Weg wächst mit dir.",
-  goals: "Was ist dir am wichtigsten?",
-  feels: "Geld fühlt sich an…",
-  confidence: "Selbsteinschätzung",
-  confident: "Wie sicher fühlst du dich bei…",
-  noWrong: "Keine falschen Antworten. Nur dein Startpunkt.",
-  keep: "Weiter geht’s",
-  check: "Prüfen",
-  wallet: "DEIN GUTHABEN",
-  shopSub: "Nutze Münzen, die dir beim Weiterlernen helfen.",
-  lessonLoading: "Kiko bereitet deine Lektion vor…",
-  lessonError:
-    "Diese Lektion konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
-  tryAgain: "Erneut versuchen",
-  next: "Weiter",
-  finish: "Fertig",
-  makingLesson: "Kiko erstellt deine Lektion…",
-  lessonMatched: "Kiko hat eine Lektion dazu gefunden:",
-  openLesson: "Lektion öffnen",
-  lessonOffTopic:
-    "Kiko kann nur über Geld lehren. Frag nach Sparen, Leihen, Zahlungen oder Betrug.",
-  lessonRequestError:
-    "Kiko konnte gerade keine Lektion erstellen. Bitte versuche es erneut.",
-  turnIntoLesson: "✦ Daraus eine Lektion machen",
-  addedToRoadmap: "✓ Zu deiner Roadmap hinzugefügt",
-};
 void i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: en },
-    es: { translation: es },
-    hi: { translation: hi },
-    sw: { translation: sw },
-    de: { translation: de },
+    en: {
+      translation: {
+        ...en,
+        ...confidenceCopy.en,
+        pathPreview: pathPreviewCopy.en,
+      },
+    },
+    es: {
+      translation: {
+        ...es,
+        ...confidenceCopy.es,
+        pathPreview: pathPreviewCopy.es,
+      },
+    },
+    sw: {
+      translation: {
+        ...sw,
+        ...confidenceCopy.sw,
+        pathPreview: pathPreviewCopy.sw,
+      },
+    },
   },
   lng: "en",
   fallbackLng: "en",
