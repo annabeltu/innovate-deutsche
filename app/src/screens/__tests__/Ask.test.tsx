@@ -82,6 +82,10 @@ it("submits a typed question and stores the real generated lesson for the roadma
     body: { user_id: "u_live", request: "Teach me insurance" },
   });
   expect(useApp.getState().bonusLessonIds.Insurance).toBe("bonus_real");
+  // The screen already has one roadmap button; a new lesson must not add another.
+  expect(
+    screen.getAllByRole("button", { name: "See my roadmap" }),
+  ).toHaveLength(1);
   expect(recognizeIntent).not.toHaveBeenCalled();
 });
 

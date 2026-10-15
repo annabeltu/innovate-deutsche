@@ -39,18 +39,9 @@ export function LessonRequest({
   const isOffTopic =
     request.error instanceof ApiError && request.error.code === OFF_TOPIC;
 
+  // The Ask screen already offers its own roadmap button below this one.
   if (result?.generated) {
-    return (
-      <>
-        <Button title={t("addedToRoadmap")} disabled onPress={() => {}} />
-        <Button
-          secondary
-          icon="arrow-right"
-          title={t("roadmap")}
-          onPress={() => router.replace("/roadmap")}
-        />
-      </>
-    );
+    return <Button title={t("addedToRoadmap")} disabled onPress={() => {}} />;
   }
   if (result?.matched_topic) {
     const topic = result.matched_topic;
