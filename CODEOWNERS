@@ -1,0 +1,19 @@
+# GitHub uses the LAST matching rule, so broad folders come first
+# and the jointly-owned contract files come last.
+
+/app/                         @frontend-placeholder
+/data/                        @data-placeholder
+/.github/                     @voice-placeholder
+
+/api/app/routers/path.py      @faraz999shah
+/api/app/routers/lessons.py   @faraz999shah
+/api/app/services/            @faraz999shah @willapat
+/api/app/llm/                 @faraz999shah
+/api/app/prompts/             @faraz999shah
+/api/app/routers/profile.py   @willapat
+/api/app/routers/voice.py     @voice-placeholder
+
+# Shared contracts: changes need approval from BOTH Faraz and Will
+/api/app/schemas/shared.py    @faraz999shah @willapat
+/app/src/types/api.ts         @faraz999shah @willapat
+/docs/API_CONTRACTS.md        @faraz999shah @willapat
