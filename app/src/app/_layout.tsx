@@ -1,9 +1,10 @@
+import { colors } from "../theme/tokens";
 import "../../global.css";
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { AccessibilityInfo } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AccessibilityInfo, View } from "react-native";
 import { useApp } from "../state/useApp";
 import i18n from "../i18n";
 export default function Layout() {
@@ -18,10 +19,10 @@ export default function Layout() {
   }, []);
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#E8F0FF" }}>
+      <View style={{ flex: 1, backgroundColor: colors.iceBlue }}>
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
-      </SafeAreaView>
+      </View>
     </SafeAreaProvider>
   );
 }

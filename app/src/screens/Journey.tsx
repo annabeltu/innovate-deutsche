@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, Alert, AccessibilityInfo } from "react-native";
+import { View, Pressable, AccessibilityInfo } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
-import Svg, { Path } from "react-native-svg";
 import { useApp } from "../state/useApp";
 import {
   Screen,
@@ -15,157 +14,13 @@ import {
   Choice,
   Progress,
   Kiko,
-  Landscape,
   Card,
   Nav,
   c,
 } from "../components/ui";
 import { lessons } from "./Onboarding";
 const money = { US: "$", MX: "MX$", KE: "KSh" };
-export function Roadmap() {
-  const s = useApp();
-  return (
-    <Screen dark footer={<Nav active="path" />}>
-      <Row>
-        {[`♨ ${s.streak}`, `● ${s.coins}`, `♥ ${s.hearts}`].map((text) => (
-          <View
-            key={text}
-            style={{
-              backgroundColor: c.darkBlue,
-              padding: 13,
-              borderRadius: 16,
-            }}
-          >
-            <Txt style={{ color: c.white, fontWeight: "700" }}>{text}</Txt>
-          </View>
-        ))}
-      </Row>
-      <Card
-        style={{ backgroundColor: c.deepBlue, borderBottomColor: c.darkBlue }}
-      >
-        <Label light>UNIT 1</Label>
-        <Row>
-          <Txt style={{ color: c.white, fontSize: 25, fontWeight: "700" }}>
-            Money basics
-          </Txt>
-          <Txt style={{ color: c.lightBlue }}>
-            {s.completed.length} / {lessons.length}
-          </Txt>
-        </Row>
-      </Card>
-      <View style={{ position: "relative", paddingVertical: 15, gap: 32 }}>
-        <View
-          pointerEvents="none"
-          style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
-        >
-          <Svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 400 640"
-            preserveAspectRatio="none"
-          >
-            <Path
-              d="M48 30 C48 140 95 180 48 260 S48 440 48 620"
-              fill="none"
-              stroke={c.lightBlue}
-              strokeWidth="4"
-              strokeDasharray="6 8"
-            />
-          </Svg>
-        </View>
-        {[
-          ...lessons,
-          ...s.bonus.map((title, i) => ({ id: `bonus-${i}`, title })),
-        ].map((lesson, i) => {
-          const done = s.completed.includes(lesson.id);
-          const locked =
-            i > 0 &&
-            !s.completed.includes(lessons[i - 1]?.id) &&
-            !lesson.id.startsWith("bonus");
-          return (
-            <Pressable
-              key={lesson.id}
-              accessibilityRole="button"
-              accessibilityLabel={`${lesson.title}, ${done ? "completed" : locked ? "locked" : "available"}`}
-              accessibilityState={{ disabled: locked }}
-              onPress={() => {
-                if (locked) {
-                  Alert.alert(
-                    "Keep going",
-                    "Complete the previous lesson to unlock this one.",
-                  );
-                  return;
-                }
-                router.push({ pathname: "/lesson", params: { id: lesson.id } });
-              }}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 20,
-                minHeight: 92,
-              }}
-            >
-              <View
-                style={{
-                  width: 82,
-                  height: 82,
-                  borderRadius: 45,
-                  borderWidth: 7,
-                  borderColor: done
-                    ? "#FFE08A"
-                    : locked
-                      ? "#E3E8F0"
-                      : c.brightBlue,
-                  backgroundColor: done
-                    ? c.coinGold
-                    : locked
-                      ? c.grey
-                      : c.deepBlue,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Txt
-                  style={{ color: c.white, fontSize: 34, fontWeight: "800" }}
-                >
-                  {done ? "✓" : locked ? "▣" : "➜"}
-                </Txt>
-              </View>
-              <Card
-                style={{ flex: 1, padding: 14, opacity: locked ? 0.75 : 1 }}
-              >
-                <Txt style={{ fontWeight: "700" }}>{lesson.title}</Txt>
-                <Txt style={{ fontSize: 12, color: c.midBlue }}>
-                  {done
-                    ? "Completed"
-                    : locked
-                      ? "Locked lesson"
-                      : "10 min · beginner"}
-                </Txt>
-              </Card>
-            </Pressable>
-          );
-        })}
-        <Row style={{ justifyContent: "flex-start" }}>
-          <View
-            style={{
-              backgroundColor: c.coinGold,
-              padding: 18,
-              borderRadius: 12,
-            }}
-          >
-            <Txt>✦</Txt>
-          </View>
-          <Txt style={{ color: c.white, fontWeight: "700" }}>Unit treasure</Txt>
-        </Row>
-      </View>
-      <Landscape country={s.country} />
-      <View style={{ position: "absolute", right: 0, bottom: 45 }}>
-        <Button title="♩  Ask Kiko" onPress={() => router.push("/ask")} />
-      </View>
-    </Screen>
-  );
-}
+export { Roadmap } from "./Roadmap";
 export function Lesson() {
   const { id = "budget" } = useLocalSearchParams<{ id: string }>();
   const [answer, setAnswer] = useState("");

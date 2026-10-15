@@ -1,1 +1,1 @@
-export { Roadmap as default } from "../screens/Journey";
+export { Roadmap as default } from "../screens/Roadmap";

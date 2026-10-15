@@ -1,3 +1,4 @@
+import { Roadmap } from "../Roadmap";
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { PersonalizedPath } from "../PersonalizedPath";
@@ -5,6 +6,9 @@ import { Confidence } from "../Confidence";
 import { useApp } from "../../state/useApp";
 import { router } from "expo-router";
 
+jest.mock("@expo/vector-icons", () => ({
+  Feather: jest.requireActual("react-native").View,
+}));
 jest.mock("expo-router", () => ({ router: { push: jest.fn() } }));
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -71,15 +75,35 @@ it.each([
   ).toBeNull();
 });
 
-it("opens the lowest-confidence lesson from the personalized preview", () => {
+it("opens the roadmap from the personalized preview", () => {
   useApp
     .getState()
     .set({ confidence: [0.75, 0.5, 1, 0, 0.25], onboarded: false });
   const screen = render(<PersonalizedPath />);
   fireEvent.press(screen.getByRole("button", { name: "pathPreview.start" }));
-  expect(router.push).toHaveBeenCalledWith({
+  expect(router.push).toHaveBeenCalledWith("/roadmap");
+  expect(useApp.getState().onboarded).toBe(true);
+});
+
+it("opens the current roadmap lesson and prevents opening locked lessons", () => {
+  useApp
+    .getState()
+    .set({ confidence: [0.75, 0.5, 1, 0, 0.25], completed: [], bonus: [] });
+  const screen = render(<Roadmap />);
+  fireEvent.press(
+    screen.getByRole("button", {
+      name: "confidenceTopics.scams. roadmapScreen.current",
+    }),
+  );
+  expect(router.push).toHaveBeenLastCalledWith({
     pathname: "/lesson",
     params: { id: "scams" },
   });
-  expect(useApp.getState().onboarded).toBe(true);
+  const locked = screen.getByRole("button", {
+    name: "confidenceTopics.budget. roadmapScreen.locked",
+  });
+  expect(locked.props.accessibilityState.disabled).toBe(true);
+  const count = jest.mocked(router.push).mock.calls.length;
+  fireEvent.press(locked);
+  expect(jest.mocked(router.push).mock.calls).toHaveLength(count);
 });

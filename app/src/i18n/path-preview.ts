@@ -10,7 +10,7 @@ export const pathPreviewCopy = {
     low: "Build confidence.",
     medium: "Get more practice.",
     high: "Go a step further.",
-    start: "Start my first lesson →",
+    start: "See my roadmap →",
     openHint: "Begin this lesson.",
     previewHint: "Explore lessons chosen from your confidence ratings.",
     details: {
@@ -31,7 +31,7 @@ export const pathPreviewCopy = {
     low: "Gana confianza.",
     medium: "Practica un poco más.",
     high: "Da un paso más.",
-    start: "Empezar mi primera lección →",
+    start: "Ver mi ruta →",
     openHint: "Empieza esta lección.",
     previewHint: "Explora las lecciones elegidas según tu confianza.",
     details: {
@@ -52,7 +52,7 @@ export const pathPreviewCopy = {
     low: "Jenga kujiamini.",
     medium: "Fanya mazoezi zaidi.",
     high: "Ongeza ujuzi wako.",
-    start: "Anza somo langu la kwanza →",
+    start: "Ona njia yangu →",
     openHint: "Anza somo hili.",
     previewHint: "Chunguza masomo yaliyopangwa kulingana na kujiamini kwako.",
     details: {

@@ -1,3 +1,5 @@
+import { challengeCopy } from "./challenges";
+import { roadmapCopy } from "./roadmap";
 import { pathPreviewCopy } from "./path-preview";
 import { confidenceCopy } from "./confidence";
 import { createInstance } from "i18next";
@@ -107,6 +109,8 @@ void i18n.use(initReactI18next).init({
         ...en,
         ...confidenceCopy.en,
         pathPreview: pathPreviewCopy.en,
+        roadmapScreen: roadmapCopy.en,
+        challenge: challengeCopy.en,
       },
     },
     es: {
@@ -114,6 +118,8 @@ void i18n.use(initReactI18next).init({
         ...es,
         ...confidenceCopy.es,
         pathPreview: pathPreviewCopy.es,
+        roadmapScreen: roadmapCopy.es,
+        challenge: challengeCopy.es,
       },
     },
     sw: {
@@ -121,6 +127,8 @@ void i18n.use(initReactI18next).init({
         ...sw,
         ...confidenceCopy.sw,
         pathPreview: pathPreviewCopy.sw,
+        roadmapScreen: roadmapCopy.sw,
+        challenge: challengeCopy.sw,
       },
     },
   },
