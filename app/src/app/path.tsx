@@ -1,1 +1,1 @@
-export { Reveal as default } from "../screens/Onboarding";
+export { PersonalizedPath as default } from "../screens/PersonalizedPath";

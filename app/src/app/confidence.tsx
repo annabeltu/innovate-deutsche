@@ -1,1 +1,1 @@
-export { Confidence as default } from "../screens/Onboarding";
+export { Confidence as default } from "../screens/Confidence";
