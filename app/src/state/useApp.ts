@@ -34,11 +34,18 @@ type State = {
   equippedOutfit: OutfitId | null;
   equipOutfit: (id: OutfitId) => void;
   dismissBonus: () => void;
+  adoptLearner: (learnerId: string, learnerKey: string) => void;
   set: (
     value: Partial<
       Omit<
         State,
-        "set" | "complete" | "buy" | "addBonus" | "equipOutfit" | "dismissBonus"
+        | "set"
+        | "complete"
+        | "buy"
+        | "addBonus"
+        | "equipOutfit"
+        | "dismissBonus"
+        | "adoptLearner"
       >
     >,
   ) => void;
@@ -72,6 +79,14 @@ export const useApp = create<State>()(
         if (get().purchases.includes(id)) set({ equippedOutfit: id });
       },
       dismissBonus: () => set({ pendingBonus: null }),
+      adoptLearner: (learnerId, learnerKey) =>
+        // Bonus lessons belong to one server learner; another learner's ids
+        // return 404, so a new learner starts without them.
+        set((state) =>
+          state.learnerId === learnerId
+            ? { learnerKey }
+            : { learnerId, learnerKey, bonus: [], bonusLessonIds: {} },
+        ),
       learnerId: null,
       learnerKey: null,
       bonusLessonIds: {},
