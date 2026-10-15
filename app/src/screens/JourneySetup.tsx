@@ -1,13 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useWindowSize } from "../hooks/use-window-size";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import Svg, { Path, Rect } from "react-native-svg";
@@ -32,7 +26,7 @@ export function JourneySetup() {
   const insets = useSafeAreaInsets();
   const s = useApp();
   const { t } = useTranslation();
-  const { width, fontScale } = useWindowDimensions();
+  const { width, fontScale } = useWindowSize();
   const stacked = width < 320 || fontScale > 1.5 || s.large;
   return (
     <View style={styles.screen}>

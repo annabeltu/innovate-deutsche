@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  Image,
-  Pressable,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
+import { useWindowSize } from "../hooks/use-window-size";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -33,7 +28,7 @@ export function Roadmap() {
   const coins = useApp((state) => state.coins);
   const hearts = useApp((state) => state.hearts);
   const bonus = useApp((state) => state.bonus);
-  const { width, fontScale } = useWindowDimensions();
+  const { width, fontScale } = useWindowSize();
   const { t } = useTranslation();
   const path = buildRoadmap(confidence, completed);
   const mapWidth = width - 32;

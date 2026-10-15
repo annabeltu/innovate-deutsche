@@ -8,8 +8,8 @@ import {
   StyleSheet,
   Switch,
   View,
-  useWindowDimensions,
 } from "react-native";
+import { useWindowSize } from "../hooks/use-window-size";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -63,7 +63,7 @@ function ReferenceArt({ crop }: { crop: string }) {
 export function Welcome() {
   const s = useApp();
   const { t } = useTranslation();
-  const { width, height, fontScale } = useWindowDimensions();
+  const { width, height, fontScale } = useWindowSize();
   const insets = useSafeAreaInsets();
   const pageWidth = width - insets.left - insets.right;
   const availableHeight = height - insets.top - insets.bottom;
