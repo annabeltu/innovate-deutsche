@@ -38,7 +38,7 @@ def test_customize_lesson_serves_cards_for_sample_student(
 ) -> None:
     lesson = customize_lesson(saving_template, learner_profile, learner_needs)
 
-    assert lesson.lesson_id == "saving-safe-saving"
+    assert lesson.lesson_id == "saving"
     assert lesson.difficulty == 2
     assert [card.card_id for card in lesson.cards] == [
         "where-money-lives",

@@ -186,11 +186,11 @@ Submitting or skipping a finished quiz returns `409 quiz_already_submitted`; a q
 
 ## Lesson
 
-`GET /v1/lessons/{lesson_id}` returns a lesson already customized for the learner: only the cards that fit their difficulty, life stage and goal, with Findex facts filled in.
+`GET /v1/lessons/{lesson_id}` returns a lesson already customized for the learner. A core lesson's `lesson_id` is its topic (`saving`); bonus lessons have their own ids. It contains only the cards that fit their difficulty, life stage and goal, with Findex facts filled in.
 
 ```json
 {
-  "lesson_id": "saving-safe-saving",
+  "lesson_id": "saving",
   "topic": "saving",
   "title": "Safe Saving",
   "goal": "Compare where money can be kept and understand protection and growth.",

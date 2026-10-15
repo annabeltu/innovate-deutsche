@@ -114,3 +114,18 @@ def test_load_names_the_broken_file(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="scams.json"):
         load_lesson_templates(tmp_path)
+
+
+def test_load_rejects_lesson_id_that_is_not_its_topic(tmp_path: Path) -> None:
+    for path in LESSON_TEMPLATES_DIR.glob("*.json"):
+        shutil.copy(path, tmp_path)
+    renamed = json.loads((tmp_path / "saving.json").read_text())
+    renamed["lesson_id"] = "safe-saving"
+    (tmp_path / "saving.json").write_text(json.dumps(renamed))
+
+    with pytest.raises(ValueError, match="must be its topic"):
+        load_lesson_templates(tmp_path)
+
+
+def test_core_lesson_ids_are_their_topics() -> None:
+    assert all(template.lesson_id == topic for topic, template in TEMPLATES.items())

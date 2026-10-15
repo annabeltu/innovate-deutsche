@@ -26,12 +26,16 @@ def load_lesson_templates(
         The base lesson for each topic.
 
     Raises:
-        ValueError: If a file is invalid, two files share a topic, or a topic
-            has no lesson.
+        ValueError: If a file is invalid, its lesson id is not its topic, two
+            files share a topic, or a topic has no lesson.
     """
     templates: dict[Topic, LessonTemplate] = {}
     for path in sorted(directory.glob("*.json")):
         template = _load_template(path)
+        if template.lesson_id != template.topic:
+            raise ValueError(
+                f"{path.name}: core lesson id must be its topic {template.topic!r}"
+            )
         if template.topic in templates:
             raise ValueError(f"{path.name}: second lesson for topic {template.topic}")
         templates[template.topic] = template
