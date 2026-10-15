@@ -19,6 +19,10 @@ STATUS_BY_CODE = {
     "lesson_not_found": status.HTTP_404_NOT_FOUND,
     "quiz_already_submitted": status.HTTP_409_CONFLICT,
     "unsupported_language": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "audio_too_large": status.HTTP_413_CONTENT_TOO_LARGE,
+    "unsupported_audio_type": status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+    "rate_limited": status.HTTP_429_TOO_MANY_REQUESTS,
+    "speech_unavailable": status.HTTP_503_SERVICE_UNAVAILABLE,
 }
 
 

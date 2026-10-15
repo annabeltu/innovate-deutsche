@@ -46,3 +46,27 @@ class UnsupportedLanguageError(KompassError):
     """The language is valid but not offered for the chosen country."""
 
     code = "unsupported_language"
+
+
+class AudioTooLargeError(KompassError):
+    """The uploaded recording is over the configured size limit."""
+
+    code = "audio_too_large"
+
+
+class UnsupportedAudioTypeError(KompassError):
+    """The upload is not one of the audio formats the speech provider accepts."""
+
+    code = "unsupported_audio_type"
+
+
+class SpeechUnavailableError(KompassError):
+    """Speech is not configured, or the provider failed twice in a row."""
+
+    code = "speech_unavailable"
+
+
+class RateLimitedError(KompassError):
+    """The caller sent too many voice requests in the current window."""
+
+    code = "rate_limited"
