@@ -1,3 +1,4 @@
+import { experienceCopy } from "./experience";
 import { challengeCopy } from "./challenges";
 import { roadmapCopy } from "./roadmap";
 import { pathPreviewCopy } from "./path-preview";
@@ -108,6 +109,7 @@ void i18n.use(initReactI18next).init({
       translation: {
         ...en,
         ...confidenceCopy.en,
+        ...experienceCopy.en,
         pathPreview: pathPreviewCopy.en,
         roadmapScreen: roadmapCopy.en,
         challenge: challengeCopy.en,
@@ -117,6 +119,7 @@ void i18n.use(initReactI18next).init({
       translation: {
         ...es,
         ...confidenceCopy.es,
+        ...experienceCopy.es,
         pathPreview: pathPreviewCopy.es,
         roadmapScreen: roadmapCopy.es,
         challenge: challengeCopy.es,
@@ -126,6 +129,7 @@ void i18n.use(initReactI18next).init({
       translation: {
         ...sw,
         ...confidenceCopy.sw,
+        ...experienceCopy.sw,
         pathPreview: pathPreviewCopy.sw,
         roadmapScreen: roadmapCopy.sw,
         challenge: challengeCopy.sw,

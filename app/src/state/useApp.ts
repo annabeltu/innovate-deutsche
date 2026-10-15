@@ -1,3 +1,4 @@
+import { shopCatalog, TRANSFER_LESSON, type OutfitId } from "../shop/catalog";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,8 +21,17 @@ type State = {
   completed: string[];
   purchases: string[];
   bonus: string[];
+  pendingBonus: string | null;
+  equippedOutfit: OutfitId | null;
+  equipOutfit: (id: OutfitId) => void;
+  dismissBonus: () => void;
   set: (
-    value: Partial<Omit<State, "set" | "complete" | "buy" | "addBonus">>,
+    value: Partial<
+      Omit<
+        State,
+        "set" | "complete" | "buy" | "addBonus" | "equipOutfit" | "dismissBonus"
+      >
+    >,
   ) => void;
   complete: (id: string) => void;
   buy: (id: string, price: number) => boolean;
@@ -46,6 +56,12 @@ export const useApp = create<State>()(
       completed: [],
       purchases: [],
       bonus: [],
+      pendingBonus: null,
+      equippedOutfit: null,
+      equipOutfit: (id) => {
+        if (get().purchases.includes(id)) set({ equippedOutfit: id });
+      },
+      dismissBonus: () => set({ pendingBonus: null }),
       set: (value) => set(value),
       complete: (id) => {
         if (!get().completed.includes(id))
@@ -55,28 +71,42 @@ export const useApp = create<State>()(
           }));
       },
       buy: (id, price) => {
-        const s = get();
-        if (s.coins < price || s.purchases.includes(id)) return false;
+        const state = get();
+        const item = shopCatalog.find((candidate) => candidate.id === id);
+        if (
+          !item ||
+          item.price !== price ||
+          state.coins < price ||
+          state.purchases.includes(id) ||
+          (id === "transfer" && state.bonus.includes(TRANSFER_LESSON))
+        )
+          return false;
         set({
-          coins: s.coins - price,
-          purchases: [...s.purchases, id],
-          hearts: id === "heart" ? s.hearts + 1 : s.hearts,
+          coins: state.coins - price,
+          purchases: [...state.purchases, id],
+          hearts: id === "heart" ? state.hearts + 1 : state.hearts,
+          bonus:
+            id === "transfer" ? [...state.bonus, TRANSFER_LESSON] : state.bonus,
+          pendingBonus:
+            id === "transfer" ? TRANSFER_LESSON : state.pendingBonus,
         });
         return true;
       },
       addBonus: (title) => {
         if (!get().bonus.includes(title))
-          set((s) => ({ bonus: [...s.bonus, title] }));
+          set((s) => ({ bonus: [...s.bonus, title], pendingBonus: title }));
       },
     }),
     {
       name: "kompass-v1",
       storage: createJSONStorage(() => AsyncStorage),
-      version: 2,
+      version: 3,
       migrate: (persisted) => {
         const state = persisted as Partial<State>;
         return {
           ...state,
+          pendingBonus: state.pendingBonus ?? null,
+          equippedOutfit: state.equippedOutfit ?? null,
           language: ["en", "es", "sw"].includes(state.language ?? "")
             ? state.language
             : "en",

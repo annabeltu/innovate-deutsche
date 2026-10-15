@@ -125,8 +125,8 @@ export function Confidence() {
       </View>
       <Action
         title={t("build")}
-        hint={t("pathPreview.previewHint")}
-        onPress={() => router.push("/path")}
+        hint={t("quizStartHint")}
+        onPress={() => router.push("/quiz")}
       />
     </Screen>
   );

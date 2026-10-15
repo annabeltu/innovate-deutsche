@@ -71,7 +71,7 @@ export function Badge({
 }
 
 /** Persistent navigation matching the roadmap’s rounded bottom bar. */
-export function RoadmapNavigation() {
+export function RoadmapNavigation({ active = "path" }: { active?: string }) {
   const { t } = useTranslation();
   const items = [
     ["path", "home", "/roadmap"],
@@ -88,20 +88,25 @@ export function RoadmapNavigation() {
           accessibilityRole="tab"
           accessibilityLabel={t(name)}
           accessibilityHint={t("roadmapScreen.navHint", { screen: t(name) })}
-          accessibilityState={{ selected: name === "path" }}
+          accessibilityState={{ selected: name === active }}
           onPress={() => router.replace(route)}
           className="min-h-14 flex-1 items-center justify-center gap-1"
         >
           <Feather
             name={icon}
             size={24}
-            color={name === "path" ? colors.deepBlue : colors.midBlue}
+            color={name === active ? colors.deepBlue : colors.midBlue}
           />
           <Text
-            className={`text-xs font-bold ${name === "path" ? "text-brand" : "text-ink"}`}
+            className={`text-xs font-bold ${name === active ? "text-brand" : "text-ink"}`}
           >
             {t(name)}
           </Text>
+          <View
+            className={
+              name === active ? "h-1 w-10 rounded-full bg-brand" : "h-1 w-10"
+            }
+          />
         </Pressable>
       ))}
     </View>

@@ -1,3 +1,4 @@
+import { TransferLesson } from "../TransferLesson";
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { BudgetChallenge } from "../BudgetChallenge";
@@ -88,5 +89,21 @@ it("never awards duplicate coins for a completed challenge", () => {
   const replay = render(<ScamChallenge />);
   fireEvent.press(replay.getByRole("button", { name: "challenge.scam" }));
   expect(replay.getByText("challenge.replayed")).toBeTruthy();
+  expect(useApp.getState().coins).toBe(110);
+});
+
+it("completes the curated bonus lesson and rewards it only once", () => {
+  const screen = render(<TransferLesson id="bonus-0" />);
+  fireEvent.press(
+    screen.getByRole("radio", { name: "B. experience.transferB" }),
+  );
+  fireEvent.press(screen.getByRole("button", { name: "check" }));
+  expect(screen.getByText("experience.transferRetry")).toBeTruthy();
+  fireEvent.press(
+    screen.getByRole("radio", { name: "A. experience.transferA" }),
+  );
+  fireEvent.press(screen.getByRole("button", { name: "check" }));
+  expect(screen.getByText("challenge.transferSuccess")).toBeTruthy();
+  expect(useApp.getState().completed).toContain("bonus-0");
   expect(useApp.getState().coins).toBe(110);
 });

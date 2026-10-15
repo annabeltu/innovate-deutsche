@@ -197,12 +197,14 @@ export function Screen({
   footer,
   compact = false,
   background,
+  narrate = true,
 }: {
   children: React.ReactNode;
   dark?: boolean;
   footer?: React.ReactNode;
   compact?: boolean;
   background?: React.ReactNode;
+  narrate?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const readAloud = useApp((s) => s.readAloud);
@@ -214,11 +216,11 @@ export function Screen({
   }, [narration, language]);
   useFocusEffect(
     useCallback(() => {
-      if (readAloud) speak();
+      if (readAloud && narrate) speak();
       return () => {
         void Speech.stop();
       };
-    }, [readAloud, speak]),
+    }, [readAloud, narrate, speak]),
   );
   return (
     <LinearGradient
@@ -247,7 +249,7 @@ export function Screen({
           }}
         >
           {children}
-          {readAloud && (
+          {readAloud && narrate && (
             <Button secondary title="Repeat screen aloud" onPress={speak} />
           )}
         </View>

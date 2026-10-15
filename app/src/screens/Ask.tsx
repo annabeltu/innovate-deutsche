@@ -1,243 +1,238 @@
 import React, { useEffect, useState } from "react";
-import { TextInput, View, Platform } from "react-native";
-import { router } from "expo-router";
-import {
-  AudioModule,
-  RecordingPresets,
-  setAudioModeAsync,
-  useAudioRecorder,
-  useAudioRecorderState,
-} from "expo-audio";
+import { Pressable, Text, TextInput, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
+import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { Screen } from "../components/ui";
+import { AccountHeader } from "../components/AccountHeader";
+import { AppScenery } from "../components/AppScenery";
+import { KikoAvatar } from "../components/KikoAvatar";
+import { RoadmapNavigation } from "../components/RoadmapChrome";
+import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
-import {
-  Screen,
-  Txt,
-  Label,
-  Row,
-  Button,
-  Kiko,
-  Card,
-  c,
-} from "../components/ui";
-const example = "How do I send money to my mom in another country?";
+import { colors } from "../theme/tokens";
+import { TRANSFER_LESSON } from "../shop/catalog";
+import { useKikoAnswer } from "../api/assistant";
+import { useKikoRecorder } from "../voice/use-kiko-recorder";
+
+/** Voice and text assistant with an honest sample conversation and bonus-lesson action. */
 export default function Ask() {
-  const s = useApp();
+  const { t } = useTranslation();
+  const language = useApp((state) => state.language);
+  const country = useApp((state) => state.country);
+  const bonus = useApp((state) => state.bonus);
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [added, setAdded] = useState(false);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const recording = useAudioRecorderState(recorder);
+  const answer = useKikoAnswer();
+  const ask = (text: string, demo = !process.env.EXPO_PUBLIC_API_URL) => {
+    if (!text.trim()) return;
+    setQuestion(text);
+    answer.mutate({ question: text, country, language, demo });
+  };
+  const voice = useKikoRecorder((text) => ask(text, false));
+  const busy = answer.isPending || voice.busy;
+  const added = bonus.includes(TRANSFER_LESSON);
   useEffect(
     () => () => {
       void Speech.stop();
     },
     [],
   );
-  async function ask(text: string) {
-    if (!text.trim()) return;
-    setBusy(true);
-    setError("");
-    setAdded(false);
-    try {
-      const base = process.env.EXPO_PUBLIC_API_URL;
-      if (!base) {
-        setAnswer(
-          "You can use a trusted bank or mobile money service. Compare the fee, check the exchange rate, and never share your PIN.",
-        );
-        return;
-      }
-      const response = await fetch(`${base}/v1/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: text,
-          country: s.country,
-          language: s.language,
-        }),
-      });
-      if (!response.ok)
-        throw new Error("Kiko could not connect. Please try again.");
-      const data = await response.json();
-      if (typeof data.answer !== "string")
-        throw new Error("Kiko received an unexpected response.");
-      setAnswer(data.answer);
-      if (s.readAloud) Speech.speak(data.answer, { language: s.language });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function record() {
-    setError("");
-    try {
-      if (recording.isRecording) {
-        await recorder.stop();
-        await setAudioModeAsync({ allowsRecording: false });
-        const base = process.env.EXPO_PUBLIC_API_URL;
-        if (!base) {
-          setError(
-            "Recording saved for this session. Connect the voice API to transcribe it, or type your question below.",
-          );
-          return;
-        }
-        setBusy(true);
-        const body = new FormData();
-        if (Platform.OS === "web") {
-          const blob = await (await fetch(recorder.uri!)).blob();
-          body.append("file", blob, "question.webm");
-        } else
-          body.append("file", {
-            uri: recorder.uri,
-            name: "question.m4a",
-            type: "audio/mp4",
-          } as unknown as Blob);
-        const response = await fetch(`${base}/v1/voice/transcribe`, {
-          method: "POST",
-          body,
-        });
-        if (!response.ok)
-          throw new Error("Transcription failed. Please type your question.");
-        const data = await response.json();
-        if (typeof data.text !== "string")
-          throw new Error("No transcript was returned.");
-        setQuestion(data.text);
-        await ask(data.text);
-      } else {
-        const permission = await AudioModule.requestRecordingPermissionsAsync();
-        if (!permission.granted) {
-          setError(
-            "Microphone access is off. You can still type your question.",
-          );
-          return;
-        }
-        await setAudioModeAsync({
-          allowsRecording: true,
-          playsInSilentMode: true,
-        });
-        await recorder.prepareToRecordAsync();
-        recorder.record();
-      }
-    } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : "Recording failed. Please type your question.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
-    <Screen dark>
-      <Row>
-        <Txt style={{ color: c.white, fontSize: 22, fontWeight: "700" }}>
-          Ask Kiko
-        </Txt>
-        <Button
-          secondary
-          title="×"
-          onPress={() => router.replace("/roadmap")}
-        />
-      </Row>
-      <View style={{ paddingVertical: 20, gap: 20 }}>
-        <Kiko pulse={recording.isRecording} size={180} />
-        <Txt
-          accessibilityLiveRegion="polite"
-          style={{ textAlign: "center", color: c.lightBlue }}
+    <Screen
+      compact
+      narrate={!voice.isRecording}
+      dark
+      background={<AppScenery dark />}
+      footer={<RoadmapNavigation active="ask" />}
+    >
+      <AccountHeader dark />
+      <View className="items-center gap-1">
+        <Text
+          accessibilityRole="header"
+          className="text-4xl font-bold text-white"
         >
-          {recording.isRecording
-            ? "Kiko is listening…"
-            : busy
-              ? "Kiko is thinking…"
-              : "Big questions. Small, helpful steps."}
-        </Txt>
+          {t("askScreen.title")}
+        </Text>
+        <Text className="text-base text-white">{t("askScreen.subtitle")}</Text>
       </View>
-      <Button
-        secondary
-        title={
-          recording.isRecording ? "■ Stop recording" : "♩ Record a question"
-        }
-        disabled={busy}
-        onPress={() => void record()}
-      />
-      <TextInput
-        accessibilityLabel="Your question for Kiko"
-        placeholder={example}
-        placeholderTextColor={c.midBlue}
-        value={question}
-        onChangeText={setQuestion}
-        multiline
-        style={{
-          backgroundColor: c.white,
-          borderRadius: 20,
-          padding: 20,
-          minHeight: 110,
-          color: c.darkBlue,
-          fontSize: 18,
-          textAlignVertical: "top",
-        }}
-      />
-      <Button
-        title={busy ? "Thinking…" : "Ask Kiko →"}
-        disabled={busy || !question.trim() || recording.isRecording}
-        onPress={() => void ask(question)}
-      />
-      {!process.env.EXPO_PUBLIC_API_URL && (
-        <>
-          <Label light>DEMO MODE · SAMPLE ANSWER</Label>
-          <Button
-            secondary
-            title="Try the example question"
-            onPress={() => {
-              setQuestion(example);
-              void ask(example);
-            }}
-          />
-        </>
-      )}
-      {error && (
-        <Txt accessibilityLiveRegion="polite" style={{ color: "#FFE08A" }}>
-          {error}
-        </Txt>
-      )}
-      {answer && (
-        <>
-          <Card>
-            <Txt accessibilityLiveRegion="polite">{answer}</Txt>
-            <Label>
-              {process.env.EXPO_PUBLIC_API_URL
-                ? "KIKO RESPONSE"
-                : "SAMPLE · COUNTRY GUIDE"}
-            </Label>
-            <Button
-              secondary
-              title="Read answer aloud"
-              onPress={() => Speech.speak(answer, { language: s.language })}
+      <View className="flex-row gap-2">
+        {(
+          [
+            ["message-circle", "questionBenefit"],
+            ["book-open", "answerBenefit"],
+            ["zap", "lessonBenefit"],
+          ] as const
+        ).map(([icon, key]) => (
+          <View
+            key={key}
+            className="min-h-14 flex-1 flex-row items-center gap-2 rounded-2xl bg-brand/60 p-2"
+          >
+            <Feather name={icon} size={20} color={colors.white} />
+            <Text className="flex-1 text-xs leading-4 text-white">
+              {t(`askScreen.${key}`)}
+            </Text>
+          </View>
+        ))}
+      </View>
+      <View className="items-center">
+        <KikoAvatar size={125} />
+        <View className="-mt-3 flex-row items-center gap-4">
+          <Wave />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t(
+              voice.isRecording ? "askScreen.stop" : "askScreen.record",
+            )}
+            accessibilityHint={t("askScreen.recordHint")}
+            accessibilityState={{ disabled: busy }}
+            disabled={busy}
+            onPress={() => void voice.record()}
+            className="h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-brand"
+          >
+            <Feather
+              name={voice.isRecording ? "square" : "mic"}
+              size={42}
+              color={colors.white}
             />
-          </Card>
-          <Button
-            title={
-              added ? "✓ Added to your roadmap" : "✦ Turn this into a lesson"
-            }
-            disabled={added}
-            onPress={() => {
-              s.addBonus("Sending money abroad");
-              setAdded(true);
-            }}
-          />
+          </Pressable>
+          <Wave />
+        </View>
+        <Text
+          accessibilityLiveRegion="polite"
+          className="mt-2 text-sm text-white"
+        >
+          {t(
+            voice.isRecording
+              ? "askScreen.listening"
+              : busy
+                ? "askScreen.thinking"
+                : "askScreen.ready",
+          )}
+        </Text>
+      </View>
+      <View className="gap-3 rounded-3xl bg-brand/70 p-4">
+        <TextInput
+          accessibilityLabel={t("askScreen.input")}
+          accessibilityHint={t("askScreen.inputHint")}
+          placeholder={t("askScreen.exampleQuestion")}
+          placeholderTextColor={colors.lightBlue}
+          multiline
+          editable={!busy && !voice.isRecording}
+          value={question}
+          onChangeText={(text) => {
+            setQuestion(text);
+            if (answer.data) answer.reset();
+          }}
+          className="min-h-20 text-base leading-6 text-white"
+        />
+        <Action
+          title={t("askScreen.send")}
+          hint={t("askScreen.sendHint")}
+          disabled={busy || voice.isRecording || !question.trim()}
+          onPress={() => ask(question)}
+        />
+      </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t("askScreen.tryExample")}
+        accessibilityHint={t("askScreen.exampleHint")}
+        disabled={busy || voice.isRecording}
+        onPress={() => ask(t("askScreen.exampleQuestion"), true)}
+        className="min-h-11 items-center justify-center"
+      >
+        <Text className="font-semibold text-white underline">
+          {t("askScreen.tryExample")}
+        </Text>
+      </Pressable>
+      {(voice.error || answer.isError) && (
+        <Text
+          accessibilityRole="alert"
+          className="rounded-xl bg-white p-3 text-danger"
+        >
+          {voice.error || t("askScreen.connectionError")}
+        </Text>
+      )}
+      {answer.data && (
+        <>
+          <View className="gap-3 rounded-3xl bg-white p-4">
+            <View className="flex-row items-center justify-between">
+              <KikoAvatar size={48} />
+              <Text className="flex-1 px-2 text-xs font-bold text-brand">
+                {t(
+                  answer.data.sample
+                    ? "askScreen.sample"
+                    : "askScreen.response",
+                )}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t("askScreen.read")}
+                accessibilityHint={t("askScreen.readHint")}
+                onPress={() => {
+                  void Speech.stop();
+                  Speech.speak(answer.data?.answer ?? "", { language });
+                }}
+                className="min-h-11 min-w-11 items-center justify-center rounded-full bg-ice"
+              >
+                <Feather name="volume-2" size={22} color={colors.deepBlue} />
+              </Pressable>
+            </View>
+            <Text
+              accessibilityLiveRegion="polite"
+              className="text-base leading-6 text-ink"
+            >
+              {answer.data.answer}
+            </Text>
+          </View>
+          {answer.data.canAddLesson && (
+            <Action
+              title={t(added ? "askScreen.added" : "askScreen.turnIntoLesson")}
+              hint={t("askScreen.addHint")}
+              disabled={added}
+              onPress={() => useApp.getState().addBonus(TRANSFER_LESSON)}
+            />
+          )}
           {added && (
-            <Button
-              secondary
-              title="See my roadmap →"
+            <Action
+              title={t("roadmap")}
+              hint={t("challenge.backHint")}
               onPress={() => router.replace("/roadmap")}
             />
           )}
+          <View className="flex-row flex-wrap gap-2">
+            {["fees", "time", "safety"].map((key) => (
+              <Pressable
+                key={key}
+                accessibilityRole="button"
+                accessibilityLabel={t(`askScreen.${key}Question`)}
+                accessibilityHint={t("askScreen.exampleHint")}
+                disabled={busy || voice.isRecording}
+                onPress={() => ask(t(`askScreen.${key}Question`), true)}
+                className="min-h-11 flex-1 items-center justify-center rounded-full border border-white px-2 py-3"
+              >
+                <Text className="text-center text-xs text-white">
+                  {t(`askScreen.${key}Question`)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </>
       )}
     </Screen>
+  );
+}
+
+function Wave() {
+  return (
+    <View accessible={false} className="flex-row items-center gap-1">
+      {[12, 28, 46, 24, 12].map((height, index) => (
+        <View
+          key={index}
+          className="w-1 rounded-full bg-ice"
+          style={{ height }}
+        />
+      ))}
+    </View>
   );
 }

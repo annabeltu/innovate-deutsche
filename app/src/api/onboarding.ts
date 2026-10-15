@@ -7,7 +7,11 @@ import type {
 } from "../types/api";
 export const onboardingClient = new QueryClient();
 
-async function post<Response>(path: string, body: unknown): Promise<Response> {
+/** Shared JSON POST client for validated API services. */
+export async function postJson<Response>(
+  path: string,
+  body: unknown,
+): Promise<Response> {
   const baseUrl = process.env.EXPO_PUBLIC_API_URL;
   if (!baseUrl) throw new Error("apiUnavailable");
   const response = await fetch(`${baseUrl.replace(/\/$/, "")}/v1${path}`, {
@@ -23,7 +27,7 @@ export function useStartQuiz() {
   return useMutation(
     {
       mutationFn: (request: OnboardingRequest) =>
-        post<OnboardingResponse>("/onboarding", request),
+        postJson<OnboardingResponse>("/onboarding", request),
     },
     onboardingClient,
   );
@@ -33,7 +37,7 @@ export function useSubmitQuiz(quizId: string) {
   return useMutation(
     {
       mutationFn: (request: QuizSubmitRequest) =>
-        post<QuizSubmitResponse>(`/quiz/${quizId}/submit`, request),
+        postJson<QuizSubmitResponse>(`/quiz/${quizId}/submit`, request),
     },
     onboardingClient,
   );

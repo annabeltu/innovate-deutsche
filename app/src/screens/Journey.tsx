@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, AccessibilityInfo } from "react-native";
+import { View, AccessibilityInfo } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
@@ -29,9 +29,10 @@ export function Lesson() {
   const { t } = useTranslation();
   const scam = id === "scams";
   const budget = id === "budget";
+  const bonusTitle = s.bonus[Number(id.split("-")[1])];
   const title =
     lessons.find((l) => l.id === id)?.title ||
-    s.bonus[Number(id.split("-")[1])] ||
+    (bonusTitle?.startsWith("i18n:") ? t(bonusTitle.slice(5)) : bonusTitle) ||
     "Money basics";
   const correct = scam
     ? answer === "Scam"
@@ -297,93 +298,7 @@ export function Success() {
     </Screen>
   );
 }
-export function Shop() {
-  const s = useApp();
-  const { t } = useTranslation();
-  const [message, setMessage] = useState("");
-  const items = [
-    ["freeze", "❄️", "Streak Freeze", 40],
-    ["heart", "❤️", "Extra Heart", 60],
-    ["family", "👪", "Family Pack lessons", 120],
-    [
-      "outfit",
-      "✦",
-      `${{ US: "United States", MX: "Mexico", KE: "Kenya" }[s.country]} Kiko outfit`,
-      90,
-    ],
-  ] as const;
-  return (
-    <Screen footer={<Nav active="shop" />}>
-      <Label>{t("wallet")}</Label>
-      <Txt style={{ fontSize: 38, lineHeight: 48 }}>🟡 {s.coins}</Txt>
-      <View>
-        <Title>{t("shop")}</Title>
-        <Txt style={{ color: c.midBlue }}>{t("shopSub")}</Txt>
-      </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-        {items.map(([id, icon, name, price]) => (
-          <Pressable
-            key={id}
-            accessibilityRole="button"
-            accessibilityLabel={`${name}, ${price} coins${s.purchases.includes(id) ? ", owned" : ""}`}
-            accessibilityState={{
-              disabled: s.purchases.includes(id) || s.coins < price,
-            }}
-            onPress={() => {
-              if (s.purchases.includes(id)) return;
-              const ok = s.buy(id, price);
-              setMessage(
-                ok
-                  ? `${name} added to your collection!`
-                  : "You need more coins. Complete lessons to earn them.",
-              );
-            }}
-            style={{ width: "48%" }}
-          >
-            <Card style={{ minHeight: 215 }}>
-              <View
-                style={{
-                  backgroundColor: c.iceBlue,
-                  borderRadius: 20,
-                  padding: 14,
-                  alignSelf: "flex-start",
-                }}
-              >
-                <Txt style={{ fontSize: 34, lineHeight: 42 }}>{icon}</Txt>
-              </View>
-              <Txt style={{ fontWeight: "700" }}>{name}</Txt>
-              <Row style={{ marginTop: "auto" }}>
-                <Txt style={{ color: "#8C6200" }}>● {price}</Txt>
-                <Txt style={{ fontSize: 24 }}>
-                  {s.purchases.includes(id) ? "✓" : "+"}
-                </Txt>
-              </Row>
-            </Card>
-          </Pressable>
-        ))}
-      </View>
-      {message && <Txt accessibilityLiveRegion="polite">{message}</Txt>}
-      <Card style={{ backgroundColor: c.lightBlue, borderBottomWidth: 0 }}>
-        <Txt>
-          ♛ <Txt style={{ fontWeight: "700" }}>Every lesson is free.</Txt> Shop
-          items are just here to make your journey more fun.
-        </Txt>
-      </Card>
-      {s.purchases.length > 0 && (
-        <Card>
-          <Label>YOUR COLLECTION</Label>
-          {items
-            .filter(([id]) => s.purchases.includes(id))
-            .map(([id, icon, name]) => (
-              <Txt key={id}>
-                {icon} {name}
-              </Txt>
-            ))}
-        </Card>
-      )}
-    </Screen>
-  );
-}
+export { Shop } from "./Shop";
 export function Practice() {
   const s = useApp();
   return (

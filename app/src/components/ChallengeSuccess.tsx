@@ -13,7 +13,7 @@ export function ChallengeSuccess({
   kind,
   reward,
 }: {
-  kind: "budget" | "scam";
+  kind: "budget" | "scam" | "transfer";
   reward: number;
 }) {
   const insets = useSafeAreaInsets();
@@ -49,7 +49,7 @@ export function ChallengeSuccess({
             paddingLeft: 20 + insets.left,
             paddingRight: 20 + insets.right,
           }}
-          className={`max-h-[85%] w-full self-center rounded-t-3xl px-5 pb-7 pt-3 ${kind === "budget" ? "bg-positiveSurface" : "bg-warning"}`}
+          className={`max-h-[85%] w-full self-center rounded-t-3xl px-5 pb-7 pt-3 ${kind !== "scam" ? "bg-positiveSurface" : "bg-warning"}`}
         >
           <View className="mb-4 h-1 w-10 self-center rounded-full bg-ice" />
           <ScrollView contentContainerClassName="gap-4">
@@ -58,13 +58,13 @@ export function ChallengeSuccess({
                 <Text
                   accessibilityRole="header"
                   className={
-                    kind === "budget"
+                    kind !== "scam"
                       ? "text-5xl font-bold text-positive"
                       : "text-2xl font-bold text-danger"
                   }
                 >
                   {t(
-                    kind === "budget"
+                    kind !== "scam"
                       ? "challenge.nice"
                       : "challenge.scamHeading",
                   )}
@@ -75,8 +75,8 @@ export function ChallengeSuccess({
                 </Text>
               </View>
               <ChallengeArt
-                kind={kind === "budget" ? "success" : "scamSuccess"}
-                size={kind === "budget" ? 145 : 100}
+                kind={kind !== "scam" ? "success" : "scamSuccess"}
+                size={kind !== "scam" ? 145 : 100}
               />
             </View>
             {kind === "scam" && (

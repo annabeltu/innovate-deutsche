@@ -46,13 +46,13 @@ jest.mock("@react-native-community/slider", () => {
   return { __esModule: true, default: View };
 });
 
-it("moves a slider without changing other topics and opens the personalized path", () => {
+it("moves a slider without changing other topics and opens the quiz", () => {
   useApp.getState().set({ confidence: [0.1, 0.2, 0.3, 0.4, 0.5] });
   const screen = render(<Confidence />);
   fireEvent(screen.getByLabelText("confidenceTopics.saving"), "valueChange", 5);
   expect(useApp.getState().confidence).toEqual([0.1, 1, 0.3, 0.4, 0.5]);
   fireEvent.press(screen.getByRole("button", { name: "build" }));
-  expect(router.push).toHaveBeenCalledWith("/path");
+  expect(router.push).toHaveBeenCalledWith("/quiz");
   expect(useApp.getState().onboarded).toBe(false);
 });
 

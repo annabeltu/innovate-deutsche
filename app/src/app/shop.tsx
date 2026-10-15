@@ -1,1 +1,1 @@
-export { Shop as default } from "../screens/Journey";
+export { Shop as default } from "../screens/Shop";
