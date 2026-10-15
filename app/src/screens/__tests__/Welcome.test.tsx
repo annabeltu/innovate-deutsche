@@ -51,3 +51,14 @@ it("updates country names, accessibility controls and hints immediately from the
   expect(screen.getByLabelText("Soma kwa sauti")).toBeTruthy();
   expect(screen.queryByText("Leer en voz alta")).toBeNull();
 });
+
+it("shows the full USA scenery instead of a cropped reference with a sky strip", async () => {
+  useApp.getState().set({ ...useApp.getInitialState(), country: "US" });
+  await render(<Welcome />);
+  const scenery = screen.getByLabelText(
+    "Statue of Liberty and the New York skyline",
+  );
+  expect(scenery.props.source).toEqual(
+    require("../../../assets/welcome/us.png"),
+  );
+});
