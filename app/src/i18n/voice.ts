@@ -1,7 +1,9 @@
 /** Voice, read-aloud and Ask Kiko copy. Spoken text never says "tap", "swipe" or "see". */
 export const voiceCopy = {
   en: {
-    repeatScreen: "Repeat screen aloud",
+    readScreen: "Read this screen aloud",
+    stopReading: "Stop reading",
+    readScreenHint: "Reads everything on this screen in your language",
     buttonHint: "Activates this action",
     choiceHint: "Selects this option",
     kiko: "Kiko, your friendly compass guide",
@@ -39,7 +41,9 @@ export const voiceCopy = {
     },
   },
   es: {
-    repeatScreen: "Repetir la pantalla en voz alta",
+    readScreen: "Leer esta pantalla en voz alta",
+    stopReading: "Dejar de leer",
+    readScreenHint: "Lee todo lo que hay en esta pantalla en tu idioma",
     buttonHint: "Activa esta acción",
     choiceHint: "Selecciona esta opción",
     kiko: "Kiko, tu guía amigable",
@@ -78,7 +82,9 @@ export const voiceCopy = {
     },
   },
   sw: {
-    repeatScreen: "Soma skrini hii tena kwa sauti",
+    readScreen: "Soma skrini hii kwa sauti",
+    stopReading: "Acha kusoma",
+    readScreenHint: "Husoma kila kitu kwenye skrini hii kwa lugha yako",
     buttonHint: "Hufanya kitendo hiki",
     choiceHint: "Huchagua chaguo hili",
     kiko: "Kiko, kiongozi wako rafiki",

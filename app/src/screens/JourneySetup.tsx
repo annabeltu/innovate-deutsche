@@ -1,14 +1,17 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React from "react";
+import React, { useCallback } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useWindowSize } from "../hooks/use-window-size";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 import { KompassLogo } from "../components/KompassLogo";
+import { stopSpeaking } from "../voice/speech";
+import { useNarration } from "../voice/narration";
+import { ReadAloudDock } from "../components/ReadAloudBubble";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -29,6 +32,17 @@ export function JourneySetup() {
   const { t } = useTranslation();
   const { width, fontScale } = useWindowSize();
   const stacked = width < 320 || fontScale > 1.5 || s.large;
+  const narration = [
+    `${t("where")} ${t("now")}`,
+    ...stages.map(([, labelKey]) => t(`setup.stages.${labelKey}`)),
+    t("continue"),
+  ].join(". ");
+  useFocusEffect(
+    useCallback(() => {
+      useNarration.getState().setText(narration);
+      return stopSpeaking;
+    }, [narration]),
+  );
   return (
     <View style={styles.screen}>
       <View style={styles.page}>
@@ -98,6 +112,7 @@ export function JourneySetup() {
             ))}
           </View>
         </ScrollView>
+        <ReadAloudDock />
         <View style={[styles.footer, { paddingBottom: 28 + insets.bottom }]}>
           <Pressable
             accessibilityRole="button"

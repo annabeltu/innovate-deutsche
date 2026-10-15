@@ -6,7 +6,9 @@ import { useTranslation } from "react-i18next";
 import { Action } from "../screens/Confidence";
 import { ChallengeArt } from "./ChallengeArt";
 import { useApp } from "../state/useApp";
-import { speak, stopSpeaking } from "../voice/speech";
+import { stopSpeaking } from "../voice/speech";
+import { useNarration } from "../voice/narration";
+import { ReadAloudBubble } from "./ReadAloudBubble";
 
 /** Accessible success sheet; repeated completions never claim a second coin reward. */
 export function ChallengeSuccess({
@@ -19,8 +21,6 @@ export function ChallengeSuccess({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const readAloud = useApp((state) => state.readAloud);
-  const language = useApp((state) => state.language);
-  const country = useApp((state) => state.country);
   const finish = () => router.replace("/roadmap");
   const explanation = t(`challenge.${kind}Success`);
   const tip = t(`challenge.${kind}Tip`);
@@ -29,16 +29,26 @@ export function ChallengeSuccess({
       ? t("challenge.reward", { count: reward })
       : t("challenge.replayed");
   useEffect(() => {
-    if (readAloud)
-      void speak(
-        `${t("challenge.nice")}. ${coinText}. ${explanation}. ${tip}. ${t("continue")}.`,
-        { language, country },
-      );
+    const narration = `${t("challenge.nice")}. ${coinText}. ${explanation}. ${tip}. ${t("continue")}.`;
+    useNarration.getState().setText(narration);
     return stopSpeaking;
-  }, [readAloud, language, country, t, coinText, explanation, tip]);
+  }, [t, coinText, explanation, tip]);
   return (
     <Modal transparent visible animationType="none" onRequestClose={finish}>
       <View className="flex-1 justify-end bg-ink/60">
+        {/* The pop-up hides the screen's bubble, so it floats its own over the
+            dimmed backdrop, where it covers nothing. */}
+        {readAloud && (
+          <View
+            style={{
+              position: "absolute",
+              top: insets.top + 16,
+              right: insets.right + 16,
+            }}
+          >
+            <ReadAloudBubble />
+          </View>
+        )}
         <View
           accessibilityViewIsModal
           style={{

@@ -24,7 +24,9 @@ import { router, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { colors as c, regionAccents } from "../theme/tokens";
-import { speak as speakAloud, stopSpeaking } from "../voice/speech";
+import { stopSpeaking } from "../voice/speech";
+import { useNarration } from "../voice/narration";
+import { ReadAloudDock } from "./ReadAloudBubble";
 export { c };
 export function Txt({ style, ...props }: TextProps) {
   const large = useApp((s) => s.large);
@@ -215,20 +217,15 @@ export function Screen({
   compact?: boolean;
   background?: React.ReactNode;
 }) {
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const readAloud = useApp((s) => s.readAloud);
-  const language = useApp((s) => s.language);
-  const country = useApp((s) => s.country);
   const narration = spokenText([children, footer]);
-  const speak = useCallback(() => {
-    void speakAloud(narration, { language, country });
-  }, [narration, language, country]);
   useFocusEffect(
     useCallback(() => {
-      if (readAloud) speak();
+      // Nothing plays by itself: the read-aloud bubble reads this on request.
+      useNarration.getState().setText(narration);
       return stopSpeaking;
-    }, [readAloud, speak]),
+    }, [narration]),
   );
   return (
     <LinearGradient
@@ -242,7 +239,8 @@ export function Screen({
           paddingLeft: (compact ? 16 : 24) + insets.left,
           paddingRight: (compact ? 16 : 24) + insets.right,
           paddingTop: (compact ? 16 : 24) + insets.top,
-          paddingBottom: (compact ? 12 : 32) + (footer ? 0 : insets.bottom),
+          paddingBottom:
+            (compact ? 12 : 32) + (footer || readAloud ? 0 : insets.bottom),
           gap: 20,
           flexGrow: 1,
         }}
@@ -257,11 +255,9 @@ export function Screen({
           }}
         >
           {children}
-          {readAloud && (
-            <Button secondary title={t("voice.repeatScreen")} onPress={speak} />
-          )}
         </View>
       </ScrollView>
+      <ReadAloudDock bottomInset={!footer} />
       {footer && (
         <View
           style={{

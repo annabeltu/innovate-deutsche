@@ -5,6 +5,7 @@ import {
   type AudioPlayer,
 } from "expo-audio";
 import { speakUrl } from "../api/voice";
+import { useNarration } from "./narration";
 import type { Country, Language } from "../types/api";
 import { MAX_SPOKEN_TEXT_CHARS } from "../types/api";
 
@@ -81,6 +82,7 @@ let finishCurrent: (() => void) | null = null;
 /** Stop anything being read aloud by either engine. */
 export function stopSpeaking(): void {
   generation += 1;
+  useNarration.getState().setSpeaking(false);
   void Speech.stop();
   player?.remove();
   player = null;
@@ -100,6 +102,7 @@ export async function speak(
   stopSpeaking();
   const run = generation;
   if (!text.trim()) return;
+  useNarration.getState().setSpeaking(true);
   // Blind learners often leave the ringer switch on silent; speak anyway.
   await setAudioModeAsync({ playsInSilentMode: true }).catch(() => undefined);
   const chunks = chunkText(text);
@@ -107,10 +110,16 @@ export async function speak(
     const played = await playFromServer(chunks[index], options.language, run);
     if (run !== generation) return;
     if (!played) {
-      await speakOnDevice(chunks.slice(index).join(" "), options);
+      await speakOnDevice(chunks.slice(index).join(" "), options, run);
       return;
     }
   }
+  finished(run);
+}
+
+/** Mark speech finished, unless a newer speak() call has taken over. */
+function finished(run: number): void {
+  if (run === generation) useNarration.getState().setSpeaking(false);
 }
 
 /** Play one chunk of Gemini speech; false if the API could not produce it. */
@@ -143,12 +152,17 @@ async function playFromServer(
 async function speakOnDevice(
   text: string,
   { language, country }: SpeakOptions,
+  run: number,
 ): Promise<void> {
   const locale = speechLocale(language, country);
   const voices = await Speech.getAvailableVoicesAsync().catch(() => []);
   const voice = bestDeviceVoice(voices, locale);
+  const done = () => finished(run);
   Speech.speak(text, {
     language: voice?.language ?? locale,
     voice: voice?.identifier,
+    onDone: done,
+    onStopped: done,
+    onError: done,
   });
 }

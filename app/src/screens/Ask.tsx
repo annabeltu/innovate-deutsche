@@ -39,7 +39,6 @@ export default function Ask() {
   const { t } = useTranslation();
   const language = useApp((s) => s.language);
   const country = useApp((s) => s.country);
-  const readAloud = useApp((s) => s.readAloud);
   const addBonus = useApp((s) => s.addBonus);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -51,15 +50,11 @@ export default function Ask() {
   const demo = apiBaseUrl() === null;
   useEffect(() => stopSpeaking, []);
 
-  function say(text: string) {
-    if (readAloud) void speak(text, { language, country });
-  }
   function fail(key: string) {
     const message = t(
       `voice.errors.${KNOWN_ERRORS.includes(key) ? key : "apiUnavailable"}`,
     );
     setError(message);
-    say(message);
   }
   async function ask(text: string) {
     if (!text.trim()) return;
@@ -70,7 +65,6 @@ export default function Ask() {
       const reply =
         (await askKiko(text, country, language)) ?? t("voice.sampleAnswer");
       setAnswer(reply);
-      say(reply);
     } catch (e) {
       fail(e instanceof VoiceApiError ? e.code : "apiUnavailable");
     } finally {

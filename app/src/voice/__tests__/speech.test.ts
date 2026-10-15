@@ -109,20 +109,20 @@ describe("speak", () => {
     await speak("Hola", { language: "es", country: "MX" });
 
     expect(createAudioPlayer).not.toHaveBeenCalled();
-    expect(Speech.speak).toHaveBeenCalledWith("Hola", {
-      language: "es-MX",
-      voice: "es-mx-enhanced",
-    });
+    expect(Speech.speak).toHaveBeenCalledWith(
+      "Hola",
+      expect.objectContaining({ language: "es-MX", voice: "es-mx-enhanced" }),
+    );
   });
 
   it("uses the device voice without an API", async () => {
     await speak("Karibu", { language: "sw", country: "KE" });
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(Speech.speak).toHaveBeenCalledWith("Karibu", {
-      language: "sw-KE",
-      voice: undefined,
-    });
+    expect(Speech.speak).toHaveBeenCalledWith(
+      "Karibu",
+      expect.objectContaining({ language: "sw-KE", voice: undefined }),
+    );
   });
 
   it("does nothing for empty text", async () => {
@@ -136,5 +136,18 @@ describe("speak", () => {
     stopSpeaking();
 
     expect(Speech.stop).toHaveBeenCalled();
+  });
+});
+
+describe("speaking state", () => {
+  it("is on while Gemini audio plays and off once it finishes", async () => {
+    const { useNarration } =
+      jest.requireActual<typeof import("../narration")>("../narration");
+    process.env.EXPO_PUBLIC_API_URL = API;
+    fetchMock.mockResolvedValue({ ok: true });
+
+    await speak("Hola", { language: "es", country: "MX" });
+
+    expect(useNarration.getState().speaking).toBe(false);
   });
 });

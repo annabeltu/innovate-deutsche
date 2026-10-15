@@ -23,7 +23,9 @@ import {
 } from "../i18n/use-rotating-language";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
-import { speak as speakAloud, stopSpeaking } from "../voice/speech";
+import { stopSpeaking } from "../voice/speech";
+import { useNarration } from "../voice/narration";
+import { ReadAloudDock } from "../components/ReadAloudBubble";
 import { KompassLogo } from "../components/KompassLogo";
 
 const blue = "#0012B3";
@@ -85,17 +87,13 @@ export function Welcome() {
     fontSize: s.large ? 18 : 12.5 * unit,
     lineHeight: s.large ? 25 : 19 * unit,
   };
-  const speak = useCallback(() => {
-    void speakAloud(
-      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`setup.countries.${s.country}`)}. ${t("access")}. ${t("getStarted")}`,
-      { language: s.language, country: s.country },
-    );
-  }, [s.country, s.language, t]);
+  const narration = `Deutsche Bank Kompass. ${t("language")}. ${t("country")}. ${t(`setup.countries.${s.country}`)}. ${t("access")}. ${t("getStarted")}.`;
   useFocusEffect(
     useCallback(() => {
-      if (s.readAloud) speak();
+      // Nothing plays by itself: the read-aloud bubble reads this on request.
+      useNarration.getState().setText(narration);
       return stopSpeaking;
-    }, [s.readAloud, speak]),
+    }, [narration]),
   );
 
   return (
@@ -311,16 +309,6 @@ export function Welcome() {
                 </View>
               ))}
             </View>
-            {s.readAloud && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={spoken("voice.repeatScreen")}
-                onPress={speak}
-                style={styles.extraAction}
-              >
-                <Txt style={styles.option}>{shown("voice.repeatScreen")}</Txt>
-              </Pressable>
-            )}
             {s.onboarded && (
               <Pressable
                 accessibilityRole="button"
@@ -333,6 +321,7 @@ export function Welcome() {
           </View>
         </View>
       </ScrollView>
+      <ReadAloudDock />
       <View style={[styles.footer, { paddingBottom: 10 + insets.bottom }]}>
         <View
           style={{
