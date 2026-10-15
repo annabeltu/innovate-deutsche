@@ -10,6 +10,10 @@ export const colors = {
   white: "#FFFFFF",
   success: "#1FA463",
   error: "#E5484D",
+  warningSurface: "#FFE4DE",
+  successSurface: "#E1F5ED",
+  successText: "#076835",
+  errorText: "#A51D24",
   coinGold: "#F5B700",
 } as const;
 

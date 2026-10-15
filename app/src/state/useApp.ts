@@ -43,7 +43,7 @@ export const useApp = create<State>()(
       coins: 240,
       hearts: 5,
       streak: 7,
-      completed: ["accounts", "saving"],
+      completed: [],
       purchases: [],
       bonus: [],
       set: (value) => set(value),
