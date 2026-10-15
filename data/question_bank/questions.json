@@ -1,0 +1,817 @@
+{
+  "speech": {
+    "en": {
+      "intro": "Question {number} of {total}.",
+      "option": "Option {letter}: {text}.",
+      "instruction": "Say A, B or C to answer. Say repeat to hear it again."
+    },
+    "es": {
+      "intro": "Pregunta {number} de {total}.",
+      "option": "Opción {letter}: {text}.",
+      "instruction": "Di A, B o C para responder. Di repetir para escucharla otra vez."
+    },
+    "sw": {
+      "intro": "Swali la {number} kati ya {total}.",
+      "option": "Chaguo {letter}: {text}.",
+      "instruction": "Sema A, B au C kujibu. Sema rudia kusikia tena."
+    }
+  },
+  "questions": [
+    {
+      "id": "accounts_1a",
+      "topic": "accounts",
+      "difficulty": 1,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "What is a bank account mainly for?",
+          "options": [
+            "Keeping money safe and making payments",
+            "Only running a business",
+            "Getting free money from the bank"
+          ]
+        },
+        "es": {
+          "prompt": "¿Para qué sirve principalmente una cuenta bancaria?",
+          "options": [
+            "Guardar dinero de forma segura y hacer pagos",
+            "Solo para manejar un negocio",
+            "Recibir dinero gratis del banco"
+          ]
+        },
+        "sw": {
+          "prompt": "Akaunti ya benki ni ya nini hasa?",
+          "options": [
+            "Kuweka pesa salama na kufanya malipo",
+            "Kuendesha biashara tu",
+            "Kupata pesa za bure kutoka benki"
+          ]
+        }
+      }
+    },
+    {
+      "id": "accounts_1b",
+      "topic": "accounts",
+      "difficulty": 1,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "What do you usually need to open a bank account?",
+          "options": ["A letter from your employer", "{id_document}", "Nothing at all"]
+        },
+        "es": {
+          "prompt": "¿Qué necesitas normalmente para abrir una cuenta bancaria?",
+          "options": ["Una carta de tu jefe", "{id_document}", "Nada"]
+        },
+        "sw": {
+          "prompt": "Kwa kawaida unahitaji nini kufungua akaunti ya benki?",
+          "options": ["Barua kutoka kwa mwajiri wako", "{id_document}", "Hakuna kitu chochote"]
+        }
+      }
+    },
+    {
+      "id": "accounts_2a",
+      "topic": "accounts",
+      "difficulty": 2,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "What is a debit card?",
+          "options": [
+            "A card that lends you money",
+            "A gift card from a shop",
+            "A card that spends money already in your account"
+          ]
+        },
+        "es": {
+          "prompt": "¿Qué es una tarjeta de débito?",
+          "options": [
+            "Una tarjeta que te presta dinero",
+            "Una tarjeta de regalo de una tienda",
+            "Una tarjeta que usa el dinero que ya está en tu cuenta"
+          ]
+        },
+        "sw": {
+          "prompt": "Kadi ya debit ni nini?",
+          "options": [
+            "Kadi inayokukopesha pesa",
+            "Kadi ya zawadi kutoka dukani",
+            "Kadi inayotumia pesa ambazo tayari ziko kwenye akaunti yako"
+          ]
+        }
+      }
+    },
+    {
+      "id": "accounts_2b",
+      "topic": "accounts",
+      "difficulty": 2,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "What is a safe way to send money to family quickly?",
+          "options": [
+            "{mobile_money}",
+            "Cash in an envelope sent with a stranger",
+            "Giving your PIN to a friend so they can send it"
+          ]
+        },
+        "es": {
+          "prompt": "¿Cuál es una forma segura de enviar dinero rápido a tu familia?",
+          "options": [
+            "{mobile_money}",
+            "Efectivo en un sobre con un desconocido",
+            "Darle tu NIP a un amigo para que lo envíe"
+          ]
+        },
+        "sw": {
+          "prompt": "Ni njia gani salama ya kutuma pesa kwa familia haraka?",
+          "options": [
+            "{mobile_money}",
+            "Pesa taslimu kwenye bahasha kupitia mtu usiyemjua",
+            "Kumpa rafiki PIN yako ili azitume"
+          ]
+        }
+      }
+    },
+    {
+      "id": "accounts_3a",
+      "topic": "accounts",
+      "difficulty": 3,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Your account charges a monthly fee you cannot afford. What is the best first step?",
+          "options": [
+            "Close it and keep all your money at home",
+            "Ask the bank about a basic account with no monthly fee",
+            "Ignore the fee"
+          ]
+        },
+        "es": {
+          "prompt": "Tu cuenta cobra una comisión mensual que no puedes pagar. ¿Cuál es el mejor primer paso?",
+          "options": [
+            "Cerrarla y guardar todo tu dinero en casa",
+            "Preguntar al banco por una cuenta básica sin comisión mensual",
+            "Ignorar la comisión"
+          ]
+        },
+        "sw": {
+          "prompt": "Akaunti yako inatoza ada ya kila mwezi ambayo huwezi kumudu. Hatua bora ya kwanza ni ipi?",
+          "options": [
+            "Kuifunga na kuweka pesa zako zote nyumbani",
+            "Kuuliza benki kuhusu akaunti ya msingi isiyo na ada ya kila mwezi",
+            "Kupuuza ada hiyo"
+          ]
+        }
+      }
+    },
+    {
+      "id": "accounts_3b",
+      "topic": "accounts",
+      "difficulty": 3,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "What is an overdraft fee?",
+          "options": [
+            "A fee for spending more than is in your account",
+            "A reward for saving",
+            "The cost of opening an account"
+          ]
+        },
+        "es": {
+          "prompt": "¿Qué es una comisión por sobregiro?",
+          "options": [
+            "Un cargo por gastar más de lo que tienes en tu cuenta",
+            "Un premio por ahorrar",
+            "El costo de abrir una cuenta"
+          ]
+        },
+        "sw": {
+          "prompt": "Ada ya overdraft ni nini?",
+          "options": [
+            "Ada ya kutumia pesa zaidi ya zilizo kwenye akaunti yako",
+            "Zawadi ya kuweka akiba",
+            "Gharama ya kufungua akaunti"
+          ]
+        }
+      }
+    },
+    {
+      "id": "saving_1a",
+      "topic": "saving",
+      "difficulty": 1,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Where are your savings safest from theft and fire?",
+          "options": ["Under the mattress", "In an insured bank or savings account", "In your wallet"]
+        },
+        "es": {
+          "prompt": "¿Dónde están más seguros tus ahorros contra robos e incendios?",
+          "options": ["Debajo del colchón", "En un banco o cuenta de ahorro asegurada", "En tu cartera"]
+        },
+        "sw": {
+          "prompt": "Akiba yako iko salama zaidi dhidi ya wizi na moto wapi?",
+          "options": ["Chini ya godoro", "Katika benki au akaunti ya akiba yenye bima", "Kwenye pochi yako"]
+        }
+      }
+    },
+    {
+      "id": "saving_1b",
+      "topic": "saving",
+      "difficulty": 1,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "What is an emergency fund?",
+          "options": ["Money saved for unexpected costs", "Money saved for a holiday", "A loan from the bank"]
+        },
+        "es": {
+          "prompt": "¿Qué es un fondo de emergencia?",
+          "options": [
+            "Dinero ahorrado para gastos inesperados",
+            "Dinero ahorrado para vacaciones",
+            "Un préstamo del banco"
+          ]
+        },
+        "sw": {
+          "prompt": "Akiba ya dharura ni nini?",
+          "options": [
+            "Pesa zilizowekwa kwa gharama zisizotarajiwa",
+            "Pesa zilizowekwa kwa ajili ya likizo",
+            "Mkopo kutoka benki"
+          ]
+        }
+      }
+    },
+    {
+      "id": "saving_2a",
+      "topic": "saving",
+      "difficulty": 2,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "If your bank fails, what protects your savings?",
+          "options": [
+            "Nothing protects them",
+            "They are always fully protected, whatever the amount",
+            "{deposit_insurer}, up to a set limit"
+          ]
+        },
+        "es": {
+          "prompt": "Si tu banco quiebra, ¿qué protege tus ahorros?",
+          "options": [
+            "Nada los protege",
+            "Siempre están protegidos por completo, sin importar la cantidad",
+            "{deposit_insurer}, hasta un límite establecido"
+          ]
+        },
+        "sw": {
+          "prompt": "Benki yako ikifilisika, nini kinalinda akiba yako?",
+          "options": [
+            "Hakuna kinachoilinda",
+            "Inalindwa yote kila wakati, bila kujali kiasi",
+            "{deposit_insurer}, hadi kiwango fulani"
+          ]
+        }
+      }
+    },
+    {
+      "id": "saving_2b",
+      "topic": "saving",
+      "difficulty": 2,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "You save {cur}100 every week. How much do you have after 10 weeks?",
+          "options": ["{cur}1,000", "{cur}110", "{cur}10,000"]
+        },
+        "es": {
+          "prompt": "Ahorras {cur}100 cada semana. ¿Cuánto tienes después de 10 semanas?",
+          "options": ["{cur}1,000", "{cur}110", "{cur}10,000"]
+        },
+        "sw": {
+          "prompt": "Unaweka akiba ya {cur}100 kila wiki. Utakuwa na kiasi gani baada ya wiki 10?",
+          "options": ["{cur}1,000", "{cur}110", "{cur}10,000"]
+        }
+      }
+    },
+    {
+      "id": "saving_3a",
+      "topic": "saving",
+      "difficulty": 3,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "Your savings earn 5% interest a year, but prices rise 7% a year. What happens to what your savings can buy?",
+          "options": ["It grows", "It stays the same", "It shrinks"]
+        },
+        "es": {
+          "prompt": "Tus ahorros ganan 5% de interés al año, pero los precios suben 7% al año. ¿Qué pasa con lo que puedes comprar con tus ahorros?",
+          "options": ["Aumenta", "Se queda igual", "Disminuye"]
+        },
+        "sw": {
+          "prompt": "Akiba yako inapata riba ya 5% kwa mwaka, lakini bei zinapanda 7% kwa mwaka. Nini kinatokea kwa kile akiba yako inaweza kununua?",
+          "options": ["Kinaongezeka", "Kinabaki vile vile", "Kinapungua"]
+        }
+      }
+    },
+    {
+      "id": "saving_3b",
+      "topic": "saving",
+      "difficulty": 3,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "In a {savings_group}, members pay in and take turns receiving the pot. What is the main risk?",
+          "options": [
+            "A member stops paying or the money is lost",
+            "The government takes all of it",
+            "There is no risk at all"
+          ]
+        },
+        "es": {
+          "prompt": "En una {savings_group}, los miembros aportan dinero y se turnan para recibir el total. ¿Cuál es el principal riesgo?",
+          "options": [
+            "Que alguien deje de pagar o que se pierda el dinero",
+            "Que el gobierno se quede con todo",
+            "No hay ningún riesgo"
+          ]
+        },
+        "sw": {
+          "prompt": "Katika {savings_group}, wanachama huchangia pesa na kupokea mchango kwa zamu. Hatari kubwa ni ipi?",
+          "options": [
+            "Mwanachama akaacha kulipa au pesa zikapotea",
+            "Serikali ikachukua pesa zote",
+            "Hakuna hatari yoyote"
+          ]
+        }
+      }
+    },
+    {
+      "id": "borrowing_1a",
+      "topic": "borrowing",
+      "difficulty": 1,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "What is interest on a loan?",
+          "options": ["The extra money you pay to borrow", "A discount on the loan", "Money the lender pays you"]
+        },
+        "es": {
+          "prompt": "¿Qué es el interés de un préstamo?",
+          "options": [
+            "El dinero extra que pagas por pedir prestado",
+            "Un descuento en el préstamo",
+            "Dinero que el prestamista te paga"
+          ]
+        },
+        "sw": {
+          "prompt": "Riba ya mkopo ni nini?",
+          "options": [
+            "Pesa za ziada unazolipa ili kukopa",
+            "Punguzo kwenye mkopo",
+            "Pesa ambazo mkopeshaji anakulipa"
+          ]
+        }
+      }
+    },
+    {
+      "id": "borrowing_1b",
+      "topic": "borrowing",
+      "difficulty": 1,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Before you sign for a loan, what should you do?",
+          "options": [
+            "Sign quickly before the offer ends",
+            "Check the total cost and the repayment dates",
+            "Let a friend sign for you"
+          ]
+        },
+        "es": {
+          "prompt": "Antes de firmar un préstamo, ¿qué debes hacer?",
+          "options": [
+            "Firmar rápido antes de que termine la oferta",
+            "Revisar el costo total y las fechas de pago",
+            "Dejar que un amigo firme por ti"
+          ]
+        },
+        "sw": {
+          "prompt": "Kabla ya kusaini mkopo, unapaswa kufanya nini?",
+          "options": [
+            "Kusaini haraka kabla ofa haijaisha",
+            "Kuangalia gharama yote na tarehe za kulipa",
+            "Kumwachia rafiki asaini kwa niaba yako"
+          ]
+        }
+      }
+    },
+    {
+      "id": "borrowing_2a",
+      "topic": "borrowing",
+      "difficulty": 2,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "You borrow {cur}1,000 at 10% interest for one month. How much do you pay back?",
+          "options": ["{cur}1,000", "{cur}1,010", "{cur}1,100"]
+        },
+        "es": {
+          "prompt": "Pides prestados {cur}1,000 con 10% de interés por un mes. ¿Cuánto devuelves?",
+          "options": ["{cur}1,000", "{cur}1,010", "{cur}1,100"]
+        },
+        "sw": {
+          "prompt": "Unakopa {cur}1,000 kwa riba ya 10% kwa mwezi mmoja. Utarudisha kiasi gani?",
+          "options": ["{cur}1,000", "{cur}1,010", "{cur}1,100"]
+        }
+      }
+    },
+    {
+      "id": "borrowing_2b",
+      "topic": "borrowing",
+      "difficulty": 2,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "What do credit bureaus such as {credit_bureau} record about you?",
+          "options": ["Your salary and taxes", "Your history of borrowing and repaying", "Your bank PIN"]
+        },
+        "es": {
+          "prompt": "¿Qué registran sobre ti los burós de crédito como {credit_bureau}?",
+          "options": ["Tu salario y tus impuestos", "Tu historial de préstamos y pagos", "Tu NIP bancario"]
+        },
+        "sw": {
+          "prompt": "Ofisi za mikopo kama {credit_bureau} hurekodi nini kukuhusu?",
+          "options": ["Mshahara na kodi zako", "Historia yako ya kukopa na kulipa", "PIN yako ya benki"]
+        }
+      }
+    },
+    {
+      "id": "borrowing_3a",
+      "topic": "borrowing",
+      "difficulty": 3,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Loan A costs 3% a month. Loan B costs 30% a year. Which is cheaper over one year?",
+          "options": ["Loan A", "Loan B", "They cost the same"]
+        },
+        "es": {
+          "prompt": "El préstamo A cuesta 3% al mes. El préstamo B cuesta 30% al año. ¿Cuál es más barato en un año?",
+          "options": ["El préstamo A", "El préstamo B", "Cuestan lo mismo"]
+        },
+        "sw": {
+          "prompt": "Mkopo A una gharama ya 3% kwa mwezi. Mkopo B una gharama ya 30% kwa mwaka. Upi ni nafuu zaidi kwa mwaka mmoja?",
+          "options": ["Mkopo A", "Mkopo B", "Gharama ni sawa"]
+        }
+      }
+    },
+    {
+      "id": "borrowing_3b",
+      "topic": "borrowing",
+      "difficulty": 3,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "Why can a loan from {informal_lender} be risky?",
+          "options": [
+            "Interest and penalties are often very high and unclear",
+            "They report you to the tax office",
+            "They never charge interest"
+          ]
+        },
+        "es": {
+          "prompt": "¿Por qué puede ser riesgoso un préstamo de {informal_lender}?",
+          "options": [
+            "Los intereses y multas suelen ser muy altos y poco claros",
+            "Te reportan a la oficina de impuestos",
+            "Nunca cobran intereses"
+          ]
+        },
+        "sw": {
+          "prompt": "Kwa nini mkopo kutoka kwa {informal_lender} unaweza kuwa hatari?",
+          "options": [
+            "Riba na faini mara nyingi ni kubwa sana na hazieleweki",
+            "Wanakuripoti kwa mamlaka ya kodi",
+            "Hawatozi riba kamwe"
+          ]
+        }
+      }
+    },
+    {
+      "id": "scams_1a",
+      "topic": "scams",
+      "difficulty": 1,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Someone calls saying they are from your bank and asks for your PIN. What should you do?",
+          "options": [
+            "Give it so they can help you",
+            "Hang up and call the number on your card",
+            "Give only half of it"
+          ]
+        },
+        "es": {
+          "prompt": "Alguien llama diciendo que es de tu banco y te pide tu NIP. ¿Qué debes hacer?",
+          "options": [
+            "Dárselo para que te ayude",
+            "Colgar y llamar al número de tu tarjeta",
+            "Darle solo la mitad"
+          ]
+        },
+        "sw": {
+          "prompt": "Mtu anakupigia simu akisema ni wa benki yako na anaomba PIN yako. Ufanye nini?",
+          "options": [
+            "Umpe ili akusaidie",
+            "Kata simu na upige namba iliyo kwenye kadi yako",
+            "Umpe nusu yake tu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "scams_1b",
+      "topic": "scams",
+      "difficulty": 1,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "A message says you won a prize, but you must pay a fee to get it. This is most likely:",
+          "options": ["A scam", "A real prize", "A special bank offer"]
+        },
+        "es": {
+          "prompt": "Un mensaje dice que ganaste un premio, pero debes pagar una cuota para recibirlo. Lo más probable es que sea:",
+          "options": ["Una estafa", "Un premio real", "Una oferta especial del banco"]
+        },
+        "sw": {
+          "prompt": "Ujumbe unasema umeshinda zawadi, lakini lazima ulipe ada ili uipate. Kuna uwezekano mkubwa kuwa huu ni:",
+          "options": ["Ulaghai", "Zawadi ya kweli", "Ofa maalum ya benki"]
+        }
+      }
+    },
+    {
+      "id": "scams_2a",
+      "topic": "scams",
+      "difficulty": 2,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "You get a text with a link to 'unlock your account'. What is safest?",
+          "options": [
+            "Open the link",
+            "Reply with your details",
+            "Open your bank's official app or call your bank yourself"
+          ]
+        },
+        "es": {
+          "prompt": "Recibes un mensaje con un enlace para 'desbloquear tu cuenta'. ¿Qué es lo más seguro?",
+          "options": [
+            "Abrir el enlace",
+            "Responder con tus datos",
+            "Abrir la app oficial de tu banco o llamar tú mismo a tu banco"
+          ]
+        },
+        "sw": {
+          "prompt": "Unapokea ujumbe wenye kiungo cha 'kufungua akaunti yako'. Nini ni salama zaidi?",
+          "options": [
+            "Kufungua kiungo hicho",
+            "Kujibu ukitoa taarifa zako",
+            "Kufungua programu rasmi ya benki yako au kupiga simu benki wewe mwenyewe"
+          ]
+        }
+      }
+    },
+    {
+      "id": "scams_2b",
+      "topic": "scams",
+      "difficulty": 2,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Someone sends you money 'by mistake' with {mobile_money} and asks you to send it to a different number. What should you do?",
+          "options": [
+            "Send it to the new number quickly",
+            "Check your real balance and contact your provider first",
+            "Share your PIN so they can reverse it"
+          ]
+        },
+        "es": {
+          "prompt": "Alguien te envía dinero 'por error' con {mobile_money} y te pide enviarlo a otro número. ¿Qué debes hacer?",
+          "options": [
+            "Enviarlo rápido al nuevo número",
+            "Revisar tu saldo real y contactar primero a tu banco o proveedor",
+            "Compartir tu NIP para que lo regresen"
+          ]
+        },
+        "sw": {
+          "prompt": "Mtu anakutumia pesa 'kwa makosa' kupitia {mobile_money} na anakuomba uzitume kwa namba nyingine. Ufanye nini?",
+          "options": [
+            "Kuzituma haraka kwa namba hiyo mpya",
+            "Kuangalia salio lako halisi na kuwasiliana na mtoa huduma wako kwanza",
+            "Kutoa PIN yako ili wazirudishe"
+          ]
+        }
+      }
+    },
+    {
+      "id": "scams_3a",
+      "topic": "scams",
+      "difficulty": 3,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "An investment promises to double your money in one month with no risk. What is the biggest warning sign?",
+          "options": ["Guaranteed high returns with no risk", "It has a website", "A friend told you about it"]
+        },
+        "es": {
+          "prompt": "Una inversión promete duplicar tu dinero en un mes sin riesgo. ¿Cuál es la mayor señal de alerta?",
+          "options": ["Ganancias altas garantizadas sin riesgo", "Tiene un sitio web", "Te lo contó un amigo"]
+        },
+        "sw": {
+          "prompt": "Uwekezaji unaahidi kuongeza pesa zako mara mbili ndani ya mwezi mmoja bila hatari. Ishara kubwa ya hatari ni ipi?",
+          "options": ["Faida kubwa iliyohakikishwa bila hatari", "Una tovuti", "Rafiki alikuambia kuuhusu"]
+        }
+      }
+    },
+    {
+      "id": "scams_3b",
+      "topic": "scams",
+      "difficulty": 3,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "You think you were scammed. Who should you report it to?",
+          "options": [
+            "Nobody, the money is gone",
+            "The person who scammed you",
+            "Your bank and {scam_report_agency}"
+          ]
+        },
+        "es": {
+          "prompt": "Crees que te estafaron. ¿A quién debes reportarlo?",
+          "options": [
+            "A nadie, el dinero ya se perdió",
+            "A la persona que te estafó",
+            "A tu banco y a {scam_report_agency}"
+          ]
+        },
+        "sw": {
+          "prompt": "Unadhani umetapeliwa. Unapaswa kuripoti kwa nani?",
+          "options": [
+            "Hakuna, pesa zimeshapotea",
+            "Kwa mtu aliyekutapeli",
+            "Kwa benki yako na {scam_report_agency}"
+          ]
+        }
+      }
+    },
+    {
+      "id": "budget_1a",
+      "topic": "budget",
+      "difficulty": 1,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "What is a budget?",
+          "options": ["A plan for how you will use your money", "A type of loan", "A bank fee"]
+        },
+        "es": {
+          "prompt": "¿Qué es un presupuesto?",
+          "options": ["Un plan de cómo usarás tu dinero", "Un tipo de préstamo", "Una comisión del banco"]
+        },
+        "sw": {
+          "prompt": "Bajeti ni nini?",
+          "options": ["Mpango wa jinsi utakavyotumia pesa zako", "Aina ya mkopo", "Ada ya benki"]
+        }
+      }
+    },
+    {
+      "id": "budget_1b",
+      "topic": "budget",
+      "difficulty": 1,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Which of these is a need, not a want?",
+          "options": ["A new phone case", "Rent or housing", "Eating out"]
+        },
+        "es": {
+          "prompt": "¿Cuál de estos es una necesidad y no un gusto?",
+          "options": ["Una funda nueva para el celular", "La renta o vivienda", "Comer fuera"]
+        },
+        "sw": {
+          "prompt": "Kipi kati ya hivi ni hitaji, si tamaa?",
+          "options": ["Kava mpya ya simu", "Kodi ya nyumba au makazi", "Kula hotelini"]
+        }
+      }
+    },
+    {
+      "id": "budget_2a",
+      "topic": "budget",
+      "difficulty": 2,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "You earn {cur}1,000 a month and spend {cur}1,100. What happens?",
+          "options": ["You save {cur}100 each month", "You are {cur}100 short each month", "Nothing changes"]
+        },
+        "es": {
+          "prompt": "Ganas {cur}1,000 al mes y gastas {cur}1,100. ¿Qué pasa?",
+          "options": ["Ahorras {cur}100 cada mes", "Te faltan {cur}100 cada mes", "No cambia nada"]
+        },
+        "sw": {
+          "prompt": "Unapata {cur}1,000 kwa mwezi na unatumia {cur}1,100. Nini kinatokea?",
+          "options": [
+            "Unaweka akiba ya {cur}100 kila mwezi",
+            "Unapungukiwa na {cur}100 kila mwezi",
+            "Hakuna kinachobadilika"
+          ]
+        }
+      }
+    },
+    {
+      "id": "budget_2b",
+      "topic": "budget",
+      "difficulty": 2,
+      "correct": "a",
+      "text": {
+        "en": {
+          "prompt": "Your income changes from month to month. What is a good budgeting habit?",
+          "options": ["Plan around your lowest usual month", "Plan around your best month", "Do not plan at all"]
+        },
+        "es": {
+          "prompt": "Tus ingresos cambian cada mes. ¿Qué es un buen hábito para tu presupuesto?",
+          "options": [
+            "Planear con base en tu mes más bajo de costumbre",
+            "Planear con base en tu mejor mes",
+            "No planear nada"
+          ]
+        },
+        "sw": {
+          "prompt": "Kipato chako hubadilika kila mwezi. Tabia nzuri ya bajeti ni ipi?",
+          "options": [
+            "Kupanga kulingana na mwezi wako wa kawaida wenye kipato kidogo zaidi",
+            "Kupanga kulingana na mwezi wako bora",
+            "Kutopanga kabisa"
+          ]
+        }
+      }
+    },
+    {
+      "id": "budget_3a",
+      "topic": "budget",
+      "difficulty": 3,
+      "correct": "b",
+      "text": {
+        "en": {
+          "prompt": "Many people move money to savings as soon as they are paid. Why?",
+          "options": [
+            "Banks require it",
+            "What is left at the end of the month is often nothing",
+            "Savings earn more at the start of the month"
+          ]
+        },
+        "es": {
+          "prompt": "Muchas personas pasan dinero a sus ahorros en cuanto les pagan. ¿Por qué?",
+          "options": [
+            "Los bancos lo exigen",
+            "Lo que queda a fin de mes muchas veces es nada",
+            "Los ahorros ganan más a principio de mes"
+          ]
+        },
+        "sw": {
+          "prompt": "Watu wengi huweka pesa kwenye akiba mara tu wanapolipwa. Kwa nini?",
+          "options": [
+            "Benki zinalazimisha",
+            "Mara nyingi hakuna kinachobaki mwisho wa mwezi",
+            "Akiba hupata faida zaidi mwanzoni mwa mwezi"
+          ]
+        }
+      }
+    },
+    {
+      "id": "budget_3b",
+      "topic": "budget",
+      "difficulty": 3,
+      "correct": "c",
+      "text": {
+        "en": {
+          "prompt": "How many months of essential costs is it often suggested to keep in an emergency fund?",
+          "options": ["One week", "Five years", "Three to six months"]
+        },
+        "es": {
+          "prompt": "¿Cuántos meses de gastos básicos se suele recomendar tener en un fondo de emergencia?",
+          "options": ["Una semana", "Cinco años", "De tres a seis meses"]
+        },
+        "sw": {
+          "prompt": "Mara nyingi inapendekezwa uwe na gharama za msingi za miezi mingapi kwenye akiba ya dharura?",
+          "options": ["Wiki moja", "Miaka mitano", "Miezi mitatu hadi sita"]
+        }
+      }
+    }
+  ]
+}
