@@ -46,3 +46,33 @@ class UnsupportedLanguageError(KompassError):
     """The language is valid but not offered for the chosen country."""
 
     code = "unsupported_language"
+
+
+class UnsupportedAudioError(KompassError):
+    """The uploaded recording is not an audio type speech-to-text accepts."""
+
+    code = "unsupported_audio"
+
+
+class AudioTooLargeError(KompassError):
+    """The uploaded recording is over the configured size limit."""
+
+    code = "audio_too_large"
+
+
+class VoiceUnavailableError(KompassError):
+    """No speech provider is configured; the app falls back to on-device speech."""
+
+    code = "voice_unavailable"
+
+
+class VoiceProviderError(KompassError):
+    """The speech provider rejected the request or returned something unusable."""
+
+    code = "voice_provider_error"
+
+
+class VoiceProviderTimeoutError(KompassError):
+    """The speech provider did not answer in time."""
+
+    code = "voice_provider_timeout"

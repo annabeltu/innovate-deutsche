@@ -60,3 +60,14 @@ class IntentResponse(BaseModel):
     normalized_text: str = Field(
         description="Lowercased, accent- and punctuation-free text that was matched."
     )
+
+
+class TranscriptionResponse(BaseModel):
+    """Returned by POST /v1/voice/transcribe."""
+
+    text: str = Field(description="What the learner said; empty if nothing was heard.")
+    language: Language
+    is_fixture: bool = Field(
+        default=False,
+        description="True only in development when no speech-to-text key is set.",
+    )

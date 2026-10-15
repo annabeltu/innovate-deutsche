@@ -3,9 +3,11 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+TEN_MEGABYTES = 10 * 1024 * 1024
 
 
 class Settings(BaseSettings):
@@ -15,6 +17,16 @@ class Settings(BaseSettings):
 
     database_path: Path = Path("kompass.db")
     question_bank_dir: Path = REPO_ROOT / "data" / "question_bank"
+
+    # Voice: speech-to-text (any OpenAI-compatible transcription endpoint).
+    whisper_api_key: SecretStr | None = None
+    whisper_api_url: str = "https://api.openai.com/v1/audio/transcriptions"
+    whisper_model: str = "whisper-1"
+    # Development only: return a labeled fixture transcript when no key is set.
+    voice_dev_fixtures: bool = False
+    voice_max_audio_bytes: int = TEN_MEGABYTES
+
+    voice_provider_timeout_seconds: float = 20.0
 
 
 @lru_cache
