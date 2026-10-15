@@ -138,19 +138,22 @@ export function Choice({
   onPress,
   icon,
   style,
+  accessibilityLabel,
 }: {
   title: string;
   selected?: boolean;
   onPress: () => void;
   icon?: string;
   style?: ViewStyle;
+  /** Spoken name when the visible title is a symbol, such as "‹". */
+  accessibilityLabel?: string;
 }) {
   const { t } = useTranslation();
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={title}
+      accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ selected }}
       accessibilityHint={t("voice.choiceHint")}
       style={[

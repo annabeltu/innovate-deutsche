@@ -219,12 +219,12 @@ export function Roadmap() {
         <Pressable
           key={`${title}-${index}`}
           accessibilityRole="button"
-          accessibilityLabel={title}
+          accessibilityLabel={t(title)}
           accessibilityHint={t("roadmapScreen.lessonHint")}
           onPress={() => openLesson(`bonus-${index}`)}
           className="min-h-14 rounded-2xl bg-white p-3"
         >
-          <Text className="font-bold text-ink">✦ {title}</Text>
+          <Text className="font-bold text-ink">✦ {t(title)}</Text>
           <Text className="text-xs text-brand">{t("roadmapScreen.bonus")}</Text>
         </Pressable>
       ))}

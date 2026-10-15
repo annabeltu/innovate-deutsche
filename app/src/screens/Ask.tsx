@@ -32,7 +32,8 @@ const KNOWN_ERRORS = [
   "rate_limited",
   "speech_unavailable",
 ];
-const BONUS_TITLE = "Sending money abroad";
+/** Saved as a translation key so the roadmap shows it in the current language. */
+const BONUS_TITLE = "journey.lessons.send";
 
 export default function Ask() {
   const { t } = useTranslation();

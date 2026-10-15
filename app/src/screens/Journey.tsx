@@ -20,6 +20,8 @@ import {
 } from "../components/ui";
 import { lessons } from "./Onboarding";
 const money = { US: "$", MX: "MX$", KE: "KSh" };
+/** Matches the reward granted by useApp.complete. */
+const COINS_PER_LESSON = 10;
 export { Roadmap } from "./Roadmap";
 export function Lesson() {
   const { id = "budget" } = useLocalSearchParams<{ id: string }>();
@@ -29,10 +31,16 @@ export function Lesson() {
   const { t } = useTranslation();
   const scam = id === "scams";
   const budget = id === "budget";
-  const title =
-    lessons.find((l) => l.id === id)?.title ||
-    s.bonus[Number(id.split("-")[1])] ||
-    "Money basics";
+  const tipKey = id.startsWith("bonus")
+    ? "bonus"
+    : id === "saving" || id === "borrowing"
+      ? id
+      : "accounts";
+  const safeKey = tipKey === "saving" ? "accounts" : tipKey;
+  const riskyKey = id === "borrowing" ? "borrowing" : "accounts";
+  const title = lessons.some((l) => l.id === id)
+    ? t(`journey.lessons.${id}`)
+    : t(s.bonus[Number(id.split("-")[1])] ?? "journey.lessons.fallback");
   const correct = scam
     ? answer === "Scam"
     : budget
@@ -53,9 +61,17 @@ export function Lesson() {
   return (
     <Screen>
       <Row>
-        <Choice title="‹" onPress={() => router.replace("/roadmap")} />
+        <Choice
+          title="‹"
+          accessibilityLabel={t("journey.lesson.back")}
+          onPress={() => router.replace("/roadmap")}
+        />
         <Progress value={0.6} />
-        <Txt>♥ {s.hearts}</Txt>
+        <Txt
+          accessibilityLabel={t("journey.lesson.hearts", { count: s.hearts })}
+        >
+          ♥ {s.hearts}
+        </Txt>
       </Row>
       <Label>{title.toUpperCase()}</Label>
       <Title>
@@ -74,7 +90,7 @@ export function Lesson() {
             </Txt>
           </>
         ) : (
-          "Small steps. Stronger future."
+          t("journey.lesson.headline")
         )}
       </Title>
       {scam ? (
@@ -169,16 +185,10 @@ export function Lesson() {
       ) : (
         <Card>
           <Kiko size={100} />
-          <Txt>
-            {id === "saving"
-              ? "An emergency fund helps you handle unexpected costs. Start with a small amount you can save regularly."
-              : id === "borrowing"
-                ? "Before borrowing, compare the total repayment, fees, and due dates. Only borrow what you can afford to repay."
-                : id.startsWith("bonus")
-                  ? "Compare transfer fees and the exchange rate. Use a trusted provider and never share your PIN."
-                  : "A bank account can keep your money secure. Keep your PIN private, even if someone claims to work for your bank."}
+          <Txt>{t(`journey.lesson.tips.${tipKey}`)}</Txt>
+          <Txt style={{ fontWeight: "700" }}>
+            {t("journey.lesson.question")}
           </Txt>
-          <Txt style={{ fontWeight: "700" }}>Which is the safer choice?</Txt>
         </Card>
       )}
       <Row>
@@ -202,27 +212,14 @@ export function Lesson() {
       </Row>
       {!scam && !budget && (
         <Txt>
-          A.{" "}
-          {id === "borrowing"
-            ? "Compare total repayment"
-            : id.startsWith("bonus")
-              ? "Compare fees and use a trusted provider"
-              : "Keep your money and PIN safe"}
-          {"\n"}B.{" "}
-          {id === "borrowing"
-            ? "Borrow without checking fees"
-            : "Share your PIN with a stranger"}
+          A. {t(`journey.lesson.safe.${safeKey}`)}
+          {"\n"}B. {t(`journey.lesson.risky.${riskyKey}`)}
         </Txt>
       )}
       {checked && !correct && (
         <Card style={{ backgroundColor: "#FFF1F1" }}>
           <Txt accessibilityLiveRegion="polite" style={{ color: c.error }}>
-            Try again.{" "}
-            {scam
-              ? "A bank will never ask for your PIN. Urgent pressure and shortened links are warning signs."
-              : budget
-                ? "Protect essentials first. Savings can give you room for an unexpected repair."
-                : "Choose the option that protects your money."}
+            {t("journey.lesson.tryAgain")}
           </Txt>
         </Card>
       )}
@@ -277,17 +274,19 @@ export function Success() {
         <Kiko pulse />
       </View>
       <View style={{ alignItems: "center", gap: 20, paddingVertical: 30 }}>
-        <Label>THAT’S THE WAY</Label>
+        <Label>{t("journey.success.label")}</Label>
         <Txt style={{ fontSize: 58, lineHeight: 70, color: c.success }}>
-          Nice!
+          {t("journey.success.nice")}
         </Txt>
         <Card style={{ backgroundColor: "#FFF5CF", borderBottomWidth: 0 }}>
           <Txt style={{ color: "#906900", fontWeight: "700" }}>
-            {rewarded === "false" ? "✓ Practice complete" : "● +10 coins"}
+            {rewarded === "false"
+              ? `✓ ${t("journey.success.practiced")}`
+              : `● ${t("journey.success.coins", { count: COINS_PER_LESSON })}`}
           </Txt>
         </Card>
         <Txt style={{ textAlign: "center", color: c.midBlue }}>
-          One more step toward feeling good about money. Future-you says thanks.
+          {t("journey.success.message")}
         </Txt>
       </View>
       <Button
@@ -302,13 +301,15 @@ export function Shop() {
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const items = [
-    ["freeze", "❄️", "Streak Freeze", 40],
-    ["heart", "❤️", "Extra Heart", 60],
-    ["family", "👪", "Family Pack lessons", 120],
+    ["freeze", "❄️", t("journey.shop.items.freeze"), 40],
+    ["heart", "❤️", t("journey.shop.items.heart"), 60],
+    ["family", "👪", t("journey.shop.items.family"), 120],
     [
       "outfit",
       "✦",
-      `${{ US: "United States", MX: "Mexico", KE: "Kenya" }[s.country]} Kiko outfit`,
+      t("journey.shop.items.outfit", {
+        country: t(`setup.countries.${s.country}`),
+      }),
       90,
     ],
   ] as const;
@@ -325,7 +326,11 @@ export function Shop() {
           <Pressable
             key={id}
             accessibilityRole="button"
-            accessibilityLabel={`${name}, ${price} coins${s.purchases.includes(id) ? ", owned" : ""}`}
+            accessibilityLabel={
+              s.purchases.includes(id)
+                ? t("journey.shop.owned", { name })
+                : t("journey.shop.price", { name, count: price })
+            }
             accessibilityState={{
               disabled: s.purchases.includes(id) || s.coins < price,
             }}
@@ -334,8 +339,8 @@ export function Shop() {
               const ok = s.buy(id, price);
               setMessage(
                 ok
-                  ? `${name} added to your collection!`
-                  : "You need more coins. Complete lessons to earn them.",
+                  ? t("journey.shop.added", { name })
+                  : t("journey.shop.needCoins"),
               );
             }}
             style={{ width: "48%" }}
@@ -365,13 +370,13 @@ export function Shop() {
       {message && <Txt accessibilityLiveRegion="polite">{message}</Txt>}
       <Card style={{ backgroundColor: c.lightBlue, borderBottomWidth: 0 }}>
         <Txt>
-          ♛ <Txt style={{ fontWeight: "700" }}>Every lesson is free.</Txt> Shop
-          items are just here to make your journey more fun.
+          ♛ <Txt style={{ fontWeight: "700" }}>{t("journey.shop.free")}</Txt>{" "}
+          {t("journey.shop.freeDetail")}
         </Txt>
       </Card>
       {s.purchases.length > 0 && (
         <Card>
-          <Label>YOUR COLLECTION</Label>
+          <Label>{t("journey.shop.collection")}</Label>
           {items
             .filter(([id]) => s.purchases.includes(id))
             .map(([id, icon, name]) => (
@@ -386,21 +391,23 @@ export function Shop() {
 }
 export function Practice() {
   const s = useApp();
+  const { t } = useTranslation();
   return (
     <Screen footer={<Nav active="practice" />}>
-      <Label>A LITTLE EVERY DAY</Label>
-      <Title>Practice makes progress.</Title>
-      <Txt style={{ color: c.midBlue }}>
-        Revisit a lesson. Build your confidence.
-      </Txt>
+      <Label>{t("journey.practice.label")}</Label>
+      <Title>{t("journey.practice.title")}</Title>
+      <Txt style={{ color: c.midBlue }}>{t("journey.practice.subtitle")}</Txt>
       {lessons
         .filter((l) => s.completed.includes(l.id))
         .map((l) => (
           <Card key={l.id}>
-            <Txt style={{ fontWeight: "700" }}>{l.title}</Txt>
+            <Txt style={{ fontWeight: "700" }}>
+              {t(`journey.lessons.${l.id}`)}
+            </Txt>
             <Button
               secondary
-              title="Practice again →"
+              title={`${t("journey.practice.again")} →`}
+              accessibilityLabel={t("journey.practice.again")}
               onPress={() =>
                 router.push({ pathname: "/lesson", params: { id: l.id } })
               }
@@ -412,23 +419,25 @@ export function Practice() {
 }
 export function Leagues() {
   const s = useApp();
+  const { t } = useTranslation();
   return (
     <Screen footer={<Nav active="leagues" />}>
-      <Label>YOUR PERSONAL BEST</Label>
-      <Title>Small wins add up.</Title>
+      <Label>{t("journey.leagues.label")}</Label>
+      <Title>{t("journey.leagues.title")}</Title>
       <Kiko />
       <Card>
         <Txt style={{ fontSize: 28, fontWeight: "700" }}>
-          ♨ {s.streak} day streak
+          ♨ {t("journey.leagues.streak", { count: s.streak })}
         </Txt>
-        <Txt>{s.completed.length} lessons completed</Txt>
-        <Txt>● {s.coins} coins earned and saved</Txt>
+        <Txt>
+          {t("journey.leagues.completed", { count: s.completed.length })}
+        </Txt>
+        <Txt>● {t("journey.leagues.coins", { count: s.coins })}</Txt>
       </Card>
-      <Txt style={{ color: c.midBlue }}>
-        Community leagues are coming soon. For now, celebrate your own progress.
-      </Txt>
+      <Txt style={{ color: c.midBlue }}>{t("journey.leagues.soon")}</Txt>
       <Button
-        title="Keep learning →"
+        title={`${t("journey.leagues.keepLearning")} →`}
+        accessibilityLabel={t("journey.leagues.keepLearning")}
         onPress={() => router.replace("/roadmap")}
       />
     </Screen>

@@ -3,6 +3,8 @@ import { roadmapCopy } from "./roadmap";
 import { pathPreviewCopy } from "./path-preview";
 import { confidenceCopy } from "./confidence";
 import { voiceCopy } from "./voice";
+import { welcomeCopy } from "./welcome";
+import { journeyCopy } from "./journey";
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next";
 const i18n = createInstance();
@@ -111,6 +113,8 @@ void i18n.use(initReactI18next).init({
         ...confidenceCopy.en,
         pathPreview: pathPreviewCopy.en,
         voice: voiceCopy.en,
+        setup: welcomeCopy.en,
+        journey: journeyCopy.en,
         roadmapScreen: roadmapCopy.en,
         challenge: challengeCopy.en,
       },
@@ -121,6 +125,8 @@ void i18n.use(initReactI18next).init({
         ...confidenceCopy.es,
         pathPreview: pathPreviewCopy.es,
         voice: voiceCopy.es,
+        setup: welcomeCopy.es,
+        journey: journeyCopy.es,
         roadmapScreen: roadmapCopy.es,
         challenge: challengeCopy.es,
       },
@@ -131,6 +137,8 @@ void i18n.use(initReactI18next).init({
         ...confidenceCopy.sw,
         pathPreview: pathPreviewCopy.sw,
         voice: voiceCopy.sw,
+        setup: welcomeCopy.sw,
+        journey: journeyCopy.sw,
         roadmapScreen: roadmapCopy.sw,
         challenge: challengeCopy.sw,
       },

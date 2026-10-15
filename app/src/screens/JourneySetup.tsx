@@ -15,11 +15,12 @@ const scenes = {
   MX: require("../../assets/welcome/mx.png"),
   KE: require("../../assets/welcome/ke.png"),
 };
+// The stored value stays in English: src/onboarding/request.ts maps it to the API enum.
 const stages = [
-  ["Student", "🎒"],
-  ["First job", "💼"],
-  ["Parent", "🏡"],
-  ["Retired", "🏖️🌿"],
+  ["Student", "student", "🎒"],
+  ["First job", "firstJob", "💼"],
+  ["Parent", "parent", "🏡"],
+  ["Retired", "retired", "🏖️🌿"],
 ] as const;
 
 export function JourneySetup() {
@@ -76,11 +77,11 @@ export function JourneySetup() {
           </View>
           <View style={styles.landscapeSpace} />
           <View style={styles.grid}>
-            {stages.map(([stage, icon]) => (
+            {stages.map(([stage, labelKey, icon]) => (
               <Pressable
                 key={stage}
                 accessibilityRole="button"
-                accessibilityLabel={stage}
+                accessibilityLabel={t(`setup.stages.${labelKey}`)}
                 accessibilityState={{ selected: s.stage === stage }}
                 onPress={() => s.set({ stage })}
                 style={[
@@ -90,7 +91,9 @@ export function JourneySetup() {
                 ]}
               >
                 <Txt style={styles.emoji}>{icon}</Txt>
-                <Txt style={styles.choiceLabel}>{stage}</Txt>
+                <Txt style={styles.choiceLabel}>
+                  {t(`setup.stages.${labelKey}`)}
+                </Txt>
               </Pressable>
             ))}
           </View>
