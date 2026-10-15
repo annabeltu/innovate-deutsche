@@ -1,10 +1,8 @@
 import { Platform } from "react-native";
-import type {
-  ErrorResponse,
-  Language,
-  TranscriptionResponse,
-} from "../types/api";
+import { apiRequest } from "./client";
+import type { ErrorResponse, Language } from "../types/api";
 import { MAX_SPOKEN_TEXT_CHARS } from "../types/api";
+import type { IntentResponse, TranscriptionResponse } from "../voice/types";
 
 /** Error codes the voice screens translate; server codes pass through as-is. */
 export const API_UNAVAILABLE = "apiUnavailable";
@@ -35,11 +33,22 @@ export function speakUrl(text: string, language: Language): string | null {
   return `${base}/v1/voice/speak?${query.toString()}`;
 }
 
+/** Map a short spoken reply to the server's multilingual command vocabulary. */
+export function recognizeIntent(
+  text: string,
+  language: Language,
+): Promise<IntentResponse> {
+  return apiRequest<IntentResponse>("/v1/voice/intent", {
+    method: "POST",
+    body: { text, language },
+  });
+}
+
 /** Send a finished recording to the API and return what the learner said. */
 export async function transcribeRecording(
   uri: string,
   language: Language,
-): Promise<string> {
+): Promise<TranscriptionResponse> {
   const base = apiBaseUrl();
   if (!base) throw new VoiceApiError(API_UNAVAILABLE);
   const body = new FormData();
@@ -57,7 +66,11 @@ export async function transcribeRecording(
   if (!response.ok) throw new VoiceApiError(await errorCode(response));
   const data = (await response.json()) as Partial<TranscriptionResponse>;
   if (typeof data.text !== "string") throw new VoiceApiError(API_UNAVAILABLE);
-  return data.text;
+  return {
+    text: data.text,
+    language: data.language ?? language,
+    is_fixture: Boolean(data.is_fixture),
+  };
 }
 
 /** Native fetch uploads straight from the file URI; the browser needs a Blob. */

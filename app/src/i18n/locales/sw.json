@@ -98,7 +98,10 @@
       "notAdded": "Sikuongeza somo. Unaweza kuniuliza tena wakati wowote.",
       "error": "Samahani, kuna tatizo. Tafadhali jaribu tena.",
       "addFailed": "Samahani, sikuweza kuongeza somo. Tafadhali jaribu tena baadaye."
-    }
+    },
+    "readScreen": "Soma skrini hii kwa sauti",
+    "stopReading": "Acha kusoma",
+    "readScreenHint": "Husoma kila kitu kwenye skrini hii kwa lugha yako"
   },
   "onboarding": {
     "country": {

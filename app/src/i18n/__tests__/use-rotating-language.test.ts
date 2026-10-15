@@ -7,25 +7,25 @@ import {
 beforeEach(() => jest.useFakeTimers());
 afterEach(() => jest.useRealTimers());
 
-it("cycles English, Spanish and Swahili while no language is chosen", () => {
-  const { result } = renderHook(() => useRotatingLanguage(true));
+it("cycles English, Spanish and Swahili while no language is chosen", async () => {
+  const { result } = await renderHook(() => useRotatingLanguage(true));
   const seen = [result.current];
   for (let step = 0; step < 3; step++) {
-    act(() => jest.advanceTimersByTime(ROTATION_INTERVAL_MS));
+    await act(async () => jest.advanceTimersByTime(ROTATION_INTERVAL_MS));
     seen.push(result.current);
   }
 
   expect(seen).toEqual(["en", "es", "sw", "en"]);
 });
 
-it("stops cycling once a language is chosen", () => {
-  const { result, rerender } = renderHook(
+it("stops cycling once a language is chosen", async () => {
+  const { result, rerender } = await renderHook(
     ({ active }: { active: boolean }) => useRotatingLanguage(active),
     { initialProps: { active: true } },
   );
 
-  rerender({ active: false });
-  act(() => jest.advanceTimersByTime(ROTATION_INTERVAL_MS * 3));
+  await rerender({ active: false });
+  await act(async () => jest.advanceTimersByTime(ROTATION_INTERVAL_MS * 3));
 
   expect(result.current).toBeNull();
 });

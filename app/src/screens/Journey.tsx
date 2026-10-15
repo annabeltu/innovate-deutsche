@@ -3,6 +3,7 @@ import { View, Pressable, AccessibilityInfo } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
+import { Feather } from "@expo/vector-icons";
 import { useApp } from "../state/useApp";
 import {
   Screen,
@@ -11,220 +12,27 @@ import {
   Label,
   Row,
   Button,
-  Choice,
-  Progress,
   Kiko,
+  KikoNote,
   Card,
   Nav,
   c,
 } from "../components/ui";
 import { lessons } from "./Onboarding";
-const money = { US: "$", MX: "MX$", KE: "KSh" };
-/** Matches the reward granted by useApp.complete. */
-const COINS_PER_LESSON = 10;
+import { ApiLesson } from "../components/ApiLesson";
+import { useBonusLessons, serverLessonId } from "../api/lessons";
+import { LanguageChooser } from "../components/LanguageChooser";
 export { Roadmap } from "./Roadmap";
 export function Lesson() {
   const { id = "budget" } = useLocalSearchParams<{ id: string }>();
-  const [answer, setAnswer] = useState("");
-  const [checked, setChecked] = useState(false);
-  const s = useApp();
-  const { t } = useTranslation();
-  const scam = id === "scams";
-  const budget = id === "budget";
-  const tipKey = id.startsWith("bonus")
-    ? "bonus"
-    : id === "saving" || id === "borrowing"
-      ? id
-      : "accounts";
-  const safeKey = tipKey === "saving" ? "accounts" : tipKey;
-  const riskyKey = id === "borrowing" ? "borrowing" : "accounts";
-  const title = lessons.some((l) => l.id === id)
-    ? t(`journey.lessons.${id}`)
-    : t(s.bonus[Number(id.split("-")[1])] ?? "journey.lessons.fallback");
-  const correct = scam
-    ? answer === "Scam"
-    : budget
-      ? answer === "Savings"
-      : answer === "A";
-  function check() {
-    if (!answer) return;
-    setChecked(true);
-    if (correct) {
-      const rewarded = !s.completed.includes(id);
-      s.complete(id);
-      router.replace({
-        pathname: "/success",
-        params: { id, rewarded: String(rewarded) },
-      });
-    }
-  }
+  const state = useApp();
+  const lessonId = serverLessonId(id, state) ?? id;
   return (
-    <Screen>
-      <Row>
-        <Choice
-          title="‹"
-          accessibilityLabel={t("journey.lesson.back")}
-          onPress={() => router.replace("/roadmap")}
-        />
-        <Progress value={0.6} />
-        <Txt
-          accessibilityLabel={t("journey.lesson.hearts", { count: s.hearts })}
-        >
-          ♥ {s.hearts}
-        </Txt>
-      </Row>
-      <Label>{title.toUpperCase()}</Label>
-      <Title>
-        {scam ? (
-          <>
-            Would you{"\n"}
-            <Txt style={{ fontSize: 36, lineHeight: 42, color: c.midBlue }}>
-              trust this?
-            </Txt>
-          </>
-        ) : budget ? (
-          <>
-            Give every coin{"\n"}
-            <Txt style={{ fontSize: 36, lineHeight: 42, color: c.midBlue }}>
-              a job.
-            </Txt>
-          </>
-        ) : (
-          t("journey.lesson.headline")
-        )}
-      </Title>
-      {scam ? (
-        <>
-          <Card>
-            <Row>
-              <Txt style={{ color: c.midBlue, fontWeight: "700" }}>
-                MobileBank
-              </Txt>
-              <Label>now</Label>
-            </Row>
-            <View
-              style={{
-                padding: 18,
-                backgroundColor: c.iceBlue,
-                borderRadius: 18,
-                marginVertical: 16,
-              }}
-            >
-              <Txt style={{ fontSize: 19, lineHeight: 30 }}>
-                URGENT: Your account is{" "}
-                <Txt style={{ color: c.error, fontWeight: "800" }}>BLOCKED</Txt>
-                . Share your{" "}
-                <Txt style={{ color: c.error, fontWeight: "800" }}>PIN</Txt> to
-                unlock: <Txt style={{ color: c.error }}>bit.ly/3xK…</Txt>
-              </Txt>
-            </View>
-            <Txt style={{ color: c.midBlue }}>+91 700 123 456</Txt>
-          </Card>
-          <Txt style={{ fontSize: 13, color: c.midBlue }}>
-            ♧ You can’t lose hearts here.
-          </Txt>
-        </>
-      ) : budget ? (
-        <>
-          <Card>
-            <Label>MONTHLY INCOME</Label>
-            <Txt style={{ fontSize: 32, lineHeight: 42, fontWeight: "700" }}>
-              {money[s.country]} {s.country === "US" ? "2,000" : "32,000"}
-            </Txt>
-            <Row style={{ marginVertical: 12 }}>
-              {[3, 2, 2, 1, 1].map((v, i) => (
-                <View
-                  key={i}
-                  style={{
-                    height: 12,
-                    flex: v,
-                    backgroundColor: [
-                      c.brightBlue,
-                      c.lightBlue,
-                      c.midBlue,
-                      c.deepBlue,
-                      c.darkBlue,
-                    ][i],
-                    borderRadius: 4,
-                  }}
-                />
-              ))}
-            </Row>
-            {["Rent", "Food", "Transport", "School fees", "Savings"].map(
-              (name, i) => (
-                <Row key={name}>
-                  <Txt style={{ color: c.midBlue, fontSize: 14 }}>{name}</Txt>
-                  <Txt style={{ fontWeight: "700", fontSize: 14 }}>
-                    {money[s.country]}{" "}
-                    {s.country === "US"
-                      ? [750, 375, 250, 125, 187][i]
-                      : ["12k", "6k", "4k", "2k", "3k"][i]}
-                  </Txt>
-                </Row>
-              ),
-            )}
-          </Card>
-          <Card
-            style={{
-              backgroundColor: "#FFF7DD",
-              borderColor: c.coinGold,
-              borderWidth: 2,
-              borderBottomWidth: 2,
-            }}
-          >
-            <Txt style={{ fontWeight: "700", color: "#8C6200" }}>
-              ϟ Surprise!
-            </Txt>
-            <Txt>
-              Your phone broke — repair costs {money[s.country]}{" "}
-              {s.country === "US" ? "180" : "3,000"}.
-            </Txt>
-          </Card>
-          <Txt style={{ fontWeight: "700" }}>What will you adjust first?</Txt>
-        </>
-      ) : (
-        <Card>
-          <Kiko size={100} />
-          <Txt>{t(`journey.lesson.tips.${tipKey}`)}</Txt>
-          <Txt style={{ fontWeight: "700" }}>
-            {t("journey.lesson.question")}
-          </Txt>
-        </Card>
-      )}
-      <Row>
-        {(scam
-          ? ["Scam", "Legit"]
-          : budget
-            ? ["Food", "Savings", "Transport"]
-            : ["A", "B"]
-        ).map((option) => (
-          <Choice
-            key={option}
-            title={scam ? (option === "Scam" ? "🚩 Scam" : "✓ Legit") : option}
-            selected={answer === option}
-            onPress={() => {
-              setAnswer(option);
-              setChecked(false);
-            }}
-            style={{ flex: 1 }}
-          />
-        ))}
-      </Row>
-      {!scam && !budget && (
-        <Txt>
-          A. {t(`journey.lesson.safe.${safeKey}`)}
-          {"\n"}B. {t(`journey.lesson.risky.${riskyKey}`)}
-        </Txt>
-      )}
-      {checked && !correct && (
-        <Card style={{ backgroundColor: "#FFF1F1" }}>
-          <Txt accessibilityLiveRegion="polite" style={{ color: c.error }}>
-            {t("journey.lesson.tryAgain")}
-          </Txt>
-        </Card>
-      )}
-      <Button title={`${t("check")}  ✓`} disabled={!answer} onPress={check} />
-    </Screen>
+    <ApiLesson
+      key={`${state.language}-${lessonId}`}
+      routeId={id}
+      lessonId={lessonId}
+    />
   );
 }
 export function Success() {
@@ -271,26 +79,27 @@ export function Success() {
         >
           ✦ ✧ ✦
         </Txt>
-        <Kiko pulse />
+        <Kiko pulse mood="cheer" />
       </View>
       <View style={{ alignItems: "center", gap: 20, paddingVertical: 30 }}>
-        <Label>{t("journey.success.label")}</Label>
+        <Label>{t("app.successLabel")}</Label>
         <Txt style={{ fontSize: 58, lineHeight: 70, color: c.success }}>
-          {t("journey.success.nice")}
+          {t("app.successTitle")}
         </Txt>
-        <Card style={{ backgroundColor: "#FFF5CF", borderBottomWidth: 0 }}>
-          <Txt style={{ color: "#906900", fontWeight: "700" }}>
+        <Card style={{ backgroundColor: c.coinGoldSoft, borderBottomWidth: 0 }}>
+          <Txt style={{ color: c.coinGoldText, fontWeight: "700" }}>
             {rewarded === "false"
-              ? `✓ ${t("journey.success.practiced")}`
-              : `● ${t("journey.success.coins", { count: COINS_PER_LESSON })}`}
+              ? `✓ ${t("app.practiceComplete")}`
+              : `● ${t("app.coinsAwarded", { count: 10 })}`}
           </Txt>
         </Card>
         <Txt style={{ textAlign: "center", color: c.midBlue }}>
-          {t("journey.success.message")}
+          {t("app.successBody")}
         </Txt>
       </View>
       <Button
-        title={`${t("keep")}  →`}
+        title={t("keep")}
+        icon="arrow-right"
         onPress={() => router.replace("/roadmap")}
       />
     </Screen>
@@ -299,24 +108,31 @@ export function Success() {
 export function Shop() {
   const s = useApp();
   const { t } = useTranslation();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<{
+    itemId: string;
+    success: boolean;
+  } | null>(null);
   const items = [
-    ["freeze", "❄️", t("journey.shop.items.freeze"), 40],
-    ["heart", "❤️", t("journey.shop.items.heart"), 60],
-    ["family", "👪", t("journey.shop.items.family"), 120],
+    ["freeze", "❄️", t("app.freeze"), 40],
+    ["heart", "❤️", t("app.heart"), 60],
+    ["family", "👪", t("app.family"), 120],
     [
       "outfit",
       "✦",
-      t("journey.shop.items.outfit", {
-        country: t(`setup.countries.${s.country}`),
-      }),
+      t("app.outfit", { country: t(`onboarding.country.${s.country}`) }),
       90,
     ],
   ] as const;
   return (
     <Screen footer={<Nav active="shop" />}>
+      <LanguageChooser />
       <Label>{t("wallet")}</Label>
-      <Txt style={{ fontSize: 38, lineHeight: 48 }}>🟡 {s.coins}</Txt>
+      <Txt
+        accessibilityLabel={t("app.coins", { count: s.coins })}
+        style={{ fontSize: 38, lineHeight: 48 }}
+      >
+        🟡 {s.coins}
+      </Txt>
       <View>
         <Title>{t("shop")}</Title>
         <Txt style={{ color: c.midBlue }}>{t("shopSub")}</Txt>
@@ -326,22 +142,21 @@ export function Shop() {
           <Pressable
             key={id}
             accessibilityRole="button"
-            accessibilityLabel={
-              s.purchases.includes(id)
-                ? t("journey.shop.owned", { name })
-                : t("journey.shop.price", { name, count: price })
-            }
+            accessibilityLabel={t("app.itemLabel", {
+              name,
+              price,
+              status: t(
+                s.purchases.includes(id) ? "app.owned" : "app.available",
+              ),
+            })}
+            accessibilityHint={t("app.buyHint")}
             accessibilityState={{
               disabled: s.purchases.includes(id) || s.coins < price,
             }}
             onPress={() => {
               if (s.purchases.includes(id)) return;
               const ok = s.buy(id, price);
-              setMessage(
-                ok
-                  ? t("journey.shop.added", { name })
-                  : t("journey.shop.needCoins"),
-              );
+              setMessage({ itemId: id, success: ok });
             }}
             style={{ width: "48%" }}
           >
@@ -358,7 +173,9 @@ export function Shop() {
               </View>
               <Txt style={{ fontWeight: "700" }}>{name}</Txt>
               <Row style={{ marginTop: "auto" }}>
-                <Txt style={{ color: "#8C6200" }}>● {price}</Txt>
+                <Txt style={{ color: c.coinGoldText, fontWeight: "700" }}>
+                  ● {price}
+                </Txt>
                 <Txt style={{ fontSize: 24 }}>
                   {s.purchases.includes(id) ? "✓" : "+"}
                 </Txt>
@@ -367,16 +184,23 @@ export function Shop() {
           </Pressable>
         ))}
       </View>
-      {message && <Txt accessibilityLiveRegion="polite">{message}</Txt>}
+      {message && (
+        <KikoNote
+          key={`${message.itemId}-${message.success}`}
+          live
+          mood={message.success ? "cheer" : "oops"}
+          tone={message.success ? "success" : "error"}
+          message={t(message.success ? "app.itemAdded" : "app.notEnoughCoins", {
+            name: items.find(([id]) => id === message.itemId)?.[2],
+          })}
+        />
+      )}
       <Card style={{ backgroundColor: c.lightBlue, borderBottomWidth: 0 }}>
-        <Txt>
-          ♛ <Txt style={{ fontWeight: "700" }}>{t("journey.shop.free")}</Txt>{" "}
-          {t("journey.shop.freeDetail")}
-        </Txt>
+        <Txt>{t("app.freeLessons")}</Txt>
       </Card>
       {s.purchases.length > 0 && (
         <Card>
-          <Label>{t("journey.shop.collection")}</Label>
+          <Label>{t("app.collection")}</Label>
           {items
             .filter(([id]) => s.purchases.includes(id))
             .map(([id, icon, name]) => (
@@ -392,22 +216,42 @@ export function Shop() {
 export function Practice() {
   const s = useApp();
   const { t } = useTranslation();
+  const bonus = useBonusLessons();
+  const practiceLessons = [
+    ...lessons.map((lesson) => ({
+      ...lesson,
+      title: t(`confidenceTopics.${lesson.id}`),
+    })),
+    ...s.bonus.map((_, index) => ({
+      id: `bonus-${index}`,
+      title: bonus[index]?.data?.title ?? t("app.bonusLesson"),
+    })),
+  ];
   return (
     <Screen footer={<Nav active="practice" />}>
-      <Label>{t("journey.practice.label")}</Label>
-      <Title>{t("journey.practice.title")}</Title>
-      <Txt style={{ color: c.midBlue }}>{t("journey.practice.subtitle")}</Txt>
-      {lessons
+      <LanguageChooser />
+      <Label>{t("app.practiceLabel")}</Label>
+      <Title>{t("app.practiceTitle")}</Title>
+      <Txt style={{ color: c.midBlue }}>{t("app.practiceBody")}</Txt>
+      {s.completed.length === 0 && (
+        <>
+          <KikoNote message={t("app.practiceEmpty")} />
+          <Button
+            title={t("app.keepLearning")}
+            icon="arrow-right"
+            onPress={() => router.replace("/roadmap")}
+          />
+        </>
+      )}
+      {practiceLessons
         .filter((l) => s.completed.includes(l.id))
         .map((l) => (
           <Card key={l.id}>
-            <Txt style={{ fontWeight: "700" }}>
-              {t(`journey.lessons.${l.id}`)}
-            </Txt>
+            <Txt style={{ fontWeight: "700" }}>{l.title}</Txt>
             <Button
               secondary
-              title={`${t("journey.practice.again")} →`}
-              accessibilityLabel={t("journey.practice.again")}
+              icon="rotate-ccw"
+              title={t("app.practiceAgain")}
               onPress={() =>
                 router.push({ pathname: "/lesson", params: { id: l.id } })
               }
@@ -422,22 +266,24 @@ export function Leagues() {
   const { t } = useTranslation();
   return (
     <Screen footer={<Nav active="leagues" />}>
-      <Label>{t("journey.leagues.label")}</Label>
-      <Title>{t("journey.leagues.title")}</Title>
-      <Kiko />
+      <LanguageChooser />
+      <Label>{t("app.personalBest")}</Label>
+      <Title>{t("app.smallWins")}</Title>
+      <Kiko mood={s.streak > 0 ? "cheer" : "happy"} />
       <Card>
-        <Txt style={{ fontSize: 28, fontWeight: "700" }}>
-          ♨ {t("journey.leagues.streak", { count: s.streak })}
-        </Txt>
-        <Txt>
-          {t("journey.leagues.completed", { count: s.completed.length })}
-        </Txt>
-        <Txt>● {t("journey.leagues.coins", { count: s.coins })}</Txt>
+        <Row style={{ justifyContent: "flex-start" }}>
+          <Feather name="zap" size={26} color={c.coinGoldText} />
+          <Txt style={{ fontSize: 28, lineHeight: 36, fontWeight: "700" }}>
+            {t("app.streak", { count: s.streak })}
+          </Txt>
+        </Row>
+        <Txt>{t("app.lessonCount", { count: s.completed.length })}</Txt>
+        <Txt>● {t("app.coinsSaved", { count: s.coins })}</Txt>
       </Card>
-      <Txt style={{ color: c.midBlue }}>{t("journey.leagues.soon")}</Txt>
+      <Txt style={{ color: c.midBlue }}>{t("app.leaguesSoon")}</Txt>
       <Button
-        title={`${t("journey.leagues.keepLearning")} →`}
-        accessibilityLabel={t("journey.leagues.keepLearning")}
+        icon="arrow-right"
+        title={t("app.keepLearning")}
         onPress={() => router.replace("/roadmap")}
       />
     </Screen>

@@ -16,10 +16,14 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 
 it("keeps the same brand text and sizing when switching countries including USA", async () => {
-  useApp.setState({ ...useApp.getInitialState(), country: "MX" });
+  useApp.setState({
+    ...useApp.getInitialState(),
+    country: "MX",
+    languageChosen: true,
+  });
   await render(<Welcome />);
   const originalBankStyle = screen.getByText("Deutsche Bank").props.style;
-  const originalKompassStyle = screen.getByText("Kompass").props.style;
+  const originalKompassStyle = screen.getByText("mpass").props.style;
   const originalHeaderStyle = screen.getByLabelText("Deutsche Bank. Kompass")
     .props.style;
 
@@ -29,9 +33,7 @@ it("keeps the same brand text and sizing when switching countries including USA"
     expect(screen.getByText("Deutsche Bank").props.style).toEqual(
       originalBankStyle,
     );
-    expect(screen.getByText("Kompass").props.style).toEqual(
-      originalKompassStyle,
-    );
+    expect(screen.getByText("mpass").props.style).toEqual(originalKompassStyle);
     expect(screen.getByLabelText("Deutsche Bank. Kompass").props.style).toEqual(
       originalHeaderStyle,
     );
@@ -53,7 +55,11 @@ it("updates country names, accessibility controls and hints immediately from the
 });
 
 it("shows the full USA scenery instead of a cropped reference with a sky strip", async () => {
-  useApp.getState().set({ ...useApp.getInitialState(), country: "US" });
+  useApp.getState().set({
+    ...useApp.getInitialState(),
+    country: "US",
+    languageChosen: true,
+  });
   await render(<Welcome />);
   const scenery = screen.getByLabelText(
     "Statue of Liberty and the New York skyline",
@@ -61,4 +67,14 @@ it("shows the full USA scenery instead of a cropped reference with a sky strip",
   expect(scenery.props.source).toEqual(
     require("../../../assets/welcome/us.png"),
   );
+});
+
+it("names every language for screen readers until a language is chosen", async () => {
+  useApp.setState({ ...useApp.getInitialState(), country: "KE" });
+  await render(<Welcome />);
+  expect(
+    screen.getByRole("button", {
+      name: "United States. Estados Unidos. Marekani",
+    }),
+  ).toBeTruthy();
 });

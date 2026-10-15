@@ -1,7 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useCallback } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { useWindowSize } from "../hooks/use-window-size";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
@@ -9,32 +8,42 @@ import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 import { KompassLogo } from "../components/KompassLogo";
-import { stopSpeaking } from "../voice/speech";
-import { useNarration } from "../voice/narration";
 import { ReadAloudDock } from "../components/ReadAloudBubble";
+import { useWindowSize } from "../hooks/use-window-size";
+import { useNarration } from "../voice/narration";
+import { stopSpeaking } from "../voice/speech";
+import { toOnboardingRequest } from "../api/learner";
+import {
+  COMFORT_OPTIONS,
+  GOAL_OPTIONS,
+  LIFE_STAGE_OPTIONS,
+} from "../onboarding/options";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
   MX: require("../../assets/welcome/mx.png"),
   KE: require("../../assets/welcome/ke.png"),
 };
-// The stored value stays in English: src/onboarding/request.ts maps it to the API enum.
-const stages = [
-  ["Student", "student", "🎒"],
-  ["First job", "firstJob", "💼"],
-  ["Parent", "parent", "🏡"],
-  ["Retired", "retired", "🏖️🌿"],
-] as const;
+const stageIcons = {
+  student: "🎒",
+  first_job: "💼",
+  parent: "🏡",
+  retired: "🏖️🌿",
+};
 
 export function JourneySetup() {
   const insets = useSafeAreaInsets();
   const s = useApp();
   const { t } = useTranslation();
+  const answers = toOnboardingRequest(s);
   const { width, fontScale } = useWindowSize();
-  const stacked = width < 320 || fontScale > 1.5 || s.large;
   const narration = [
     `${t("where")} ${t("now")}`,
-    ...stages.map(([, labelKey]) => t(`setup.stages.${labelKey}`)),
+    ...LIFE_STAGE_OPTIONS.map((option) => t(option.labelKey)),
+    t("goals"),
+    ...GOAL_OPTIONS.map((option) => t(option.labelKey)),
+    t("feels"),
+    ...COMFORT_OPTIONS.map((option) => t(option.labelKey)),
     t("continue"),
   ].join(". ");
   useFocusEffect(
@@ -43,6 +52,7 @@ export function JourneySetup() {
       return stopSpeaking;
     }, [narration]),
   );
+  const stacked = width < 320 || fontScale > 1.5 || s.large;
   return (
     <View style={styles.screen}>
       <View style={styles.page}>
@@ -91,23 +101,68 @@ export function JourneySetup() {
           </View>
           <View style={styles.landscapeSpace} />
           <View style={styles.grid}>
-            {stages.map(([stage, labelKey, icon]) => (
+            {LIFE_STAGE_OPTIONS.map((option) => (
               <Pressable
-                key={stage}
+                key={option.id}
                 accessibilityRole="button"
-                accessibilityLabel={t(`setup.stages.${labelKey}`)}
-                accessibilityState={{ selected: s.stage === stage }}
-                onPress={() => s.set({ stage })}
+                accessibilityLabel={t(option.labelKey)}
+                accessibilityHint={t(option.helperKey)}
+                accessibilityState={{
+                  selected: answers.life_stage === option.id,
+                }}
+                onPress={() => s.set({ stage: option.id })}
                 style={[
                   styles.choice,
                   { width: stacked ? "100%" : "48%" },
-                  s.stage === stage && styles.selected,
+                  answers.life_stage === option.id && styles.selected,
                 ]}
               >
-                <Txt style={styles.emoji}>{icon}</Txt>
-                <Txt style={styles.choiceLabel}>
-                  {t(`setup.stages.${labelKey}`)}
-                </Txt>
+                <Txt style={styles.emoji}>{stageIcons[option.id]}</Txt>
+                <Txt style={styles.choiceLabel}>{t(option.labelKey)}</Txt>
+              </Pressable>
+            ))}
+          </View>
+          <Txt
+            accessibilityRole="header"
+            className="mt-6 text-xl font-bold text-ink"
+          >
+            {t("goals")}
+          </Txt>
+          <View className="gap-2">
+            {GOAL_OPTIONS.map((option) => (
+              <Pressable
+                key={option.id}
+                accessibilityRole="radio"
+                accessibilityLabel={t(option.labelKey)}
+                accessibilityHint={t(option.helperKey)}
+                accessibilityState={{ checked: answers.goal === option.id }}
+                onPress={() => s.set({ goal: option.id })}
+                className={`min-h-12 rounded-2xl border-2 p-3 ${answers.goal === option.id ? "border-brand bg-ice" : "border-transparent bg-white"}`}
+              >
+                <Txt>{t(option.labelKey)}</Txt>
+              </Pressable>
+            ))}
+          </View>
+          <Txt
+            accessibilityRole="header"
+            className="mt-6 text-xl font-bold text-ink"
+          >
+            {t("feels")}
+          </Txt>
+          <View className="gap-2">
+            {COMFORT_OPTIONS.map((option, index) => (
+              <Pressable
+                key={option.id}
+                accessibilityRole="radio"
+                accessibilityLabel={t(option.labelKey)}
+                accessibilityHint={t(option.helperKey)}
+                accessibilityState={{ checked: answers.comfort === index + 1 }}
+                onPress={() =>
+                  s.set({ comfort: index / (COMFORT_OPTIONS.length - 1) })
+                }
+                className={`min-h-12 rounded-2xl border-2 p-3 ${answers.comfort === index + 1 ? "border-brand bg-ice" : "border-transparent bg-white"}`}
+              >
+                <Txt>{t(option.labelKey)}</Txt>
               </Pressable>
             ))}
           </View>

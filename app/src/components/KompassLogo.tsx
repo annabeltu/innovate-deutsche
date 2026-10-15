@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import Svg, { Circle, Line, Path, Polygon, Rect } from "react-native-svg";
 import { colors } from "../theme/tokens";
 
-const BRAND_LABEL = "Deutsche Bank Kompass";
+const BRAND_LABEL = "Deutsche Bank. Kompass";
 // Proportions relative to the wordmark's font size.
 const BANK_TEXT_RATIO = 0.42;
 const COMPASS_RATIO = 0.66;

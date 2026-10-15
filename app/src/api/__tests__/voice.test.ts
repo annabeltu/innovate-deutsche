@@ -33,9 +33,13 @@ describe("transcribeRecording", () => {
       json: () => Promise.resolve({ text: "Habari", language: "sw" }),
     });
 
-    const text = await transcribeRecording("file:///question.m4a", "sw");
+    const transcript = await transcribeRecording("file:///question.m4a", "sw");
 
-    expect(text).toBe("Habari");
+    expect(transcript).toEqual({
+      text: "Habari",
+      language: "sw",
+      is_fixture: false,
+    });
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe(`${API}/v1/voice/transcribe`);
     const body = init.body as FormData;
@@ -76,27 +80,5 @@ describe("transcribeRecording", () => {
       code: API_UNAVAILABLE,
     });
     expect(fetchMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("askKiko", () => {
-  it("returns null (sample answer) while /v1/ask is not deployed", async () => {
-    const { askKiko } = jest.requireActual<typeof import("../ask")>("../ask");
-    fetchMock.mockResolvedValue({ ok: false, status: 404 });
-
-    await expect(askKiko("Hi", "US", "en")).resolves.toBeNull();
-  });
-
-  it("returns the answer from the API", async () => {
-    const { askKiko } = jest.requireActual<typeof import("../ask")>("../ask");
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ answer: "Compare fees first." }),
-    });
-
-    await expect(askKiko("Hi", "US", "en")).resolves.toBe(
-      "Compare fees first.",
-    );
   });
 });

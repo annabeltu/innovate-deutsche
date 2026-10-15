@@ -1,25 +1,15 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
-  TextProps,
   View,
   ViewStyle,
-  AccessibilityInfo,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
-import Svg, { Circle, Ellipse, Path, Polygon, Rect } from "react-native-svg";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-  cancelAnimation,
-} from "react-native-reanimated";
+import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { router, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
@@ -27,23 +17,10 @@ import { colors as c, regionAccents } from "../theme/tokens";
 import { stopSpeaking } from "../voice/speech";
 import { useNarration } from "../voice/narration";
 import { ReadAloudDock } from "./ReadAloudBubble";
-export { c };
-export function Txt({ style, ...props }: TextProps) {
-  const large = useApp((s) => s.large);
-  return (
-    <Text
-      {...props}
-      style={[
-        {
-          color: c.darkBlue,
-          fontSize: large ? 19 : 16,
-          lineHeight: large ? 28 : 24,
-        },
-        style,
-      ]}
-    />
-  );
-}
+import { Txt } from "./Txt";
+export { c, Txt };
+export { Kiko, KikoNote, useReduceMotion } from "./Kiko";
+export type { KikoMood, KikoTone } from "./Kiko";
 export function Title({
   children,
   light = false,
@@ -87,11 +64,21 @@ export function Label({
     </Txt>
   );
 }
+// Pressing a chunky surface sinks it into its bottom border, like a real key.
+function pressedDepth(pressed: boolean, depth: number): ViewStyle {
+  return pressed ? { borderBottomWidth: 2, marginTop: depth - 2 } : {};
+}
+type FeatherName = React.ComponentProps<typeof Feather>["name"];
+const BUTTON_DEPTH = 6;
+const CHOICE_DEPTH = 4;
+
+/** Primary (deep blue) or secondary (white) action with an optional icon. */
 export function Button({
   title,
   onPress,
   secondary = false,
   disabled = false,
+  icon,
   accessibilityLabel,
   accessibilityHint,
 }: {
@@ -99,16 +86,18 @@ export function Button({
   onPress: () => void;
   secondary?: boolean;
   disabled?: boolean;
-  /** Spoken name when the visible title is a symbol, such as "×". */
+  icon?: FeatherName;
+  /** Spoken name when the visible title is a symbol, such as "→". */
   accessibilityLabel?: string;
   accessibilityHint?: string;
 }) {
   const { t } = useTranslation();
+  const labelColor = secondary ? c.deepBlue : c.white;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}
-      accessibilityHint={accessibilityHint ?? t("voice.buttonHint")}
+      accessibilityHint={accessibilityHint ?? t("actionHint")}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
@@ -117,13 +106,14 @@ export function Button({
         {
           backgroundColor: secondary ? c.white : c.deepBlue,
           borderBottomColor: secondary ? c.lightBlue : c.darkBlue,
-          opacity: disabled ? 0.45 : pressed ? 0.8 : 1,
+          opacity: disabled ? 0.45 : 1,
         },
+        pressedDepth(pressed && !disabled, BUTTON_DEPTH),
       ]}
     >
       <Txt
         style={{
-          color: secondary ? c.deepBlue : c.white,
+          color: labelColor,
           fontWeight: "700",
           fontSize: 18,
           textAlign: "center",
@@ -131,6 +121,7 @@ export function Button({
       >
         {title}
       </Txt>
+      {icon && <Feather name={icon} size={22} color={labelColor} />}
     </Pressable>
   );
 }
@@ -157,11 +148,12 @@ export function Choice({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ selected }}
-      accessibilityHint={t("voice.choiceHint")}
-      style={[
+      accessibilityHint={t("app.selectHint")}
+      style={({ pressed }) => [
         s.choice,
-        selected && { borderColor: c.deepBlue, backgroundColor: "#F7FAFF" },
+        selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
         style,
+        pressedDepth(pressed, CHOICE_DEPTH),
       ]}
     >
       {icon && (
@@ -229,16 +221,18 @@ export function Screen({
   );
   return (
     <LinearGradient
-      colors={dark ? ["#294DB3", c.darkBlue] : ["#FFFFFF", c.iceBlue]}
+      colors={dark ? [c.duskBlue, c.darkBlue] : [c.white, c.iceBlue]}
       style={{ flex: 1 }}
     >
       {background}
       <ScrollView
+        testID="screen-scroll"
         contentContainerStyle={{
           paddingHorizontal: compact ? 16 : 24,
           paddingLeft: (compact ? 16 : 24) + insets.left,
           paddingRight: (compact ? 16 : 24) + insets.right,
           paddingTop: (compact ? 16 : 24) + insets.top,
+          // The read-aloud dock clears the home indicator when it is shown.
           paddingBottom:
             (compact ? 12 : 32) + (footer || readAloud ? 0 : insets.bottom),
           gap: 20,
@@ -260,6 +254,7 @@ export function Screen({
       <ReadAloudDock bottomInset={!footer} />
       {footer && (
         <View
+          testID="screen-footer"
           style={{
             paddingBottom: insets.bottom,
             paddingLeft: insets.left,
@@ -296,9 +291,11 @@ export function Row({
   );
 }
 export function Progress({ value }: { value: number }) {
+  const { t } = useTranslation();
   return (
     <View
       accessibilityRole="progressbar"
+      accessibilityLabel={t("app.progress")}
       accessibilityValue={{ min: 0, max: 100, now: Math.round(value * 100) }}
       style={{
         height: 8,
@@ -317,72 +314,6 @@ export function Progress({ value }: { value: number }) {
         }}
       />
     </View>
-  );
-}
-export function Kiko({
-  size = 130,
-  pulse = false,
-}: {
-  size?: number;
-  pulse?: boolean;
-}) {
-  const { t } = useTranslation();
-  const scale = useSharedValue(1);
-  const [reduce, setReduce] = useState(false);
-  const simple = useApp((s) => s.simple);
-  useEffect(() => {
-    void AccessibilityInfo.isReduceMotionEnabled().then(setReduce);
-    const listener = AccessibilityInfo.addEventListener(
-      "reduceMotionChanged",
-      setReduce,
-    );
-    return () => listener.remove();
-  }, []);
-  useEffect(() => {
-    if (pulse && !reduce && !simple)
-      scale.value = withRepeat(withTiming(1.07, { duration: 1100 }), -1, true);
-    else scale.value = 1;
-    return () => cancelAnimation(scale);
-  }, [pulse, reduce, simple, scale]);
-  const animated = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-  return (
-    <Animated.View
-      accessible
-      accessibilityLabel={t("voice.kiko")}
-      style={[{ width: size, height: size, alignSelf: "center" }, animated]}
-    >
-      <Svg width="100%" height="100%" viewBox="0 0 140 140">
-        <Circle cx="70" cy="75" r="55" fill={c.darkBlue} />
-        <Circle
-          cx="70"
-          cy="68"
-          r="53"
-          fill={c.deepBlue}
-          stroke="white"
-          strokeWidth="7"
-        />
-        <Path
-          d="M10 86 L0 81 M130 86 L140 81"
-          stroke={c.brightBlue}
-          strokeWidth="12"
-          strokeLinecap="round"
-        />
-        <Polygon
-          points="70,39 74,48 84,49 76,55 76,65 69,59 59,63 62,53 55,46 65,46"
-          fill={c.coinGold}
-        />
-        <Ellipse cx="51" cy="79" rx="5" ry="8" fill="white" />
-        <Ellipse cx="89" cy="79" rx="5" ry="8" fill="white" />
-        <Path
-          d="M61 86 Q70 99 80 86"
-          stroke="white"
-          strokeWidth="2"
-          fill="none"
-        />
-      </Svg>
-    </Animated.View>
   );
 }
 export function Landscape({
@@ -480,6 +411,7 @@ export function Nav({ active }: { active: string }) {
           onPress={() => router.replace(url)}
           accessibilityRole="tab"
           accessibilityLabel={t(name)}
+          accessibilityHint={t("app.navHint", { screen: t(name) })}
           accessibilityState={{ selected: active === name }}
           style={{ flex: 1, minHeight: 48, alignItems: "center", gap: 4 }}
         >
@@ -506,15 +438,19 @@ const s = StyleSheet.create({
   button: {
     padding: 19,
     borderRadius: 20,
-    borderBottomWidth: 6,
+    borderBottomWidth: BUTTON_DEPTH,
     minHeight: 64,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
   },
   choice: {
     backgroundColor: c.white,
     borderWidth: 2,
     borderColor: "transparent",
-    borderBottomWidth: 4,
-    borderBottomColor: "#D6DFF1",
+    borderBottomWidth: CHOICE_DEPTH,
+    borderBottomColor: c.grey,
     borderRadius: 18,
     padding: 14,
     minHeight: 56,

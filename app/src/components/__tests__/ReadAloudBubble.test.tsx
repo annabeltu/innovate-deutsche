@@ -13,6 +13,7 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 // Icons load fonts asynchronously; the label and role are what matter here.
 jest.mock("@expo/vector-icons", () => ({ Feather: () => null }));
 jest.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty", init: jest.fn() },
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.mock("../../voice/speech", () => ({
@@ -20,28 +21,30 @@ jest.mock("../../voice/speech", () => ({
   stopSpeaking: jest.fn(),
 }));
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
-  act(() => {
+  await act(() => {
     useApp.getState().set({ readAloud: true, language: "sw", country: "KE" });
     useNarration.setState({ text: "Karibu Kompass.", speaking: false });
   });
 });
 
-it("is hidden when read aloud is off", () => {
-  act(() => {
+it("is hidden when read aloud is off", async () => {
+  await act(() => {
     useApp.getState().set({ readAloud: false });
   });
 
-  const screen = render(<ReadAloudBubble />);
+  const screen = await render(<ReadAloudBubble />);
 
   expect(screen.queryByRole("button")).toBeNull();
 });
 
-it("reads the screen in view in the selected language", () => {
-  const screen = render(<ReadAloudBubble />);
+it("reads the screen in view in the selected language", async () => {
+  const screen = await render(<ReadAloudBubble />);
 
-  fireEvent.press(screen.getByRole("button", { name: "voice.readScreen" }));
+  await fireEvent.press(
+    screen.getByRole("button", { name: "voice.readScreen" }),
+  );
 
   expect(speak).toHaveBeenCalledWith("Karibu Kompass.", {
     language: "sw",
@@ -49,13 +52,15 @@ it("reads the screen in view in the selected language", () => {
   });
 });
 
-it("becomes a stop button while speaking", () => {
-  act(() => {
+it("becomes a stop button while speaking", async () => {
+  await act(() => {
     useNarration.setState({ speaking: true });
   });
-  const screen = render(<ReadAloudBubble />);
+  const screen = await render(<ReadAloudBubble />);
 
-  fireEvent.press(screen.getByRole("button", { name: "voice.stopReading" }));
+  await fireEvent.press(
+    screen.getByRole("button", { name: "voice.stopReading" }),
+  );
 
   expect(stopSpeaking).toHaveBeenCalled();
   expect(speak).not.toHaveBeenCalled();

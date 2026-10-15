@@ -7,6 +7,9 @@ const BRAND_NAMES = new Set([
   "Deutsche Bank",
   "Kompass",
   "K◉mpass",
+  // The wordmark draws the "o" as a compass between these two pieces.
+  "K",
+  "mpass",
   "Aa",
   "Deutsche Bank. Kompass",
 ]);

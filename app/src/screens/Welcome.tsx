@@ -1,4 +1,3 @@
-import { LanguageSelector } from "../components/LanguageSelector";
 import React, { useCallback } from "react";
 import {
   Image,
@@ -21,8 +20,11 @@ import {
   ROTATING_LANGUAGES,
   useRotatingLanguage,
 } from "../i18n/use-rotating-language";
+import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
+import { LanguageSelector } from "../components/LanguageSelector";
+import { ACCESSIBILITY_OPTIONS } from "../onboarding/options";
 import { stopSpeaking } from "../voice/speech";
 import { useNarration } from "../voice/narration";
 import { ReadAloudDock } from "../components/ReadAloudBubble";
@@ -87,7 +89,7 @@ export function Welcome() {
     fontSize: s.large ? 18 : 12.5 * unit,
     lineHeight: s.large ? 25 : 19 * unit,
   };
-  const narration = `Deutsche Bank Kompass. ${t("language")}. ${t("country")}. ${t(`setup.countries.${s.country}`)}. ${t("access")}. ${t("getStarted")}.`;
+  const narration = `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`onboarding.country.${s.country}`)}. ${t("access")}. ${t("getStarted")}.`;
   useFocusEffect(
     useCallback(() => {
       // Nothing plays by itself: the read-aloud bubble reads this on request.
@@ -117,7 +119,9 @@ export function Welcome() {
               resizeMode="cover"
               style={{ width: "100%", height: "100%" }}
               accessible
-              accessibilityLabel={spoken(`setup.scenes.${s.country}`)}
+              accessibilityLabel={spoken(
+                `app.${{ US: "usaScene", MX: "mexicoScene", KE: "kenyaScene" }[s.country]}`,
+              )}
             />
             <LinearGradient
               pointerEvents="none"
@@ -169,9 +173,15 @@ export function Welcome() {
                 <Pressable
                   key={code}
                   accessibilityRole="button"
-                  accessibilityLabel={spoken(`setup.countries.${code}`)}
+                  accessibilityLabel={spoken(`onboarding.country.${code}`)}
+                  accessibilityHint={t("app.selectHint")}
                   accessibilityState={{ selected: s.country === code }}
-                  onPress={() => s.set({ country: code })}
+                  onPress={() =>
+                    s.set({
+                      country: code,
+                      language: lessonLanguage(code, s.language),
+                    })
+                  }
                   style={[
                     styles.tile,
                     {
@@ -210,7 +220,7 @@ export function Welcome() {
                         },
                       ]}
                     >
-                      {shown(`setup.countries.${code}`)}
+                      {shown(`onboarding.country.${code}`)}
                     </Txt>
                     <Feather
                       name="chevron-right"
@@ -225,78 +235,84 @@ export function Welcome() {
               {shown("access")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
-              {(
-                [
-                  ["readAloud", "setup.access.readAloud", "volume-2"],
-                  ["simple", "setup.access.simple", "help-circle"],
-                  ["large", "setup.access.large", "type"],
-                ] as const
-              ).map(([key, labelKey, icon]) => (
-                <View
-                  key={key}
-                  style={[
-                    styles.accessTile,
-                    {
-                      flexBasis: narrow ? "100%" : "28%",
-                      flexGrow: 1,
-                      minHeight: 82 * unit,
-                      paddingVertical: 8 * unit,
-                      gap: 5 * unit,
-                    },
-                  ]}
-                >
-                  {key === "large" ? (
-                    <Txt
-                      style={{
-                        color: ink,
-                        fontSize: 22 * unit,
-                        lineHeight: 25 * unit,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Aa
-                    </Txt>
-                  ) : (
-                    <Feather name={icon} size={23 * unit} color={ink} />
-                  )}
-                  <Txt
+              {ACCESSIBILITY_OPTIONS.map((option) => {
+                const controls = {
+                  readAloud: { key: "readAloud", icon: "volume-2" },
+                  simpleMode: { key: "simple", icon: "help-circle" },
+                  largerText: { key: "large", icon: "type" },
+                } as const;
+                const { key, icon } = controls[option.id];
+                const name = shown(option.labelKey);
+                return (
+                  <View
+                    key={key}
                     style={[
-                      styles.accessName,
+                      styles.accessTile,
                       {
-                        fontSize: s.large ? 17 : 10.5 * unit,
-                        lineHeight: s.large ? 24 : 15 * unit,
+                        flexBasis: narrow ? "100%" : "28%",
+                        flexGrow: 1,
+                        minHeight: 82 * unit,
+                        paddingVertical: 8 * unit,
+                        gap: 5 * unit,
                       },
                     ]}
                   >
-                    {shown(labelKey)}
-                  </Txt>
-                  <View
-                    style={{
-                      height: 24,
-                      minWidth: 44,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Switch
-                      accessibilityLabel={spoken(labelKey)}
-                      value={s[key]}
-                      onValueChange={(value) => s.set({ [key]: value })}
-                      trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
-                      thumbColor="#FFFFFF"
-                      style={
-                        Platform.OS === "ios"
-                          ? { transform: [{ scale: 0.72 }] }
-                          : undefined
-                      }
-                    />
+                    {key === "large" ? (
+                      <Txt
+                        style={{
+                          color: ink,
+                          fontSize: 22 * unit,
+                          lineHeight: 25 * unit,
+                          fontWeight: "700",
+                        }}
+                      >
+                        Aa
+                      </Txt>
+                    ) : (
+                      <Feather name={icon} size={23 * unit} color={ink} />
+                    )}
+                    <Txt
+                      style={[
+                        styles.accessName,
+                        {
+                          fontSize: s.large ? 17 : 10.5 * unit,
+                          lineHeight: s.large ? 24 : 15 * unit,
+                        },
+                      ]}
+                    >
+                      {name}
+                    </Txt>
+                    <View
+                      style={{
+                        height: 24,
+                        minWidth: 44,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Switch
+                        accessibilityLabel={spoken(option.labelKey)}
+                        accessibilityHint={t(option.helperKey)}
+                        value={s[key]}
+                        onValueChange={(value) => s.set({ [key]: value })}
+                        trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
+                        thumbColor="#FFFFFF"
+                        style={
+                          Platform.OS === "ios"
+                            ? { transform: [{ scale: 0.72 }] }
+                            : undefined
+                        }
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
             {s.onboarded && (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t("roadmap")}
+                accessibilityHint={t("app.navHint", { screen: t("path") })}
                 onPress={() => router.replace("/roadmap")}
                 style={styles.extraAction}
               >
@@ -318,6 +334,7 @@ export function Welcome() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={spoken("getStarted")}
+            accessibilityHint={t("actionHint")}
             onPress={() => router.push("/onboarding")}
             style={[
               styles.go,
