@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
 import Svg, { Path } from "react-native-svg";
+import { Feather } from "@expo/vector-icons";
 import { useApp } from "../state/useApp";
 import {
   Screen,
@@ -13,6 +14,7 @@ import {
   Row,
   Button,
   Kiko,
+  KikoNote,
   Landscape,
   Card,
   Nav,
@@ -31,14 +33,18 @@ export function Roadmap() {
   if (path.isPending)
     return (
       <Screen>
-        <Txt>{t("quizLoading")}</Txt>
+        <KikoNote mood="thinking" message={t("app.pathLoading")} live />
       </Screen>
     );
   if (path.isError)
     return (
       <Screen>
-        <Txt>{t("apiUnavailable")}</Txt>
-        <Button title={t("tryAgain")} onPress={() => void path.refetch()} />
+        <KikoNote mood="oops" tone="error" message={t("app.pathError")} live />
+        <Button
+          title={t("tryAgain")}
+          icon="refresh-cw"
+          onPress={() => void path.refetch()}
+        />
       </Screen>
     );
   const orderedLessons = path.data.lessons.map((node) => ({
@@ -50,31 +56,47 @@ export function Roadmap() {
     <Screen dark footer={<Nav active="path" />}>
       <LanguageChooser />
       <Row>
-        {[
-          {
-            text: `♨ ${s.streak}`,
-            label: t("app.streak", { count: s.streak }),
-          },
-          { text: `● ${s.coins}`, label: t("app.coins", { count: s.coins }) },
-          {
-            text: `♥ ${s.hearts}`,
-            label: t("app.hearts", { count: s.hearts }),
-          },
-        ].map(({ text, label }) => (
+        {(
+          [
+            {
+              id: "streak",
+              icon: "zap",
+              tint: c.noticeOnDark,
+              value: s.streak,
+              label: t("app.streak", { count: s.streak }),
+            },
+            {
+              id: "coins",
+              icon: "circle",
+              tint: c.coinGold,
+              value: s.coins,
+              label: t("app.coins", { count: s.coins }),
+            },
+            {
+              id: "hearts",
+              icon: "heart",
+              tint: c.error,
+              value: s.hearts,
+              label: t("app.hearts", { count: s.hearts }),
+            },
+          ] as const
+        ).map(({ id, icon, tint, value, label }) => (
           <View
-            key={text}
+            key={id}
+            accessible
+            accessibilityLabel={label}
             style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
               backgroundColor: c.darkBlue,
-              padding: 13,
+              paddingVertical: 11,
+              paddingHorizontal: 14,
               borderRadius: 16,
             }}
           >
-            <Txt
-              accessibilityLabel={label}
-              style={{ color: c.white, fontWeight: "700" }}
-            >
-              {text}
-            </Txt>
+            <Feather name={icon} size={18} color={tint} />
+            <Txt style={{ color: c.white, fontWeight: "700" }}>{value}</Txt>
           </View>
         ))}
       </Row>
@@ -123,88 +145,121 @@ export function Roadmap() {
                   : "app.loadingBonus",
               ),
           })),
-        ].map((lesson, i) => {
-          const done =
-            s.completed.includes(lesson.id) ||
-            path.data.lessons.some(
-              (node) => node.lesson_id === lesson.id && node.completed,
-            );
-          const locked =
-            i > 0 &&
-            !s.completed.includes(orderedLessons[i - 1]?.id) &&
-            !orderedLessons[i - 1]?.completed &&
-            !lesson.id.startsWith("bonus");
-          return (
-            <Pressable
-              key={lesson.id}
-              accessibilityRole="button"
-              accessibilityLabel={t("app.lessonStatus", {
-                title: lesson.title,
-                status: t(
-                  done
-                    ? "app.completed"
-                    : locked
-                      ? "app.locked"
-                      : "app.available",
-                ),
-              })}
-              accessibilityHint={t("app.lessonHint")}
-              accessibilityState={{ disabled: locked }}
-              onPress={() => {
-                if (locked) {
-                  Alert.alert(t("keep"), t("app.unlockLesson"));
-                  return;
-                }
-                router.push({ pathname: "/lesson", params: { id: lesson.id } });
-              }}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 20,
-                minHeight: 92,
-              }}
-            >
-              <View
+        ]
+          .map((lesson, i) => ({
+            ...lesson,
+            done:
+              s.completed.includes(lesson.id) ||
+              path.data.lessons.some(
+                (node) => node.lesson_id === lesson.id && node.completed,
+              ),
+            locked:
+              i > 0 &&
+              !s.completed.includes(orderedLessons[i - 1]?.id) &&
+              !orderedLessons[i - 1]?.completed &&
+              !lesson.id.startsWith("bonus"),
+          }))
+          .map((lesson, i, all) => {
+            const { done, locked } = lesson;
+            // Kiko waits beside the first lesson the learner can open next.
+            const upNext =
+              !done &&
+              !locked &&
+              all.findIndex((other) => !other.done && !other.locked) === i;
+            return (
+              <Pressable
+                key={lesson.id}
+                accessibilityRole="button"
+                accessibilityLabel={t("app.lessonStatus", {
+                  title: lesson.title,
+                  status: t(
+                    done
+                      ? "app.completed"
+                      : locked
+                        ? "app.locked"
+                        : "app.available",
+                  ),
+                })}
+                accessibilityHint={t("app.lessonHint")}
+                accessibilityState={{ disabled: locked }}
+                onPress={() => {
+                  if (locked) {
+                    Alert.alert(t("keep"), t("app.unlockLesson"));
+                    return;
+                  }
+                  router.push({
+                    pathname: "/lesson",
+                    params: { id: lesson.id },
+                  });
+                }}
                 style={{
-                  width: 82,
-                  height: 82,
-                  borderRadius: 45,
-                  borderWidth: 7,
-                  borderColor: done
-                    ? "#FFE08A"
-                    : locked
-                      ? "#E3E8F0"
-                      : c.brightBlue,
-                  backgroundColor: done
-                    ? c.coinGold
-                    : locked
-                      ? c.grey
-                      : c.deepBlue,
+                  flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "center",
+                  gap: 20,
+                  minHeight: 92,
                 }}
               >
-                <Txt
-                  style={{ color: c.white, fontSize: 34, fontWeight: "800" }}
+                <View
+                  style={{
+                    width: 82,
+                    height: 82,
+                    borderRadius: 45,
+                    borderWidth: 7,
+                    borderColor: done
+                      ? c.noticeOnDark
+                      : locked
+                        ? c.iceBlue
+                        : c.brightBlue,
+                    backgroundColor: done
+                      ? c.coinGold
+                      : locked
+                        ? c.grey
+                        : c.deepBlue,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  {done ? "✓" : locked ? "▣" : "➜"}
-                </Txt>
-              </View>
-              <Card
-                style={{ flex: 1, padding: 14, opacity: locked ? 0.75 : 1 }}
-              >
-                <Txt style={{ fontWeight: "700" }}>{lesson.title}</Txt>
-                <Txt style={{ fontSize: 12, color: c.midBlue }}>
-                  {done
-                    ? t("app.completed")
-                    : locked
-                      ? t("app.lockedLesson")
-                      : t("app.lessonDuration")}
-                </Txt>
-              </Card>
-            </Pressable>
-          );
-        })}
+                  <Feather
+                    name={done ? "check" : locked ? "lock" : "play"}
+                    size={32}
+                    color={c.white}
+                  />
+                </View>
+                <Card
+                  style={{
+                    flex: 1,
+                    padding: 14,
+                    opacity: locked ? 0.75 : 1,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{ flex: 1, gap: 2 }}>
+                    {upNext && (
+                      <Txt
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "700",
+                          color: c.deepBlue,
+                        }}
+                      >
+                        {t("app.upNext")}
+                      </Txt>
+                    )}
+                    <Txt style={{ fontWeight: "700" }}>{lesson.title}</Txt>
+                    <Txt style={{ fontSize: 12, color: c.midBlue }}>
+                      {done
+                        ? t("app.completed")
+                        : locked
+                          ? t("app.lockedLesson")
+                          : t("app.lessonDuration")}
+                    </Txt>
+                  </View>
+                  {upNext && <Kiko size={52} pulse decorative />}
+                </Card>
+              </Pressable>
+            );
+          })}
         <Row style={{ justifyContent: "flex-start" }}>
           <View
             style={{
@@ -213,7 +268,7 @@ export function Roadmap() {
               borderRadius: 12,
             }}
           >
-            <Txt>✦</Txt>
+            <Feather name="gift" size={22} color={c.darkBlue} />
           </View>
           <Txt style={{ color: c.white, fontWeight: "700" }}>
             {t("app.unitTreasure")}
@@ -223,7 +278,8 @@ export function Roadmap() {
       <Landscape country={s.country} />
       <View style={{ position: "absolute", right: 0, bottom: 45 }}>
         <Button
-          title={`♩ ${t("app.askKiko")}`}
+          title={t("app.askKiko")}
+          icon="mic"
           onPress={() => router.push("/ask")}
         />
       </View>
@@ -287,15 +343,15 @@ export function Success() {
         >
           ✦ ✧ ✦
         </Txt>
-        <Kiko pulse />
+        <Kiko pulse mood="cheer" />
       </View>
       <View style={{ alignItems: "center", gap: 20, paddingVertical: 30 }}>
         <Label>{t("app.successLabel")}</Label>
         <Txt style={{ fontSize: 58, lineHeight: 70, color: c.success }}>
           {t("app.successTitle")}
         </Txt>
-        <Card style={{ backgroundColor: "#FFF5CF", borderBottomWidth: 0 }}>
-          <Txt style={{ color: "#906900", fontWeight: "700" }}>
+        <Card style={{ backgroundColor: c.coinGoldSoft, borderBottomWidth: 0 }}>
+          <Txt style={{ color: c.coinGoldText, fontWeight: "700" }}>
             {rewarded === "false"
               ? `✓ ${t("app.practiceComplete")}`
               : `● ${t("app.coinsAwarded", { count: 10 })}`}
@@ -306,7 +362,8 @@ export function Success() {
         </Txt>
       </View>
       <Button
-        title={`${t("keep")}  →`}
+        title={t("keep")}
+        icon="arrow-right"
         onPress={() => router.replace("/roadmap")}
       />
     </Screen>
@@ -380,7 +437,9 @@ export function Shop() {
               </View>
               <Txt style={{ fontWeight: "700" }}>{name}</Txt>
               <Row style={{ marginTop: "auto" }}>
-                <Txt style={{ color: "#8C6200" }}>● {price}</Txt>
+                <Txt style={{ color: c.coinGoldText, fontWeight: "700" }}>
+                  ● {price}
+                </Txt>
                 <Txt style={{ fontSize: 24 }}>
                   {s.purchases.includes(id) ? "✓" : "+"}
                 </Txt>
@@ -390,11 +449,15 @@ export function Shop() {
         ))}
       </View>
       {message && (
-        <Txt accessibilityLiveRegion="polite">
-          {t(message.success ? "app.itemAdded" : "app.notEnoughCoins", {
+        <KikoNote
+          key={`${message.itemId}-${message.success}`}
+          live
+          mood={message.success ? "cheer" : "oops"}
+          tone={message.success ? "success" : "error"}
+          message={t(message.success ? "app.itemAdded" : "app.notEnoughCoins", {
             name: items.find(([id]) => id === message.itemId)?.[2],
           })}
-        </Txt>
+        />
       )}
       <Card style={{ backgroundColor: c.lightBlue, borderBottomWidth: 0 }}>
         <Txt>{t("app.freeLessons")}</Txt>
@@ -434,7 +497,16 @@ export function Practice() {
       <Label>{t("app.practiceLabel")}</Label>
       <Title>{t("app.practiceTitle")}</Title>
       <Txt style={{ color: c.midBlue }}>{t("app.practiceBody")}</Txt>
-      {s.completed.length === 0 && <Txt>{t("app.practiceEmpty")}</Txt>}
+      {s.completed.length === 0 && (
+        <>
+          <KikoNote message={t("app.practiceEmpty")} />
+          <Button
+            title={t("app.keepLearning")}
+            icon="arrow-right"
+            onPress={() => router.replace("/roadmap")}
+          />
+        </>
+      )}
       {practiceLessons
         .filter((l) => s.completed.includes(l.id))
         .map((l) => (
@@ -442,7 +514,8 @@ export function Practice() {
             <Txt style={{ fontWeight: "700" }}>{l.title}</Txt>
             <Button
               secondary
-              title={`${t("app.practiceAgain")} →`}
+              icon="rotate-ccw"
+              title={t("app.practiceAgain")}
               onPress={() =>
                 router.push({ pathname: "/lesson", params: { id: l.id } })
               }
@@ -460,17 +533,21 @@ export function Leagues() {
       <LanguageChooser />
       <Label>{t("app.personalBest")}</Label>
       <Title>{t("app.smallWins")}</Title>
-      <Kiko />
+      <Kiko mood={s.streak > 0 ? "cheer" : "happy"} />
       <Card>
-        <Txt style={{ fontSize: 28, fontWeight: "700" }}>
-          ♨ {t("app.streak", { count: s.streak })}
-        </Txt>
+        <Row style={{ justifyContent: "flex-start" }}>
+          <Feather name="zap" size={26} color={c.coinGoldText} />
+          <Txt style={{ fontSize: 28, lineHeight: 36, fontWeight: "700" }}>
+            {t("app.streak", { count: s.streak })}
+          </Txt>
+        </Row>
         <Txt>{t("app.lessonCount", { count: s.completed.length })}</Txt>
         <Txt>● {t("app.coinsSaved", { count: s.coins })}</Txt>
       </Card>
       <Txt style={{ color: c.midBlue }}>{t("app.leaguesSoon")}</Txt>
       <Button
-        title={`${t("app.keepLearning")} →`}
+        icon="arrow-right"
+        title={t("app.keepLearning")}
         onPress={() => router.replace("/roadmap")}
       />
     </Screen>
