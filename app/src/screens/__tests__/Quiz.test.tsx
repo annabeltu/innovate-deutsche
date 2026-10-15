@@ -140,3 +140,38 @@ it("stops displaying a cached quiz whose questions are in the previous language"
     expect.objectContaining({ language: "es" }),
   );
 });
+
+it("keeps Kiko small beside the question so the title is not squeezed", async () => {
+  useApp.setState({ ...useApp.getInitialState() });
+  jest.mocked(useStartQuiz).mockReturnValue({
+    mutate: jest.fn(),
+    data: {
+      user_id: "u_quiz",
+      quiz: {
+        quiz_id: "q_layout",
+        language: "en",
+        questions: [
+          {
+            question_id: "bank-id",
+            topic: "accounts",
+            prompt: "What do you usually need to open a bank account?",
+            options: [{ option_id: "a", text: "A photo ID" }],
+            voice: { speak_text: "What do you need? Say A." },
+          },
+        ],
+      },
+    },
+  } as unknown as ReturnType<typeof useStartQuiz>);
+  jest.mocked(useSubmitQuiz).mockReturnValue({
+    mutate: jest.fn(),
+    isPending: false,
+    isError: false,
+  } as unknown as ReturnType<typeof useSubmitQuiz>);
+
+  await render(<QuizScreen />);
+
+  expect(screen.getByTestId("quiz-kiko")).toHaveStyle({
+    width: 96,
+    height: 112,
+  });
+});
