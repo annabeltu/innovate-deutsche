@@ -6,8 +6,9 @@ module.exports = function (api) {
         "babel-preset-expo",
         {
           jsxImportSource: "nativewind",
-          // zustand's middleware uses import.meta, which breaks the classic
-          // web bundle unless it is rewritten for every platform.
+          // Zustand's ESM build reads import.meta.env, which is a SyntaxError in
+          // the classic script the web bundle loads as; without this the web app
+          // never starts and shows only the pre-rendered HTML.
           unstable_transformImportMeta: true,
         },
       ],

@@ -7,6 +7,7 @@ import { ChallengeArt } from "./ChallengeArt";
 import { Action } from "../screens/Confidence";
 import { useApp } from "../state/useApp";
 import { personalizePath } from "../onboarding/personalized-path";
+import { KompassLogo } from "./KompassLogo";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -61,10 +62,7 @@ export function ChallengeFrame({
       }
     >
       <View className="flex-row items-center justify-between">
-        <View accessibilityRole="header">
-          <Text className="text-xs font-bold text-brand">Deutsche Bank</Text>
-          <Text className="text-3xl font-extrabold text-brand">K◉mpass</Text>
-        </View>
+        <KompassLogo size={30} />
         <Text
           accessibilityLabel={t("roadmapScreen.hearts", { count: hearts })}
           className="rounded-2xl bg-white px-3 py-2 font-bold text-ink"

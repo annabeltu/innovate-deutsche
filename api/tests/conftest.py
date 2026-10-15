@@ -28,6 +28,13 @@ from app.services.needs import build_learner_needs, load_findex
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
 
+
+@pytest.fixture(autouse=True)
+def no_real_gemini(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Blank any Gemini key from api/.env so tests never call the real API."""
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+
+
 SEED = 1234
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 FINDEX = load_findex()

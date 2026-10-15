@@ -13,11 +13,13 @@ from app.config import Settings, get_settings
 from app.llm.client import EchoLlmClient, LlmClient, OpenAiClient
 from app.services.bonus_lesson_store import BonusLessonStore
 from app.services.errors import VoiceUnavailableError
+from app.services.gemini_voice import GeminiSynthesizer, GeminiTranscriber
 from app.services.lesson_service import LessonSources, LessonStores
 from app.services.lesson_templates import load_lesson_templates
 from app.services.needs import load_findex
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
+from app.services.speech_cache import SpeechCache
 from app.services.speech_to_text import (
     FixtureTranscriber,
     SpeechToTextProvider,
@@ -25,6 +27,7 @@ from app.services.speech_to_text import (
 )
 from app.services.text_to_speech import OpenAISpeechSynthesizer, TextToSpeechProvider
 from app.services.voice_provider_http import ProviderEndpoint
+from app.speech.gemini import GeminiSpeechConfig, load_transcribe_prompt
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 
@@ -114,11 +117,14 @@ def get_lesson_stores(
 
 
 def get_transcriber(settings: SettingsDep) -> SpeechToTextProvider:
-    """Return Whisper when a key is set, the labeled fixture in development, else 503.
+    """Return Gemini or Whisper when a key is set, the fixture in development, else 503.
 
     Raises:
         VoiceUnavailableError: If no key is set and development fixtures are off.
     """
+    gemini_config = _gemini_config(settings)
+    if gemini_config:
+        return GeminiTranscriber(gemini_config, settings.voice_provider_timeout_seconds)
     whisper_key = _configured(settings.whisper_api_key)
     if whisper_key:
         endpoint = ProviderEndpoint(
@@ -139,6 +145,11 @@ def get_synthesizer(settings: SettingsDep) -> TextToSpeechProvider:
     Raises:
         VoiceUnavailableError: If no text-to-speech key is set.
     """
+    gemini_config = _gemini_config(settings)
+    if gemini_config:
+        return GeminiSynthesizer(
+            gemini_config, settings.voice_provider_timeout_seconds, get_speech_cache()
+        )
     tts_key = _configured(settings.tts_api_key)
     if not tts_key:
         raise VoiceUnavailableError("Hosted text-to-speech is not configured")
@@ -149,6 +160,27 @@ def get_synthesizer(settings: SettingsDep) -> TextToSpeechProvider:
         timeout_seconds=settings.voice_provider_timeout_seconds,
     )
     return OpenAISpeechSynthesizer(endpoint, settings.tts_voice)
+
+
+def _gemini_config(settings: Settings) -> GeminiSpeechConfig | None:
+    """Gemini speech settings, or None when no Gemini key is set."""
+    key = _configured(settings.gemini_api_key)
+    if not key:
+        return None
+    return GeminiSpeechConfig(
+        api_key=key,
+        interactions_url=settings.gemini_interactions_url,
+        transcribe_models=tuple(settings.gemini_transcribe_models),
+        tts_models=tuple(settings.gemini_tts_models),
+        tts_voice=settings.gemini_tts_voice,
+        transcribe_prompt=load_transcribe_prompt(),
+    )
+
+
+@lru_cache
+def get_speech_cache() -> SpeechCache:
+    """Return the process-wide cache of generated speech."""
+    return SpeechCache(get_settings().speech_cache_max_bytes)
 
 
 def _configured(secret: SecretStr | None) -> str:

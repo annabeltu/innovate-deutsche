@@ -1,0 +1,5 @@
+Transcribe the speech in this audio recording exactly as it was spoken.
+The speaker most likely speaks {language_name}.
+Keep the original language; do not translate.
+Return only the transcript, with no labels, notes or quotation marks.
+If there is no speech, return an empty response.

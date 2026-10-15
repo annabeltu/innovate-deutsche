@@ -128,6 +128,20 @@ export interface LessonResultResponse {
   path_refresh_needed: boolean;
 }
 
+/** Returned by POST /v1/voice/transcribe. */
+export interface TranscriptionResponse {
+  text: string;
+  language: Language;
+}
+
+/** Query parameters of GET /v1/voice/speak, which returns audio/wav. */
+export interface SpeakQuery {
+  text: string;
+  language: Language;
+}
+
+export const MAX_SPOKEN_TEXT_CHARS = 1000;
+
 export interface ErrorResponse {
   error: {
     code: string;

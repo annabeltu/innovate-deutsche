@@ -2,13 +2,7 @@ import { BonusLessons } from "../components/BonusLessons";
 import { BonusNotification } from "../components/BonusNotification";
 import { KikoAvatar } from "../components/KikoAvatar";
 import React from "react";
-import {
-  Image,
-  Pressable,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -18,6 +12,8 @@ import { useApp } from "../state/useApp";
 import { Badge, RoadmapNavigation } from "../components/RoadmapChrome";
 import { colors } from "../theme/tokens";
 import { buildRoadmap } from "../onboarding/roadmap";
+import { KompassLogo } from "../components/KompassLogo";
+import { useWindowSize } from "../hooks/use-window-size";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -36,7 +32,7 @@ export function Roadmap() {
   const coins = useApp((state) => state.coins);
   const hearts = useApp((state) => state.hearts);
   const bonus = useApp((state) => state.bonus);
-  const { width, fontScale } = useWindowDimensions();
+  const { width, fontScale } = useWindowSize();
   const { t } = useTranslation();
   const path = buildRoadmap(confidence, completed);
   const mapWidth = width - 32;
@@ -64,10 +60,7 @@ export function Roadmap() {
       }
     >
       <View className="flex-row items-center justify-between gap-2">
-        <View accessibilityRole="header">
-          <Text className="text-xs font-bold text-brand">Deutsche Bank</Text>
-          <Text className="text-2xl font-extrabold text-brand">K◉mpass</Text>
-        </View>
+        <KompassLogo size={24} />
         <View className="flex-row gap-1">
           {[
             ["🔥", streak, "streak"],

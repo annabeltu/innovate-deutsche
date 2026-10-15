@@ -28,3 +28,8 @@ it.each([
 it("does not silently fall back to English for missing translated text", () => {
   expect(i18n.options.fallbackLng).toBe(false);
 });
+
+it("keeps spoken voice copy free of sight and touch words", () => {
+  const voiceText = JSON.stringify(en.voice).toLowerCase();
+  expect(voiceText).not.toMatch(/\b(tap|swipe|see)\b/);
+});

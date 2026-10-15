@@ -11,10 +11,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { router, useFocusEffect } from "expo-router";
-import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { colors as c, regionAccents } from "../theme/tokens";
+import { stopSpeaking } from "../voice/speech";
+import { useNarration } from "../voice/narration";
+import { ReadAloudDock } from "./ReadAloudBubble";
 import { Txt } from "./Txt";
 export { c, Txt };
 export { Kiko, KikoNote, useReduceMotion } from "./Kiko";
@@ -77,20 +79,26 @@ export function Button({
   secondary = false,
   disabled = false,
   icon,
+  accessibilityLabel,
+  accessibilityHint,
 }: {
   title: string;
   onPress: () => void;
   secondary?: boolean;
   disabled?: boolean;
   icon?: FeatherName;
+  /** Spoken name when the visible title is a symbol, such as "→". */
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }) {
   const { t } = useTranslation();
   const labelColor = secondary ? c.deepBlue : c.white;
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={title}
-      accessibilityHint={t("actionHint")}
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityHint={accessibilityHint ?? t("actionHint")}
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
@@ -123,19 +131,22 @@ export function Choice({
   onPress,
   icon,
   style,
+  accessibilityLabel,
 }: {
   title: string;
   selected?: boolean;
   onPress: () => void;
   icon?: string;
   style?: ViewStyle;
+  /** Spoken name when the visible title is a symbol, such as "‹". */
+  accessibilityLabel?: string;
 }) {
   const { t } = useTranslation();
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={title}
+      accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ selected }}
       accessibilityHint={t("app.selectHint")}
       style={({ pressed }) => [
@@ -200,22 +211,16 @@ export function Screen({
   background?: React.ReactNode;
   narrate?: boolean;
 }) {
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const readAloud = useApp((s) => s.readAloud);
-  const language = useApp((s) => s.language);
   const narration = spokenText([children, footer]);
-  const speak = useCallback(() => {
-    void Speech.stop();
-    Speech.speak(narration, { language });
-  }, [narration, language]);
   useFocusEffect(
     useCallback(() => {
-      if (readAloud && narrate) speak();
-      return () => {
-        void Speech.stop();
-      };
-    }, [readAloud, narrate, speak]),
+      // Nothing plays by itself: the read-aloud bubble reads this on request.
+      // Screens can opt out (narrate=false), e.g. while Ask Kiko is recording.
+      if (narrate) useNarration.getState().setText(narration);
+      return stopSpeaking;
+    }, [narration, narrate]),
   );
   return (
     <LinearGradient
@@ -230,7 +235,9 @@ export function Screen({
           paddingLeft: (compact ? 16 : 24) + insets.left,
           paddingRight: (compact ? 16 : 24) + insets.right,
           paddingTop: (compact ? 16 : 24) + insets.top,
-          paddingBottom: (compact ? 12 : 32) + (footer ? 0 : insets.bottom),
+          // The read-aloud dock clears the home indicator when it is shown.
+          paddingBottom:
+            (compact ? 12 : 32) + (footer || readAloud ? 0 : insets.bottom),
           gap: 20,
           flexGrow: 1,
         }}
@@ -245,16 +252,9 @@ export function Screen({
           }}
         >
           {children}
-          {readAloud && narrate && (
-            <Button
-              secondary
-              title={t("app.repeat")}
-              icon="volume-2"
-              onPress={speak}
-            />
-          )}
         </View>
       </ScrollView>
+      <ReadAloudDock bottomInset={!footer} />
       {footer && (
         <View
           testID="screen-footer"

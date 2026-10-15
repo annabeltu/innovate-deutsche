@@ -195,7 +195,19 @@ Submitting or skipping a finished quiz returns `409 quiz_already_submitted`; a q
 |---|---|
 | POST | `/v1/voice/transcribe` |
 | POST | `/v1/voice/intent` |
-| POST | `/v1/voice/speak` |
+| GET | `/v1/voice/speak` |
+
+Speech runs on Gemini, server-side only (see `docs/adr/0007-gemini-for-speech.md`). Both endpoints are rate-limited per client (`429 rate_limited`) and return `503 speech_unavailable` if `GEMINI_API_KEY` is missing or Gemini fails twice in a row.
+
+`POST /v1/voice/transcribe` takes `multipart/form-data` with `audio` (m4a, wav, webm, ogg, mp3 or aac, up to 5 MB) and `language` (`en`, `es` or `sw`, used as a hint). Response `200`:
+
+```json
+{"text": "How do I send money to my mom in another country?", "language": "en"}
+```
+
+Errors: `400 validation_error` (missing field, unknown language, empty recording), `413 audio_too_large`, `415 unsupported_audio_type`. Recordings stay in memory and are never stored.
+
+`GET /v1/voice/speak?text=...&language=sw` returns `audio/wav` of the text read aloud (1–1000 characters). The app uses it only when the phone has no built-in voice for the language, usually Swahili. It is a `GET`, so an audio player can stream it straight from the URL; responses may be cached for a day.
 
 ## Lesson
 

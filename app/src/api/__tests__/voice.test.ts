@@ -1,51 +1,84 @@
-import { Platform } from "react-native";
-import { recognizeIntent, transcribeRecording } from "../voice";
-import { apiRequest } from "../client";
-jest.mock("../client", () => ({ apiRequest: jest.fn() }));
+import {
+  API_UNAVAILABLE,
+  VoiceApiError,
+  speakUrl,
+  transcribeRecording,
+} from "../voice";
 
-beforeEach(() => jest.clearAllMocks());
+const API = "http://api.test";
+const fetchMock = jest.fn();
 
-it("sends the active language when recognizing a reply", async () => {
-  await recognizeIntent("siguiente", "es");
-  expect(apiRequest).toHaveBeenCalledWith("/v1/voice/intent", {
-    method: "POST",
-    body: { text: "siguiente", language: "es" },
+beforeEach(() => {
+  fetchMock.mockReset();
+  global.fetch = fetchMock;
+  process.env.EXPO_PUBLIC_API_URL = `${API}/`;
+});
+
+describe("speakUrl", () => {
+  it("encodes text and language into the speak URL", () => {
+    expect(speakUrl("¿Qué tal?", "es")).toBe(
+      `${API}/v1/voice/speak?text=%C2%BFQu%C3%A9+tal%3F&language=es`,
+    );
+  });
+  it("is null without an API", () => {
+    delete process.env.EXPO_PUBLIC_API_URL;
+    expect(speakUrl("Hi", "en")).toBeNull();
   });
 });
 
-it("uploads audio and language using the backend field names", async () => {
-  const append = jest.spyOn(FormData.prototype, "append");
-  await transcribeRecording("file:///recording.m4a", "sw");
-  expect(append).toHaveBeenCalledWith("audio", {
-    uri: "file:///recording.m4a",
-    name: "recording.m4a",
-    type: "audio/mp4",
-  });
-  expect(append).toHaveBeenCalledWith("language", "sw");
-  expect(apiRequest).toHaveBeenCalledWith("/v1/voice/transcribe", {
-    method: "POST",
-    body: expect.any(FormData),
-  });
-  append.mockRestore();
-});
+describe("transcribeRecording", () => {
+  it("uploads the recording as audio with the language hint", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ text: "Habari", language: "sw" }),
+    });
 
-it("uploads a browser recording as a blob without sending a native file descriptor", async () => {
-  const originalPlatform = Platform.OS;
-  const originalFetch = global.fetch;
-  Object.defineProperty(Platform, "OS", { value: "web", configurable: true });
-  const blob = new Blob(["audio"], { type: "audio/webm" });
-  global.fetch = jest
-    .fn()
-    .mockResolvedValue({ ok: true, blob: async () => blob });
-  const append = jest.spyOn(FormData.prototype, "append");
-  try {
-    await transcribeRecording("blob:recording", "es");
-    expect(global.fetch).toHaveBeenCalledWith("blob:recording");
-    expect(append).toHaveBeenCalledWith("audio", blob, "recording.webm");
-    expect(append).toHaveBeenCalledWith("language", "es");
-  } finally {
-    append.mockRestore();
-    Object.defineProperty(Platform, "OS", { value: originalPlatform });
-    global.fetch = originalFetch;
-  }
+    const transcript = await transcribeRecording("file:///question.m4a", "sw");
+
+    expect(transcript).toEqual({
+      text: "Habari",
+      language: "sw",
+      is_fixture: false,
+    });
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe(`${API}/v1/voice/transcribe`);
+    const body = init.body as FormData;
+    expect(body.get("language")).toBe("sw");
+    expect(body.get("audio")).toBeTruthy();
+  });
+
+  it("passes the server error code through", async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      json: () =>
+        Promise.resolve({
+          error: { code: "audio_too_large", message: "", details: {} },
+        }),
+    });
+
+    await expect(
+      transcribeRecording("file:///q.m4a", "en"),
+    ).rejects.toMatchObject({
+      code: "audio_too_large",
+    });
+  });
+
+  it("reports a network failure as apiUnavailable", async () => {
+    fetchMock.mockRejectedValue(new TypeError("Network request failed"));
+
+    await expect(transcribeRecording("file:///q.m4a", "en")).rejects.toEqual(
+      new VoiceApiError(API_UNAVAILABLE),
+    );
+  });
+
+  it("fails fast without an API", async () => {
+    delete process.env.EXPO_PUBLIC_API_URL;
+
+    await expect(
+      transcribeRecording("file:///q.m4a", "en"),
+    ).rejects.toMatchObject({
+      code: API_UNAVAILABLE,
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
