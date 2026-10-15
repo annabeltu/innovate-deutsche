@@ -8,7 +8,7 @@ Changes to this file, `api/app/schemas/shared.py` or `app/src/types/api.ts` need
 
 - Base path `/v1`, JSON bodies, `snake_case` keys
 - Scores and confidences are decimals from 0 to 1
-- Money is an integer plus an ISO 4217 currency code (`INR`, `KES`, `EUR`)
+- Money is an integer plus an ISO 4217 currency code (`KES`, `USD`, `MXN`, `INR`, `EUR`)
 - Error shape on every endpoint:
 
 ```json
@@ -17,10 +17,12 @@ Changes to this file, `api/app/schemas/shared.py` or `app/src/types/api.ts` need
 
 ## Enums
 
+The demo MVP focuses on Kenya, the USA and Mexico (`KE`, `US`, `MX`) in English, Spanish and Swahili (`en`, `es`, `sw`). India, Germany, Hindi and German stay valid for later.
+
 | Name | Values |
 |---|---|
-| country | `IN`, `KE`, `DE` |
-| language | `en`, `hi`, `sw`, `de` |
+| country | `KE`, `US`, `MX`, `IN`, `DE` |
+| language | `en`, `es`, `sw`, `hi`, `de` |
 | topic | `accounts`, `saving`, `borrowing`, `scams`, `budget` |
 | life_stage | `student`, `first_job`, `parent`, `retired` |
 | goal | `save_more`, `avoid_debt`, `stay_safe_online`, `handle_emergencies` |
@@ -34,8 +36,8 @@ Will's API writes it; Faraz's API reads it. It is the only handoff between the t
 ```json
 {
   "user_id": "u_8f3c2a91",
-  "country": "IN",
-  "language": "hi",
+  "country": "KE",
+  "language": "sw",
   "accessibility": {
     "voice_mode": true,
     "read_aloud": true,
@@ -66,7 +68,7 @@ The data teammate's code writes it; Faraz's API reads it to customize lessons. I
 ```json
 {
   "user_id": "u_8f3c2a91",
-  "country": "IN",
+  "country": "KE",
   "topic_needs": {
     "saving": {
       "indicator": "Saved at a bank in the past year",

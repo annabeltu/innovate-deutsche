@@ -15,7 +15,7 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 @pytest.fixture
 def profile_json() -> dict[str, Any]:
     """Sample LearnerProfile JSON, as stored and as served by GET /v1/profile."""
-    return _load_fixture("learner_profile_in_student.json")
+    return _load_fixture("learner_profile_ke_student.json")
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def learner_profile(profile_json: dict[str, Any]) -> LearnerProfile:
 @pytest.fixture
 def learner_needs() -> LearnerNeeds:
     """Stand-in for the data teammate's needs object for the same learner."""
-    return LearnerNeeds.model_validate(_load_fixture("learner_needs_in_student.json"))
+    return LearnerNeeds.model_validate(_load_fixture("learner_needs_ke_student.json"))
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 {
   "user_id": "u_8f3c2a91",
-  "country": "IN",
+  "country": "KE",
   "topic_needs": {
     "accounts": {"indicator": "Adults with an account", "group_rate": 0.78, "benchmark_rate": 0.9, "findex_gap": 0.13},
     "saving": {"indicator": "Saved at a bank in the past year", "group_rate": 0.384, "benchmark_rate": 0.6, "findex_gap": 0.36},

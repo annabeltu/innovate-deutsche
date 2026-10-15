@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.shared import Country, LearnerProfile, Topic
+from app.schemas.shared import Country, Language, LearnerProfile, Topic
 
 
 def test_profile_json_validates_into_learner_profile(
@@ -13,7 +13,7 @@ def test_profile_json_validates_into_learner_profile(
 ) -> None:
     profile = LearnerProfile.model_validate(profile_json)
 
-    assert profile.country == Country.INDIA
+    assert profile.country == Country.KENYA
     assert profile.topic_scores[Topic.BORROWING].proficiency == pytest.approx(0.08)
 
 
@@ -30,9 +30,26 @@ def test_profile_rejects_missing_topic(profile_json: dict[str, Any]) -> None:
         LearnerProfile.model_validate(profile_json)
 
 
+@pytest.mark.parametrize("country", list(Country))
+@pytest.mark.parametrize("language", list(Language))
+def test_profile_accepts_every_country_and_language(
+    profile_json: dict[str, Any], country: Country, language: Language
+) -> None:
+    profile_json.update(country=country.value, language=language.value)
+
+    profile = LearnerProfile.model_validate(profile_json)
+
+    assert (profile.country, profile.language) == (country, language)
+
+
+def test_supports_mvp_countries_and_languages() -> None:
+    assert {"KE", "US", "MX"} <= {country.value for country in Country}
+    assert {"en", "es", "sw"} <= {language.value for language in Language}
+
+
 @pytest.mark.parametrize(
     ("field", "bad_value"),
-    [("country", "US"), ("language", "fr"), ("goal", "get_rich")],
+    [("country", "FR"), ("language", "fr"), ("goal", "get_rich")],
 )
 def test_profile_rejects_unknown_enum_values(
     profile_json: dict[str, Any], field: str, bad_value: str

@@ -1,8 +1,10 @@
 // Must mirror api/app/schemas/shared.py
 
-export type Country = 'IN' | 'KE' | 'DE';
+/** The demo MVP focuses on KE, US and MX. */
+export type Country = 'KE' | 'US' | 'MX' | 'IN' | 'DE';
 
-export type Language = 'en' | 'hi' | 'sw' | 'de';
+/** The demo MVP focuses on en, es and sw. */
+export type Language = 'en' | 'es' | 'sw' | 'hi' | 'de';
 
 export type Topic = 'accounts' | 'saving' | 'borrowing' | 'scams' | 'budget';
 

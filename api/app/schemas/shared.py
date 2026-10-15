@@ -11,19 +11,22 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Country(StrEnum):
-    """Countries Kompass has a country pack for."""
+    """Supported countries; the demo MVP focuses on KE, US and MX."""
 
-    INDIA = "IN"
     KENYA = "KE"
+    UNITED_STATES = "US"
+    MEXICO = "MX"
+    INDIA = "IN"
     GERMANY = "DE"
 
 
 class Language(StrEnum):
-    """Languages the app and lessons are available in."""
+    """Supported languages; the demo MVP focuses on en, es and sw."""
 
     ENGLISH = "en"
-    HINDI = "hi"
+    SPANISH = "es"
     SWAHILI = "sw"
+    HINDI = "hi"
     GERMAN = "de"
 
 

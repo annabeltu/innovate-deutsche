@@ -48,7 +48,7 @@ def test_skips_the_llm_for_english_without_simple_mode(
 
 @pytest.mark.parametrize(
     ("language", "simple_mode"),
-    [(Language.SWAHILI, False), (Language.HINDI, True), (Language.ENGLISH, True)],
+    [(Language.SWAHILI, False), (Language.SPANISH, True), (Language.ENGLISH, True)],
 )
 def test_sends_language_simple_mode_and_lesson(
     customized_lesson: Lesson, language: Language, simple_mode: bool
@@ -91,6 +91,6 @@ def test_falls_back_to_original_after_two_failures(
 
 
 def test_echo_client_returns_the_lesson_unchanged(customized_lesson: Lesson) -> None:
-    result = reword_lesson(customized_lesson, Language.HINDI, True, EchoLlmClient())
+    result = reword_lesson(customized_lesson, Language.SPANISH, True, EchoLlmClient())
 
     assert result == customized_lesson
