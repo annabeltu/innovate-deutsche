@@ -8,21 +8,25 @@ from pathlib import Path
 
 import pytest
 
+from app.config import Settings
 from app.schemas.lesson_template import CardTemplate, LessonTemplate
 from app.schemas.shared import (
     AnswerMode,
+    Country,
     Goal,
     LearnerNeeds,
     LearnerProfile,
     LifeStage,
     Topic,
 )
-from app.services.lesson_builder import customize_lesson
+from app.services.lesson_builder import country_facts_for, customize_lesson
 from app.services.lesson_templates import LESSON_TEMPLATES_DIR, load_lesson_templates
+from app.services.question_bank import load_question_bank
 
 FORBIDDEN_VOICE_WORDS = {"tap", "swipe", "see"}
 PROFICIENCY_PER_DIFFICULTY = (0.1, 0.5, 0.9)
 TEMPLATES = load_lesson_templates()
+QUESTION_BANK = load_question_bank(Settings().question_bank_dir)
 ALL_CARDS = [
     pytest.param(card, id=f"{template.topic}/{card.card_id}")
     for template in TEMPLATES.values()
@@ -65,9 +69,11 @@ def test_quiz_cards_read_every_option_with_its_letter(card: CardTemplate) -> Non
     ("topic", "life_stage", "goal", "proficiency"),
     list(itertools.product(Topic, LifeStage, Goal, PROFICIENCY_PER_DIFFICULTY)),
 )
+@pytest.mark.parametrize("country", list(Country))
 def test_every_learner_gets_a_complete_lesson(
     learner_profile: LearnerProfile,
     learner_needs: LearnerNeeds,
+    country: Country,
     topic: Topic,
     life_stage: LifeStage,
     goal: Goal,
@@ -79,7 +85,12 @@ def test_every_learner_gets_a_complete_lesson(
         update={"life_stage": life_stage, "goal": goal, "topic_scores": scores}
     )
 
-    lesson = customize_lesson(TEMPLATES[topic], profile, learner_needs)
+    lesson = customize_lesson(
+        TEMPLATES[topic],
+        profile,
+        learner_needs,
+        country_facts_for(QUESTION_BANK, country),
+    )
 
     card_types = [card.type for card in lesson.cards]
     assert card_types[-1] == "takeaway"

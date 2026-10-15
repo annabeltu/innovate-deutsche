@@ -9,8 +9,9 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from app.schemas.lesson_template import LessonTemplate
-from app.schemas.shared import Topic
+from app.schemas.shared import Language, Topic
 
+BASE_LESSON_LANGUAGE = Language.EN
 LESSON_TEMPLATES_DIR = Path(__file__).resolve().parents[3] / "data" / "lesson_templates"
 
 

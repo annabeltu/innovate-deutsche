@@ -48,6 +48,16 @@
       }
     },
     {
+      "card_id": "savings-group",
+      "type": "concept",
+      "text": "Many people also save with a {savings_group}. It builds the habit, but the money is not protected like a bank deposit.",
+      "min_difficulty": 2,
+      "voice": {
+        "speak_text": "Many people also save with a {savings_group}. It builds the habit, but the money is not protected like a bank deposit. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
       "card_id": "reachable-savings",
       "type": "concept",
       "text": "In retirement, keep savings somewhere protected that you can still reach quickly when you need it.",
@@ -101,31 +111,31 @@
           "b": "under the mattress",
           "c": "with a friend"
         },
-        "correct_feedback": "Correct. Deposit insurance protects your money even if the bank fails.",
-        "incorrect_feedback": "Not quite. The answer is A. Deposit insurance protects your money even if the bank fails."
+        "correct_feedback": "Correct. Deposits at a licensed bank are protected by {deposit_insurer}, even if the bank fails.",
+        "incorrect_feedback": "Not quite. The answer is A. Deposits at a licensed bank are protected by {deposit_insurer}, even if the bank fails."
       }
     },
     {
       "card_id": "interest-quiz",
       "type": "mc_quiz",
-      "text": "You save 100 and earn 10% interest a year. How much do you have after one year?",
+      "text": "You save {cur}100 and earn 10% interest a year. How much do you have after one year?",
       "options": {
-        "a": "100",
-        "b": "110",
-        "c": "120"
+        "a": "{cur}100",
+        "b": "{cur}110",
+        "c": "{cur}120"
       },
       "correct_option": "b",
       "min_difficulty": 2,
       "voice": {
-        "speak_text": "You save 100 and earn 10 percent interest a year. How much do you have after one year? A: 100. B: 110. C: 120. Say A, B or C.",
+        "speak_text": "You save {cur}100 and earn 10 percent interest a year. How much do you have after one year? A: {cur}100. B: {cur}110. C: {cur}120. Say A, B or C.",
         "answer_mode": "say_option",
         "spoken_options": {
-          "a": "100",
-          "b": "110",
-          "c": "120"
+          "a": "{cur}100",
+          "b": "{cur}110",
+          "c": "{cur}120"
         },
-        "correct_feedback": "Correct. 10 percent of 100 is 10, so you have 110.",
-        "incorrect_feedback": "Not quite. The answer is B. 10 percent of 100 is 10, so you have 110."
+        "correct_feedback": "Correct. 10 percent of {cur}100 is {cur}10, so you have {cur}110.",
+        "incorrect_feedback": "Not quite. The answer is B. 10 percent of {cur}100 is {cur}10, so you have {cur}110."
       }
     },
     {

@@ -2,24 +2,32 @@
 
 import pytest
 
+from app.config import Settings
 from app.schemas.lesson_template import LessonTemplate
 from app.schemas.shared import (
+    Country,
     Goal,
     LearnerNeeds,
     LearnerProfile,
     LifeStage,
     Topic,
 )
-from app.services.lesson_builder import customize_lesson
+from app.services.lesson_builder import country_facts_for, customize_lesson
+from app.services.question_bank import load_question_bank
 
 FORBIDDEN_VOICE_WORDS = ("tap", "swipe", "see")
+QUESTION_BANK = load_question_bank(Settings().question_bank_dir)
+KENYA_FACTS = country_facts_for(QUESTION_BANK, Country.KE)
 
 
 def card_ids(
     template: LessonTemplate, profile: LearnerProfile, needs: LearnerNeeds
 ) -> list[str]:
     """Customize the lesson and return the ids of the cards served."""
-    return [card.card_id for card in customize_lesson(template, profile, needs).cards]
+    return [
+        card.card_id
+        for card in customize_lesson(template, profile, needs, KENYA_FACTS).cards
+    ]
 
 
 def with_proficiency(profile: LearnerProfile, proficiency: float) -> LearnerProfile:
@@ -36,7 +44,9 @@ def test_customize_lesson_serves_cards_for_sample_student(
     learner_profile: LearnerProfile,
     learner_needs: LearnerNeeds,
 ) -> None:
-    lesson = customize_lesson(saving_template, learner_profile, learner_needs)
+    lesson = customize_lesson(
+        saving_template, learner_profile, learner_needs, KENYA_FACTS
+    )
 
     assert lesson.lesson_id == "saving"
     assert lesson.difficulty == 2
@@ -55,7 +65,9 @@ def test_customize_lesson_fills_findex_facts_in_text_and_voice(
     learner_profile: LearnerProfile,
     learner_needs: LearnerNeeds,
 ) -> None:
-    lesson = customize_lesson(saving_template, learner_profile, learner_needs)
+    lesson = customize_lesson(
+        saving_template, learner_profile, learner_needs, KENYA_FACTS
+    )
     bridge = next(card for card in lesson.cards if card.card_id == "people-like-you")
 
     assert bridge.text == (
@@ -74,7 +86,7 @@ def test_customize_lesson_drops_harder_cards_for_beginners(
 ) -> None:
     beginner = with_proficiency(learner_profile, 0.1)
 
-    lesson = customize_lesson(saving_template, beginner, learner_needs)
+    lesson = customize_lesson(saving_template, beginner, learner_needs, KENYA_FACTS)
 
     assert lesson.difficulty == 1
     assert "interest-quiz" not in [card.card_id for card in lesson.cards]
@@ -126,7 +138,7 @@ def test_customize_lesson_does_not_change_the_base_lesson(
 ) -> None:
     before = saving_template.model_copy(deep=True)
 
-    customize_lesson(saving_template, learner_profile, learner_needs)
+    customize_lesson(saving_template, learner_profile, learner_needs, KENYA_FACTS)
 
     assert saving_template == before
 
@@ -136,7 +148,9 @@ def test_customize_lesson_keeps_voice_text_free_of_visual_words(
     learner_profile: LearnerProfile,
     learner_needs: LearnerNeeds,
 ) -> None:
-    lesson = customize_lesson(saving_template, learner_profile, learner_needs)
+    lesson = customize_lesson(
+        saving_template, learner_profile, learner_needs, KENYA_FACTS
+    )
 
     for card in lesson.cards:
         spoken_words = card.voice.speak_text.lower().replace(".", " ").split()
@@ -151,7 +165,7 @@ def test_customize_lesson_rejects_needs_for_another_learner(
     other_needs = learner_needs.model_copy(update={"user_id": "u_someone_else"})
 
     with pytest.raises(ValueError, match="u_someone_else"):
-        customize_lesson(saving_template, learner_profile, other_needs)
+        customize_lesson(saving_template, learner_profile, other_needs, KENYA_FACTS)
 
 
 def test_customize_lesson_rejects_unknown_placeholder(
@@ -165,7 +179,7 @@ def test_customize_lesson_rejects_unknown_placeholder(
     broken = saving_template.model_copy(update={"cards": [broken_card]})
 
     with pytest.raises(ValueError, match="balance"):
-        customize_lesson(broken, learner_profile, learner_needs)
+        customize_lesson(broken, learner_profile, learner_needs, KENYA_FACTS)
 
 
 def test_customize_lesson_rejects_lesson_with_no_fitting_cards(
@@ -179,4 +193,49 @@ def test_customize_lesson_rejects_lesson_with_no_fitting_cards(
     template = saving_template.model_copy(update={"cards": parent_only})
 
     with pytest.raises(ValueError, match="no cards"):
-        customize_lesson(template, learner_profile, learner_needs)
+        customize_lesson(template, learner_profile, learner_needs, KENYA_FACTS)
+
+
+@pytest.mark.parametrize(
+    ("country", "mobile_money"),
+    [
+        (Country.KE, "M-Pesa"),
+        (Country.US, "a payment app like Zelle or Venmo"),
+        (Country.MX, "an SPEI or CoDi transfer"),
+    ],
+)
+def test_customize_lesson_fills_local_country_facts(
+    saving_template: LessonTemplate,
+    learner_profile: LearnerProfile,
+    learner_needs: LearnerNeeds,
+    country: Country,
+    mobile_money: str,
+) -> None:
+    local_card = saving_template.cards[0].model_copy(
+        update={"text": "Send money with {mobile_money}. Save {cur}100."}
+    )
+    template = saving_template.model_copy(update={"cards": [local_card]})
+    facts = country_facts_for(QUESTION_BANK, country)
+
+    lesson = customize_lesson(template, learner_profile, learner_needs, facts)
+
+    assert lesson.cards[0].text == (
+        f"Send money with {mobile_money}. Save {facts['cur']}100."
+    )
+
+
+def test_country_facts_are_in_the_base_lesson_language() -> None:
+    assert KENYA_FACTS["scam_report_agency"] == "the police"
+
+
+def test_customize_lesson_rejects_fact_name_used_twice(
+    saving_template: LessonTemplate,
+    learner_profile: LearnerProfile,
+    learner_needs: LearnerNeeds,
+) -> None:
+    clashing_facts = {**KENYA_FACTS, "group_percent": "99"}
+
+    with pytest.raises(ValueError, match="group_percent"):
+        customize_lesson(
+            saving_template, learner_profile, learner_needs, clashing_facts
+        )

@@ -34,26 +34,26 @@
     {
       "card_id": "build-credit",
       "type": "concept",
-      "text": "Paying bills and loans on time builds your credit score, which makes future loans cheaper.",
+      "text": "Paying bills and loans on time builds your credit score, which makes future loans cheaper. Your borrowing history is kept by {credit_bureau}.",
       "life_stages": [
         "student",
         "first_job"
       ],
       "voice": {
-        "speak_text": "Paying bills and loans on time builds your credit score, which makes future loans cheaper. Say next to continue.",
+        "speak_text": "Paying bills and loans on time builds your credit score, which makes future loans cheaper. Your borrowing history is kept by {credit_bureau}. Say next to continue.",
         "answer_mode": "say_next"
       }
     },
     {
       "card_id": "compare-lenders",
       "type": "concept",
-      "text": "Before borrowing for school fees or health costs, compare the total cost at a bank, a savings group and a lender.",
+      "text": "Before borrowing for school fees or health costs, compare the total cost at a bank, a {savings_group} and a lender. Borrowing from {informal_lender} often costs the most.",
       "life_stages": [
         "parent",
         "retired"
       ],
       "voice": {
-        "speak_text": "Before borrowing for school fees or health costs, compare the total cost at a bank, a savings group and a lender. Say next to continue.",
+        "speak_text": "Before borrowing for school fees or health costs, compare the total cost at a bank, a {savings_group} and a lender. Borrowing from {informal_lender} often costs the most. Say next to continue.",
         "answer_mode": "say_next"
       }
     },
@@ -72,29 +72,29 @@
     {
       "card_id": "interest-amount-quiz",
       "type": "mc_quiz",
-      "text": "You borrow 100 and must pay back 130. How much is the interest?",
+      "text": "You borrow {cur}100 and must pay back {cur}130. How much is the interest?",
       "options": {
-        "a": "30",
-        "b": "100",
-        "c": "130"
+        "a": "{cur}30",
+        "b": "{cur}100",
+        "c": "{cur}130"
       },
       "correct_option": "a",
       "voice": {
-        "speak_text": "You borrow 100 and must pay back 130. How much is the interest? A: 30. B: 100. C: 130. Say A, B or C.",
+        "speak_text": "You borrow {cur}100 and must pay back {cur}130. How much is the interest? A: {cur}30. B: {cur}100. C: {cur}130. Say A, B or C.",
         "answer_mode": "say_option",
         "spoken_options": {
-          "a": "30",
-          "b": "100",
-          "c": "130"
+          "a": "{cur}30",
+          "b": "{cur}100",
+          "c": "{cur}130"
         },
-        "correct_feedback": "Correct. 130 minus the 100 you borrowed is 30 in interest.",
-        "incorrect_feedback": "Not quite. The answer is A. 130 minus the 100 you borrowed is 30 in interest."
+        "correct_feedback": "Correct. {cur}130 minus the {cur}100 you borrowed is {cur}30 in interest.",
+        "incorrect_feedback": "Not quite. The answer is A. {cur}130 minus the {cur}100 you borrowed is {cur}30 in interest."
       }
     },
     {
       "card_id": "compare-loans-quiz",
       "type": "mc_quiz",
-      "text": "Loan one: pay back 120 in total. Loan two: pay 10 a week for 15 weeks. Which costs less?",
+      "text": "Loan one: pay back {cur}120 in total. Loan two: pay {cur}10 a week for 15 weeks. Which costs less?",
       "options": {
         "a": "Loan one",
         "b": "Loan two",
@@ -103,15 +103,15 @@
       "correct_option": "a",
       "min_difficulty": 2,
       "voice": {
-        "speak_text": "Loan one: pay back 120 in total. Loan two: pay 10 a week for 15 weeks. Which costs less? A: loan one. B: loan two. C: they cost the same. Say A, B or C.",
+        "speak_text": "Loan one: pay back {cur}120 in total. Loan two: pay {cur}10 a week for 15 weeks. Which costs less? A: loan one. B: loan two. C: they cost the same. Say A, B or C.",
         "answer_mode": "say_option",
         "spoken_options": {
           "a": "loan one",
           "b": "loan two",
           "c": "they cost the same"
         },
-        "correct_feedback": "Correct. 10 a week for 15 weeks is 150, so loan one costs less.",
-        "incorrect_feedback": "Not quite. The answer is A. 10 a week for 15 weeks is 150, so loan one costs less."
+        "correct_feedback": "Correct. {cur}10 a week for 15 weeks is {cur}150, so loan one costs less.",
+        "incorrect_feedback": "Not quite. The answer is A. {cur}10 a week for 15 weeks is {cur}150, so loan one costs less."
       }
     },
     {

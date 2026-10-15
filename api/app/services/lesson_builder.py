@@ -1,14 +1,16 @@
 """Lesson pipeline: template fill, LLM rewrite, voice script, validate, cache. Owner: Faraz (@faraz999shah).
 
 customize_lesson() is the deterministic first step: it picks the cards that
-fit the learner and fills every {placeholder} with facts from code, so no
-number in a lesson ever comes from the LLM.
+fit the learner and fills every {placeholder} with facts from code (Findex
+numbers and local country facts), so no fact in a lesson ever comes from the
+LLM.
 """
 
 from collections.abc import Mapping
 
 from app.schemas.lesson_template import CardTemplate, LessonTemplate
 from app.schemas.shared import (
+    Country,
     Difficulty,
     LearnerNeeds,
     LearnerProfile,
@@ -17,13 +19,18 @@ from app.schemas.shared import (
     TopicNeed,
     VoiceBlock,
 )
+from app.services.lesson_templates import BASE_LESSON_LANGUAGE
 from app.services.proficiency import difficulty_band
+from app.services.question_bank import QuestionBank
 
 PERCENT = 100
 
 
 def customize_lesson(
-    template: LessonTemplate, profile: LearnerProfile, needs: LearnerNeeds
+    template: LessonTemplate,
+    profile: LearnerProfile,
+    needs: LearnerNeeds,
+    country_facts: Mapping[str, str],
 ) -> Lesson:
     """Tailor a stored base lesson to one learner.
 
@@ -31,6 +38,8 @@ def customize_lesson(
         template: The base lesson, shared by every learner.
         profile: The learner's profile from profile_store.get_profile().
         needs: What the learner struggles with, from the Findex data.
+        country_facts: Local facts for the learner's country, from
+            country_facts_for().
 
     Returns:
         The lesson at the learner's difficulty, with only the cards that fit
@@ -46,7 +55,7 @@ def customize_lesson(
         )
 
     difficulty = difficulty_band(profile.topic_scores[template.topic].proficiency)
-    facts = lesson_facts(needs.topic_needs[template.topic])
+    facts = _merge_facts(country_facts, lesson_facts(needs.topic_needs[template.topic]))
     cards = [
         _fill_card(card, facts, template.lesson_id)
         for card in template.cards
@@ -85,6 +94,26 @@ def lesson_facts(need: TopicNeed) -> dict[str, str]:
         "group_percent": _as_percent(need.group_rate),
         "benchmark_percent": _as_percent(need.benchmark_rate),
     }
+
+
+def country_facts_for(bank: QuestionBank, country: Country) -> dict[str, str]:
+    """Local facts for a country (currency, M-Pesa, FDIC...) in the base lesson language.
+
+    The facts come from Will's question bank. They are filled in English
+    because base lessons are English; the wording step translates the whole
+    lesson, facts included, so a failed rewrite never mixes languages.
+    """
+    return dict(bank.countries[country].variables[BASE_LESSON_LANGUAGE])
+
+
+def _merge_facts(
+    country_facts: Mapping[str, str], need_facts: Mapping[str, str]
+) -> dict[str, str]:
+    """Combine both fact sources, refusing a name used by both."""
+    clashes = country_facts.keys() & need_facts.keys()
+    if clashes:
+        raise ValueError(f"fact names used twice: {sorted(clashes)}")
+    return {**country_facts, **need_facts}
 
 
 def _fill_card(

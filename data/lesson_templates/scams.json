@@ -25,14 +25,14 @@
     {
       "card_id": "prize-message",
       "type": "scam_swipe",
-      "text": "A message says: You won a prize! Send 50 today to claim it. Is this a scam or safe?",
+      "text": "A message says: You won a prize! Send {cur}50 today to claim it. Is this a scam or safe?",
       "options": {
         "a": "Scam",
         "b": "Safe"
       },
       "correct_option": "a",
       "voice": {
-        "speak_text": "A message says: You won a prize! Send 50 today to claim it. Is this a scam or safe? A: scam. B: safe. Say A or B.",
+        "speak_text": "A message says: You won a prize! Send {cur}50 today to claim it. Is this a scam or safe? A: scam. B: safe. Say A or B.",
         "answer_mode": "say_option",
         "spoken_options": {
           "a": "scam",
@@ -121,6 +121,15 @@
         },
         "correct_feedback": "Correct. Big, fast, risk-free returns are a red flag.",
         "incorrect_feedback": "Not quite. The answer is A. Big, fast, risk-free returns are a red flag."
+      }
+    },
+    {
+      "card_id": "report-it",
+      "type": "concept",
+      "text": "If you think you were scammed, tell your bank right away and report it to {scam_report_agency}.",
+      "voice": {
+        "speak_text": "If you think you were scammed, tell your bank right away and report it to {scam_report_agency}. Say next to continue.",
+        "answer_mode": "say_next"
       }
     },
     {

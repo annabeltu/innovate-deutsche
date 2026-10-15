@@ -7,9 +7,9 @@
     {
       "card_id": "what-is-an-account",
       "type": "concept",
-      "text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name.",
+      "text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name. To open one, you usually need {id_document}.",
       "voice": {
-        "speak_text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name. Say next to continue.",
+        "speak_text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name. To open one, you usually need {id_document}. Say next to continue.",
         "answer_mode": "say_next"
       }
     },
@@ -25,9 +25,9 @@
     {
       "card_id": "safer-than-cash",
       "type": "concept",
-      "text": "Cash can be lost or stolen. Money in an account is protected, and there is a record of what you have.",
+      "text": "Cash can be lost or stolen. Money in a bank account is protected by {deposit_insurer}, and there is a record of what you have.",
       "voice": {
-        "speak_text": "Cash can be lost or stolen. Money in an account is protected, and there is a record of what you have. Say next to continue.",
+        "speak_text": "Cash can be lost or stolen. Money in a bank account is protected by {deposit_insurer}, and there is a record of what you have. Say next to continue.",
         "answer_mode": "say_next"
       }
     },
@@ -47,13 +47,13 @@
     {
       "card_id": "receive-support-safely",
       "type": "concept",
-      "text": "An account lets you receive support or a pension safely and send money to family without carrying cash.",
+      "text": "An account lets you receive support or a pension safely and send money to family with {mobile_money}, without carrying cash.",
       "life_stages": [
         "parent",
         "retired"
       ],
       "voice": {
-        "speak_text": "An account lets you receive support or a pension safely and send money to family without carrying cash. Say next to continue.",
+        "speak_text": "An account lets you receive support or a pension safely and send money to family with {mobile_money}, without carrying cash. Say next to continue.",
         "answer_mode": "say_next"
       }
     },

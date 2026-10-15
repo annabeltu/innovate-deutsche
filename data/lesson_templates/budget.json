@@ -95,23 +95,23 @@
     {
       "card_id": "money-left-quiz",
       "type": "mc_quiz",
-      "text": "You earn 1000 a month and your needs cost 700. How much is left for savings and wants?",
+      "text": "You earn {cur}1000 a month and your needs cost {cur}700. How much is left for savings and wants?",
       "options": {
-        "a": "300",
-        "b": "700",
-        "c": "1700"
+        "a": "{cur}300",
+        "b": "{cur}700",
+        "c": "{cur}1700"
       },
       "correct_option": "a",
       "voice": {
-        "speak_text": "You earn 1000 a month and your needs cost 700. How much is left for savings and wants? A: 300. B: 700. C: 1700. Say A, B or C.",
+        "speak_text": "You earn {cur}1000 a month and your needs cost {cur}700. How much is left for savings and wants? A: {cur}300. B: {cur}700. C: {cur}1700. Say A, B or C.",
         "answer_mode": "say_option",
         "spoken_options": {
-          "a": "300",
-          "b": "700",
-          "c": "1700"
+          "a": "{cur}300",
+          "b": "{cur}700",
+          "c": "{cur}1700"
         },
-        "correct_feedback": "Correct. 1000 minus 700 leaves 300.",
-        "incorrect_feedback": "Not quite. The answer is A. 1000 minus 700 leaves 300."
+        "correct_feedback": "Correct. {cur}1000 minus {cur}700 leaves {cur}300.",
+        "incorrect_feedback": "Not quite. The answer is A. {cur}1000 minus {cur}700 leaves {cur}300."
       }
     },
     {

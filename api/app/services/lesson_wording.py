@@ -12,12 +12,12 @@ import time
 
 from app.llm.client import LlmClient, LlmError, load_prompt
 from app.schemas.shared import Language, Lesson
+from app.services.lesson_templates import BASE_LESSON_LANGUAGE
 from app.services.validation import LessonValidationError, validate_rewrite
 
 PROMPT_FILE = "lesson_wording_v1.md"
 PROMPT_VERSION = "lesson_wording_v1"
 MAX_ATTEMPTS = 2
-BASE_LESSON_LANGUAGE = Language.EN
 
 logger = logging.getLogger(__name__)
 
