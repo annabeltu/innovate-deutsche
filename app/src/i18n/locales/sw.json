@@ -1,0 +1,107 @@
+{
+  "onboarding": {
+    "country": {
+      "US": "Marekani",
+      "MX": "Meksiko",
+      "KE": "Kenya"
+    },
+    "language": {
+      "en": "Kiingereza",
+      "es": "Kihispania",
+      "sw": "Kiswahili"
+    },
+    "accessibility": {
+      "readAloud": {
+        "label": "Soma kwa sauti",
+        "helper": "Kompass inasoma kila skrini kwa sauti."
+      },
+      "simpleMode": {
+        "label": "Hali rahisi",
+        "helper": "Sentensi fupi na maneno machache kwenye kila skrini."
+      },
+      "largerText": {
+        "label": "Maandishi makubwa",
+        "helper": "Hufanya maandishi yote kuwa makubwa na rahisi kusoma."
+      }
+    },
+    "lifeStage": {
+      "student": {
+        "label": "Mwanafunzi",
+        "helper": "Niko shuleni au ninasoma."
+      },
+      "first_job": {
+        "label": "Kazi ya kwanza",
+        "helper": "Nimeanza hivi karibuni kupata pesa zangu mwenyewe."
+      },
+      "parent": {
+        "label": "Mzazi",
+        "helper": "Ninasimamia pesa za familia yangu."
+      },
+      "retired": {
+        "label": "Mstaafu",
+        "helper": "Nimeacha kufanya kazi na ninaishi kwa akiba au pensheni."
+      }
+    },
+    "goal": {
+      "save_more": {
+        "label": "Kuweka akiba zaidi",
+        "helper": "Kuweka pesa kando na kuzilinda."
+      },
+      "avoid_debt": {
+        "label": "Kuepuka madeni",
+        "helper": "Kukopa kwa busara na kuepuka mikopo ghali."
+      },
+      "stay_safe_online": {
+        "label": "Kuwa salama mtandaoni",
+        "helper": "Kutambua ulaghai na kulinda pesa zangu."
+      },
+      "handle_emergencies": {
+        "label": "Kukabili dharura",
+        "helper": "Kuwa tayari kwa gharama zisizotarajiwa."
+      }
+    },
+    "comfort": {
+      "beginner": {
+        "label": "Mwanzilishi",
+        "helper": "Mambo ya pesa ni mapya kwangu."
+      },
+      "somewhat_comfortable": {
+        "label": "Nina uelewa kiasi",
+        "helper": "Najua mambo ya msingi lakini nina maswali."
+      },
+      "confident": {
+        "label": "Nina uhakika",
+        "helper": "Ninasimamia pesa zangu vizuri na nataka kujifunza zaidi."
+      }
+    },
+    "confidence": {
+      "accounts": {
+        "label": "Akaunti za benki na malipo",
+        "question": "Una uhakika kiasi gani kutumia akaunti kuhifadhi, kutuma na kupokea pesa?"
+      },
+      "saving": {
+        "label": "Kuweka akiba",
+        "question": "Una uhakika kiasi gani kuchagua mahali salama pa kuweka akiba?"
+      },
+      "borrowing": {
+        "label": "Mikopo",
+        "question": "Una uhakika kiasi gani kuelewa gharama kamili ya mkopo?"
+      },
+      "scams": {
+        "label": "Kutambua ulaghai",
+        "question": "Una uhakika kiasi gani kutambua ulaghai wa pesa?"
+      },
+      "budget": {
+        "label": "Bajeti na dharura",
+        "question": "Una uhakika kiasi gani kupanga bajeti ya mwezi na kuweka akiba ya dharura?"
+      }
+    },
+    "confidenceScale": {
+      "1": "Chini sana",
+      "2": "Chini",
+      "3": "Wastani",
+      "4": "Nzuri",
+      "5": "Juu"
+    }
+  }
+}

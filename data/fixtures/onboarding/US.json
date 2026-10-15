@@ -1,0 +1,19 @@
+{
+  "country": "US",
+  "language": "en",
+  "accessibility": {
+    "read_aloud": false,
+    "simple_mode": false,
+    "large_text": false
+  },
+  "life_stage": "first_job",
+  "goal": "save_more",
+  "comfort": "somewhat_comfortable",
+  "confidence": {
+    "accounts": 4,
+    "saving": 2,
+    "borrowing": 3,
+    "scams": 3,
+    "budget": 2
+  }
+}

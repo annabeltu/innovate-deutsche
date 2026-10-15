@@ -1,0 +1,107 @@
+{
+  "onboarding": {
+    "country": {
+      "US": "Estados Unidos",
+      "MX": "México",
+      "KE": "Kenia"
+    },
+    "language": {
+      "en": "Inglés",
+      "es": "Español",
+      "sw": "Suajili"
+    },
+    "accessibility": {
+      "readAloud": {
+        "label": "Leer en voz alta",
+        "helper": "Kompass lee cada pantalla en voz alta."
+      },
+      "simpleMode": {
+        "label": "Modo sencillo",
+        "helper": "Frases más cortas y menos palabras en cada pantalla."
+      },
+      "largerText": {
+        "label": "Texto más grande",
+        "helper": "Hace todo el texto más grande y fácil de leer."
+      }
+    },
+    "lifeStage": {
+      "student": {
+        "label": "Estudiante",
+        "helper": "Estoy en la escuela o estudiando."
+      },
+      "first_job": {
+        "label": "Primer empleo",
+        "helper": "Hace poco empecé a ganar mi propio dinero."
+      },
+      "parent": {
+        "label": "Madre o padre",
+        "helper": "Administro el dinero de mi familia."
+      },
+      "retired": {
+        "label": "Jubilado",
+        "helper": "Ya no trabajo y vivo de mis ahorros o una pensión."
+      }
+    },
+    "goal": {
+      "save_more": {
+        "label": "Ahorrar más",
+        "helper": "Apartar dinero y mantenerlo seguro."
+      },
+      "avoid_debt": {
+        "label": "Evitar deudas",
+        "helper": "Pedir prestado con cuidado y evitar préstamos caros."
+      },
+      "stay_safe_online": {
+        "label": "Protegerme en línea",
+        "helper": "Detectar fraudes y proteger mi dinero."
+      },
+      "handle_emergencies": {
+        "label": "Enfrentar emergencias",
+        "helper": "Estar preparado para gastos inesperados."
+      }
+    },
+    "comfort": {
+      "beginner": {
+        "label": "Principiante",
+        "helper": "Los temas de dinero son nuevos para mí."
+      },
+      "somewhat_comfortable": {
+        "label": "Algo cómodo",
+        "helper": "Conozco lo básico, pero tengo preguntas."
+      },
+      "confident": {
+        "label": "Con confianza",
+        "helper": "Manejo bien mi dinero y quiero aprender más."
+      }
+    },
+    "confidence": {
+      "accounts": {
+        "label": "Cuentas bancarias y pagos",
+        "question": "¿Qué tanta confianza tienes al usar una cuenta para guardar, enviar y recibir dinero?"
+      },
+      "saving": {
+        "label": "Ahorro",
+        "question": "¿Qué tanta confianza tienes al elegir un lugar seguro para ahorrar dinero?"
+      },
+      "borrowing": {
+        "label": "Préstamos y crédito",
+        "question": "¿Qué tanta confianza tienes al entender el costo total de un préstamo?"
+      },
+      "scams": {
+        "label": "Detectar fraudes",
+        "question": "¿Qué tanta confianza tienes al reconocer un fraude con dinero?"
+      },
+      "budget": {
+        "label": "Presupuesto y emergencias",
+        "question": "¿Qué tanta confianza tienes al planear un presupuesto mensual y ahorrar para emergencias?"
+      }
+    },
+    "confidenceScale": {
+      "1": "Muy baja",
+      "2": "Baja",
+      "3": "Media",
+      "4": "Buena",
+      "5": "Alta"
+    }
+  }
+}

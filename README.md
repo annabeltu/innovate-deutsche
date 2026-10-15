@@ -23,6 +23,19 @@ data/   Findex data, country packs, lesson templates, question bank, fixtures
 docs/   API contracts and architecture
 ```
 
+## Onboarding data
+
+Onboarding answers become one JSON payload for the LearnerProfile API. Full details are in [`docs/onboarding-contract.md`](docs/onboarding-contract.md).
+
+| What | Where |
+|---|---|
+| Types (`OnboardingState`, `OnboardingPayload`) | `app/src/types/onboarding.ts` |
+| Answer options and confidence questions | `app/src/onboarding/options.ts` |
+| Countries and languages | `app/src/onboarding/countries.ts` |
+| Validation and the JSON builder | `app/src/onboarding/build-payload.ts` (`buildOnboardingPayload(state)`) |
+| Onboarding text (en, es, sw) | `app/src/i18n/locales/` |
+| Mock payloads (US, MX, KE) | `data/fixtures/onboarding/` |
+
 ## Running the API
 
 Requires Python 3.11.
