@@ -5,9 +5,9 @@ import pytest
 
 from app.schemas.shared import Country, Difficulty, Topic
 from app.services.question_bank import (
+    BASELINE_DIFFICULTIES,
     QUESTIONS_PER_TOPIC,
     QuestionBank,
-    difficulty_for_confidence,
     render_quiz,
     select_questions,
 )
@@ -23,21 +23,7 @@ COUNTRY_LANGUAGE_PAIRS = [
 ]
 
 
-@pytest.mark.parametrize(
-    ("confidence", "expected"),
-    [
-        (0.0, Difficulty.EASY),
-        (0.39, Difficulty.EASY),
-        (0.4, Difficulty.MEDIUM),
-        (0.69, Difficulty.MEDIUM),
-        (0.7, Difficulty.HARD),
-        (1.0, Difficulty.HARD),
-    ],
-)
-def test_difficulty_follows_confidence_slider(
-    confidence: float, expected: Difficulty
-) -> None:
-    assert difficulty_for_confidence(confidence) == expected
+EASY, MEDIUM, HARD = Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD
 
 
 def test_bank_offers_expected_languages_per_country(bank: QuestionBank) -> None:
@@ -50,35 +36,45 @@ def test_bank_offers_expected_languages_per_country(bank: QuestionBank) -> None:
     assert offered == set(COUNTRY_LANGUAGE_PAIRS)
 
 
-def test_select_questions_picks_two_per_topic_at_slider_difficulty(
+def test_select_questions_serves_easy_then_hard_for_every_topic(
     bank: QuestionBank, rng: random.Random
 ) -> None:
-    confidence = {
-        Topic.ACCOUNTS: 0.1,
-        Topic.SAVING: 0.5,
-        Topic.BORROWING: 0.9,
-        Topic.SCAMS: 0.2,
-        Topic.BUDGET: 0.8,
-    }
-
-    questions = select_questions(bank, confidence, rng)
+    questions = select_questions(bank, rng)
 
     assert len(questions) == QUESTIONS_PER_TOPIC * len(Topic)
     for topic in Topic:
         picked = [question for question in questions if question.topic == topic]
-        assert len(picked) == QUESTIONS_PER_TOPIC
         assert len({question.id for question in picked}) == QUESTIONS_PER_TOPIC
-        assert all(
-            question.difficulty == difficulty_for_confidence(confidence[topic])
-            for question in picked
+        assert tuple(question.difficulty for question in picked) == (
+            BASELINE_DIFFICULTIES
         )
 
 
-def test_select_questions_is_deterministic_for_a_seed(bank: QuestionBank) -> None:
-    confidence = dict.fromkeys(Topic, 0.5)
+def test_select_questions_varies_between_learners(bank: QuestionBank) -> None:
+    quizzes = {
+        tuple(question.id for question in select_questions(bank, random.Random(seed)))
+        for seed in range(20)
+    }
 
-    first = select_questions(bank, confidence, random.Random(7))
-    second = select_questions(bank, confidence, random.Random(7))
+    assert len(quizzes) > 1
+
+
+def test_select_questions_falls_back_to_nearest_difficulty(
+    bank: QuestionBank, rng: random.Random
+) -> None:
+    without_easy = bank.model_copy(
+        update={"questions": [q for q in bank.questions if q.difficulty != EASY]}
+    )
+
+    questions = select_questions(without_easy, rng)
+
+    difficulties = [question.difficulty for question in questions]
+    assert difficulties == [MEDIUM, HARD] * len(Topic)
+
+
+def test_select_questions_is_deterministic_for_a_seed(bank: QuestionBank) -> None:
+    first = select_questions(bank, random.Random(7))
+    second = select_questions(bank, random.Random(7))
 
     assert [question.id for question in first] == [question.id for question in second]
 

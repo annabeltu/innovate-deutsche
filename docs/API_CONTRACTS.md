@@ -121,7 +121,7 @@ Response `201`: `user_id` plus the quiz, written entirely in the learner's langu
 ```
 
 - 10 questions, 2 per topic in topic order, from the pre-written bank in `data/question_bank/`.
-- Difficulty follows each topic's slider: confidence below 0.4 → 1, below 0.7 → 2, otherwise 3.
+- Every learner gets one easy (difficulty 1) and one hard (difficulty 3) question per topic, easy first, regardless of their sliders. Everyone is measured on the same scale, so `quiz_score` 0 means missing the basics, 0.5 means basics only, and 1 means basics plus harder material. Confidence still counts through the proficiency formula.
 - The answer key never leaves the server; it is stored with `quiz_id`.
 
 `POST /v1/quiz/{quiz_id}/submit` request `{"user_id": "...", "answers": [{"question_id": "...", "option_id": "b"}]}`. Response `200` is `{"profile": LearnerProfile, "results": [{"question_id", "correct", "correct_option_id"}]}`. Unanswered questions count as wrong; an unknown question or option, or the same question twice, is `400 validation_error`.
