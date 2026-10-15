@@ -25,7 +25,7 @@ Option 3. The API calls Gemini only from `app/speech/gemini.py`, behind two endp
 - `POST /v1/voice/transcribe` (audio in, text out)
 - `GET /v1/voice/speak` (text in, `audio/wav` out)
 
-The app keeps `expo-speech` as the default read-aloud and calls `/v1/voice/speak` only when the phone has no voice for the active language.
+Learners found the phone's default voices robotic, so the app reads aloud with Gemini's voice first, in a warm speaking style, in the selected language. If Gemini can't answer (no API, quota used up, offline), it falls back to the device's most natural voice for the learner's locale (exact locale and enhanced quality first) through `expo-speech`.
 
 ## Consequences
 
@@ -38,5 +38,5 @@ The app keeps `expo-speech` as the default read-aloud and calls `/v1/voice/speak
 - Every Gemini call has a timeout. Recordings stay in memory, and audio is never logged.
 - The inline-audio field name for transcription (`data`) follows the Interactions API's audio output shape. The docs only show file URIs for input, so this must be checked with a real key before the demo.
 - Swahili transcription quality is unproven. Test with Kenyan speakers before the demo.
-- Server read-aloud costs money per request, which is why on-device speech stays the default and responses are cacheable for a day.
+- Server read-aloud spends quota on every new piece of text, and the first time a screen is read there's a delay of about 3–4 s. The API and the app cache audio for repeated text, and the device voice takes over once the daily quota is gone.
 - AGENTS.md §0 should replace Whisper with Gemini once this ADR is accepted.
