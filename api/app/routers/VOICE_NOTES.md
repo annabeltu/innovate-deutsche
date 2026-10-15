@@ -1,9 +1,11 @@
-# Voice & integration: first tasks (@voice-placeholder)
+# Voice & integration: tasks (@voice-placeholder)
 
-Files: `routers/voice.py`, `services/intent.py`, `.github/`, deployment.
+Files: `routers/voice.py`, `schemas/voice.py`, `services/intent.py`, `services/intent_vocabulary.py`, `services/speech_to_text.py`, `services/text_to_speech.py`, `services/voice_provider_http.py`, `app/src/voice/`, `app/src/api/voice.ts`, `.github/`, `docs/VOICE_API.md`, `docs/DEPLOYMENT.md`.
 
-1. **Intent matching.** Implement `POST /v1/voice/intent` in `services/intent.py` with keyword matching per language (yes/haan/ndiyo/ja, no/nahin/hapana/nein, repeat, next, back, help, start, option A–D, scam, legit, spoken numbers). Return `unknown` when nothing matches so the app can re-ask. No LLM. Cover it with pytest.
-2. **Speech-to-text.** Implement `POST /v1/voice/transcribe` (multipart audio + language → `{text, language}`) with Whisper, and a fixture transcript when no `WHISPER_API_KEY` is set.
-3. **Text-to-speech.** Implement `POST /v1/voice/speak` (`{text, language, rate}` → mp3) as an optional higher-quality voice. The app falls back to on-device expo-speech when it fails or is offline.
-4. **CI.** Add `.github/workflows/ci.yml` running pytest + ruff for `api/` and eslint + `tsc --noEmit` for `app/` on every PR into `dev` and `main`.
-5. **Deployment + end-to-end test.** Deploy the API, document `API_BASE_URL`, and write an end-to-end test of the voice-only flow (setup → onboarding → path → lesson → Ask Kiko → bonus lesson) using only voice intents.
+1. **Intent matching.** Done. `POST /v1/voice/intent` matches en/es/sw keywords deterministically, with no LLM. See `docs/VOICE_API.md`.
+2. **Speech-to-text.** Done; tested with mocks only. `POST /v1/voice/transcribe` calls Whisper and uses a labeled fixture when `VOICE_DEV_FIXTURES=true` and no key is set.
+3. **Text-to-speech.** Done; tested with mocks only. `POST /v1/voice/speak` returns MP3. The app falls back to expo-speech.
+4. **CI.** `.github/workflows/ci.yml`. The api job needs `ruff format` applied to `routers/path.py` and `routers/lessons.py` (one blank line each).
+5. **Voice-mode building blocks.** Built locally, not committed yet: lesson navigator, Ask Kiko flow, screen-reader hook, locales. They wait for Jest (`jest-expo`) in the app, plus the expo-speech/expo-audio adapters.
+6. **Deployment + end-to-end test.** The guide is in `docs/DEPLOYMENT.md`; nothing is deployed yet. The end-to-end voice-only test is blocked on `/v1/path`, `/v1/lessons`, `/v1/ask` and `/v1/bonus-lessons`.
+7. **Contract proposal.** Move `schemas/voice.py` into the shared contract. This needs approval from Faraz and Will.
