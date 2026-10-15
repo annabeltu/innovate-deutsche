@@ -37,11 +37,82 @@ Copy `.env.example` to `.env` and fill in keys when you need them.
 
 ## Running the app
 
+The app uses Expo SDK 54. Install its dependencies once from the repository root:
+
 ```bash
-cd app && npx expo start
+cd app
+npm ci
 ```
 
-Then press `i` for the iOS simulator, `a` for Android, or scan the QR code with Expo Go.
+### macOS: test in Xcode Device Hub
+
+Use **Device Hub** to display the simulated iPhone and **Expo Go** inside it to run Kompass. You do not need to open the repository in Xcode.
+
+1. **Finish Xcode setup.** Open Xcode and complete its installation prompts. Under **Xcode → Settings → Locations**, select Xcode in the **Command Line Tools** dropdown. Under **Components/Platforms**, install an iOS Simulator runtime if needed. If the tools still point to the standalone Command Line Tools, run:
+
+   ```bash
+   sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+   xcrun simctl list devices available
+   ```
+
+2. **Open Device Hub** from a terminal:
+
+   ```bash
+   open -a DeviceHub
+   ```
+
+   Device Hub is included with Xcode 27. Earlier Xcode versions use the Simulator app.
+
+3. **Start an iPhone simulator.** Select **iPhone 17 Pro** in Device Hub. If it is not running, open a new terminal tab and run:
+
+   ```bash
+   xcrun simctl boot "iPhone 17 Pro"
+   ```
+
+   Use a device name from `xcrun simctl list devices available` if yours differs. Skip the boot command if the device is already booted.
+
+4. **Install Expo Go if needed.** This only needs to be done once per simulator. In a separate terminal tab:
+
+   ```bash
+   cd /tmp
+   npx --yes expo-go download ios 54
+   ```
+
+   The command prints the downloaded `.app` path. Install that path on the booted simulator, for example:
+
+   ```bash
+   xcrun simctl install booted /private/tmp/Expo-Go-54.0.7.tar.app
+   ```
+
+   Substitute the actual path printed by the download command if it differs. Keep only the simulator you want to test booted when using `booted` in these commands.
+
+5. **Start Kompass.** In a terminal, navigate to this repository's `app/` folder and run:
+
+   ```bash
+   npx expo start --go --localhost
+   ```
+
+   Leave this terminal running. If Expo is already running, use that terminal instead. To clear the bundler cache when troubleshooting, add `--clear`.
+
+6. **Open Kompass in the simulator.** In a separate terminal tab, run:
+
+   ```bash
+   xcrun simctl openurl booted exp://127.0.0.1:8081
+   ```
+
+   Accept any prompt inside the simulated iPhone to open Expo Go. If Metro reports a port other than `8081`, use that port in the URL. Use this command instead of Expo's **i** shortcut with Xcode 27: SDK 54's CLI still expects the older Simulator app.
+
+7. **Test the UI.** Click language and country cards. Select Mexico or Kenya to check the background. Click and drag upward to scroll. Click **Get started** to move to the next onboarding screen. To compare phone sizes, boot another installed device, install Expo Go on it, and open the same Metro URL.
+
+8. **Refresh changes.** Code changes should refresh automatically. To reload manually, focus the terminal running Expo and press **r**.
+
+9. **Stop the server.** Press **Ctrl+C** in the Expo terminal when finished.
+
+This localhost workflow runs entirely on your Mac and does not require your physical iPhone to connect over Wi-Fi or an ngrok tunnel.
+
+### Physical phone or Android
+
+From `app/`, run `npx expo start --go` and scan the QR code with a compatible Expo Go app on the same network. Press **a** to open an installed Android emulator. A physical phone cannot use the simulator's `127.0.0.1` URL.
 
 ## Branch strategy
 
