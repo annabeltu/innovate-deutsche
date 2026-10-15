@@ -63,7 +63,7 @@ def start_onboarding(
         )
     user_id = new_id("u")
     quiz_id = new_id("qz")
-    questions = select_questions(bank, request.confidence, rng)
+    questions = select_questions(bank, rng)
     quiz, answer_key = render_quiz(
         bank, questions, quiz_id, request.country, request.language
     )

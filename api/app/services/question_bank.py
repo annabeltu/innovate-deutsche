@@ -24,9 +24,13 @@ from app.schemas.shared import (
     QuizQuestion,
     Topic,
 )
-from app.services.proficiency import difficulty_band
 
-QUESTIONS_PER_TOPIC = 2
+# Every learner gets the same pair per topic so quiz scores share one scale:
+# 0 = misses the basics, 0.5 = basics only, 1 = basics and harder material.
+# Picking difficulty from the slider would let a low self-rating inflate the
+# score (two easy questions) and a high one deflate it (two hard ones).
+BASELINE_DIFFICULTIES = (Difficulty.EASY, Difficulty.HARD)
+QUESTIONS_PER_TOPIC = len(BASELINE_DIFFICULTIES)
 OPTION_IDS = ("a", "b", "c")
 
 OptionId = Literal["a", "b", "c"]
@@ -131,28 +135,22 @@ def load_question_bank(directory: Path) -> QuestionBank:
     return QuestionBank.model_validate({**questions_file, "countries": countries_file})
 
 
-def difficulty_for_confidence(confidence: float) -> Difficulty:
-    """Map a slider value to question difficulty: below 0.4 → 1, below 0.7 → 2, else 3."""
-    return difficulty_band(confidence)
+def select_questions(bank: QuestionBank, rng: random.Random) -> list[BankQuestion]:
+    """Pick one random question per BASELINE_DIFFICULTIES slot for each topic.
 
-
-def select_questions(
-    bank: QuestionBank, confidence: dict[Topic, float], rng: random.Random
-) -> list[BankQuestion]:
-    """Pick QUESTIONS_PER_TOPIC questions per topic, closest to the slider's difficulty first.
-
-    Questions at the exact difficulty are preferred; if there are too few, the
-    nearest difficulty fills in. Topics come out in enum order.
+    Topics come out in enum order, easiest question first. If a difficulty has
+    no question left, the nearest difficulty fills in.
     """
     selected: list[BankQuestion] = []
     for topic in Topic:
-        target = difficulty_for_confidence(confidence[topic])
-        candidates = [
-            question for question in bank.questions if question.topic == topic
-        ]
-        rng.shuffle(candidates)
-        candidates.sort(key=lambda question: abs(question.difficulty - target))
-        selected.extend(candidates[:QUESTIONS_PER_TOPIC])
+        remaining = [question for question in bank.questions if question.topic == topic]
+        rng.shuffle(remaining)
+        for target in BASELINE_DIFFICULTIES:
+            closest = min(
+                remaining, key=lambda question: abs(question.difficulty - target)
+            )
+            remaining.remove(closest)
+            selected.append(closest)
     return selected
 
 
