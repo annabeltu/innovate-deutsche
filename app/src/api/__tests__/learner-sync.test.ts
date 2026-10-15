@@ -65,3 +65,37 @@ it("creates a new learner and skips the quiz for the first API lesson", async ()
     body: { user_id: "u_new" },
   });
 });
+
+it("forgets bonus lessons owned by the previous learner when answers change", async () => {
+  useApp.setState({
+    bonus: ["Save for a bike"],
+    bonusLessonIds: { "Save for a bike": "bonus_old" },
+    completed: ["saving"],
+    country: "MX",
+  });
+  request.mockResolvedValueOnce({
+    user_id: "u_new",
+    quiz: { quiz_id: "q_new" },
+  });
+
+  expect(await ensureLearner()).toBe("u_new");
+
+  // The old learner's bonus lessons return 404 for the new learner.
+  expect(useApp.getState().bonus).toEqual([]);
+  expect(useApp.getState().bonusLessonIds).toEqual({});
+  expect(useApp.getState().completed).toEqual(["saving"]);
+});
+
+it("keeps bonus lessons when only the language changes", async () => {
+  useApp.setState({
+    bonus: ["Save for a bike"],
+    bonusLessonIds: { "Save for a bike": "bonus_kept" },
+    language: "sw",
+  });
+
+  await ensureLearner();
+
+  expect(useApp.getState().bonusLessonIds).toEqual({
+    "Save for a bike": "bonus_kept",
+  });
+});
