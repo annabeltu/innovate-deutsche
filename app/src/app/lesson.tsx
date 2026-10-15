@@ -1,1 +1,1 @@
-export { Lesson as default } from "../screens/Journey";
+export { LessonScreen as default } from "../screens/LessonScreen";

@@ -61,7 +61,7 @@ export function Welcome() {
   const { t } = useTranslation();
   const { width, height, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const pageWidth = Math.min(width - insets.left - insets.right, 540);
+  const pageWidth = width - insets.left - insets.right;
   const availableHeight = height - insets.top - insets.bottom;
   const unit = Math.min(pageWidth / 388, Math.max(0.85, availableHeight / 810));
   const narrow = pageWidth < 320 || fontScale > 1.3 || s.large;
@@ -150,7 +150,7 @@ export function Welcome() {
               style={{
                 position: "absolute",
                 left: padding,
-                top: 10 * unit,
+                top: insets.top + 10 * unit,
                 width: pageWidth * 0.48,
                 height: pageWidth * 0.188,
               }}
@@ -387,11 +387,10 @@ export function Welcome() {
           </View>
         </View>
       </ScrollView>
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: 10 + insets.bottom }]}>
         <View
           style={{
             width: "100%",
-            maxWidth: 540,
             alignSelf: "center",
             paddingHorizontal: padding,
           }}
@@ -436,7 +435,6 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1 },
   page: {
     width: "100%",
-    maxWidth: 540,
     alignSelf: "center",
     backgroundColor: "#F5F7FE",
   },

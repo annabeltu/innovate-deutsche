@@ -69,7 +69,7 @@ async function show(Component: React.ComponentType) {
 }
 
 it.each([
-  [Roadmap, "Money basics", "Conceptos básicos del dinero", "Misingi ya pesa"],
+  [Roadmap, "Money Basics", "Bases del dinero", "Misingi ya Pesa"],
   [Shop, "Streak Freeze", "Protección de racha", "Kinga ya mfululizo"],
   [
     Practice,
@@ -120,7 +120,9 @@ it("retranslates existing purchase feedback without requiring another purchase",
 it("never shows a persisted old-language bonus title after switching", async () => {
   await show(Roadmap);
   await act(() => mockUseApp.getState().set({ language: "sw", country: "KE" }));
-  expect(screen.getByText("Bima")).toBeTruthy();
-  expect(screen.queryByText("Old English title")).toBeNull();
-  expect(screen.queryByText("Insurance")).toBeNull();
+  expect(screen.getByRole("button", { name: "Bima" })).toBeTruthy();
+  expect(
+    screen.queryByRole("button", { name: "Old English title" }),
+  ).toBeNull();
+  expect(screen.queryByRole("button", { name: "Insurance" })).toBeNull();
 });

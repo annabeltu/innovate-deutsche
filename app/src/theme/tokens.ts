@@ -16,6 +16,10 @@ export const colors = {
   successSoft: "#EAF8EF",
   error: "#E5484D",
   errorSoft: "#FFF1F1",
+  warningSurface: "#FFE4DE",
+  successSurface: "#E1F5ED",
+  successText: "#076835",
+  errorText: "#A51D24",
   coinGold: "#F5B700",
   coinGoldSoft: "#FFF5CF",
   // Readable gold text on white or coinGoldSoft (contrast >= 4.5:1).

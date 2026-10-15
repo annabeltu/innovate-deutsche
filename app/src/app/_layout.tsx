@@ -1,13 +1,14 @@
 import * as Speech from "expo-speech";
+import { colors } from "../theme/tokens";
 import "../../global.css";
 import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../api/query-client";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { View } from "react-native";
 import { useScreenReaderEnabled } from "../voice/use-screen-reader";
-import { colors } from "../theme/tokens";
 import { useApp } from "../state/useApp";
 import i18n from "../i18n";
 export default function Layout() {
@@ -41,13 +42,13 @@ export default function Layout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <SafeAreaView
+        <View
           accessibilityLanguage={language}
           style={{ flex: 1, backgroundColor: colors.iceBlue }}
         >
           <StatusBar style="dark" />
           <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
-        </SafeAreaView>
+        </View>
       </SafeAreaProvider>
     </QueryClientProvider>
   );

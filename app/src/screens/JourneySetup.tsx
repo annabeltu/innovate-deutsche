@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
 import {
   Image,
@@ -34,6 +35,7 @@ const stageIcons = {
 };
 
 export function JourneySetup() {
+  const insets = useSafeAreaInsets();
   const s = useApp();
   const { t } = useTranslation();
   const answers = toOnboardingRequest(s);
@@ -61,7 +63,14 @@ export function JourneySetup() {
         />
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            {
+              paddingTop: 26 + insets.top,
+              paddingLeft: 28 + insets.left,
+              paddingRight: 28 + insets.right,
+            },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <View
@@ -171,7 +180,7 @@ export function JourneySetup() {
             ))}
           </View>
         </ScrollView>
-        <View style={styles.footer}>
+        <View style={[styles.footer, { paddingBottom: 28 + insets.bottom }]}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t("continue")}
@@ -189,13 +198,7 @@ export function JourneySetup() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#E8F0FF" },
-  page: {
-    flex: 1,
-    width: "100%",
-    maxWidth: 540,
-    alignSelf: "center",
-    overflow: "hidden",
-  },
+  page: { flex: 1, width: "100%", alignSelf: "center", overflow: "hidden" },
   scroll: { flex: 1, minHeight: 0 },
   content: {
     flexGrow: 1,

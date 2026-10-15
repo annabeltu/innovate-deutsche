@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useCallback } from "react";
 import {
   Pressable,
@@ -198,6 +199,7 @@ export function Screen({
   background?: React.ReactNode;
 }) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const readAloud = useApp((s) => s.readAloud);
   const language = useApp((s) => s.language);
   const narration = spokenText([children, footer]);
@@ -220,9 +222,13 @@ export function Screen({
     >
       {background}
       <ScrollView
+        testID="screen-scroll"
         contentContainerStyle={{
-          padding: compact ? 16 : 24,
-          paddingBottom: compact ? 12 : 32,
+          paddingHorizontal: compact ? 16 : 24,
+          paddingLeft: (compact ? 16 : 24) + insets.left,
+          paddingRight: (compact ? 16 : 24) + insets.right,
+          paddingTop: (compact ? 16 : 24) + insets.top,
+          paddingBottom: (compact ? 12 : 32) + (footer ? 0 : insets.bottom),
           gap: 20,
           flexGrow: 1,
         }}
@@ -231,7 +237,6 @@ export function Screen({
         <View
           style={{
             width: "100%",
-            maxWidth: 540,
             alignSelf: "center",
             gap: compact ? 12 : 20,
             flex: 1,
@@ -248,7 +253,18 @@ export function Screen({
           )}
         </View>
       </ScrollView>
-      {footer}
+      {footer && (
+        <View
+          testID="screen-footer"
+          style={{
+            paddingBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          }}
+        >
+          {footer}
+        </View>
+      )}
     </LinearGradient>
   );
 }
