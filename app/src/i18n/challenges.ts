@@ -1,6 +1,10 @@
 /** Challenge teaching copy, options, feedback and voice instructions. */
 export const challengeCopy = {
   en: {
+    transferSuccess:
+      "You compared the costs and checked who receives the money.",
+    transferTip:
+      "Check the total cost, delivery estimate, and recipient details before confirming.",
     scamHeading: "Correct! This is a scam.",
     redFlags: "Red flags in this message:",
     flagUrgency: "Creates urgency: “account is BLOCKED”",
@@ -60,6 +64,10 @@ export const challengeCopy = {
       "Look for pressure to act quickly and a request for your PIN. Would you trust this message?",
   },
   es: {
+    transferSuccess:
+      "Comparaste los costos y verificaste quién recibe el dinero.",
+    transferTip:
+      "Revisa el costo total, el plazo y los datos del destinatario antes de confirmar.",
     scamHeading: "¡Correcto! Es una estafa.",
     redFlags: "Señales de alerta en este mensaje:",
     flagUrgency: "Crea urgencia: “cuenta BLOQUEADA”",
@@ -120,6 +128,9 @@ export const challengeCopy = {
       "Busca la presión para actuar rápido y la solicitud de tu PIN. ¿Confiarías en este mensaje?",
   },
   sw: {
+    transferSuccess: "Umelinganisha gharama na kuhakiki mpokeaji wa pesa.",
+    transferTip:
+      "Angalia gharama yote, muda wa kufika na taarifa za mpokeaji kabla ya kuthibitisha.",
     scamHeading: "Sahihi! Huu ni ulaghai.",
     redFlags: "Dalili za ulaghai kwenye ujumbe huu:",
     flagUrgency: "Unaharakisha: “akaunti IMEZUIWA”",

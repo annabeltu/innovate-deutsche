@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, AccessibilityInfo } from "react-native";
+import { View, AccessibilityInfo } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
@@ -105,114 +105,7 @@ export function Success() {
     </Screen>
   );
 }
-export function Shop() {
-  const s = useApp();
-  const { t } = useTranslation();
-  const [message, setMessage] = useState<{
-    itemId: string;
-    success: boolean;
-  } | null>(null);
-  const items = [
-    ["freeze", "❄️", t("app.freeze"), 40],
-    ["heart", "❤️", t("app.heart"), 60],
-    ["family", "👪", t("app.family"), 120],
-    [
-      "outfit",
-      "✦",
-      t("app.outfit", { country: t(`onboarding.country.${s.country}`) }),
-      90,
-    ],
-  ] as const;
-  return (
-    <Screen footer={<Nav active="shop" />}>
-      <LanguageChooser />
-      <Label>{t("wallet")}</Label>
-      <Txt
-        accessibilityLabel={t("app.coins", { count: s.coins })}
-        style={{ fontSize: 38, lineHeight: 48 }}
-      >
-        🟡 {s.coins}
-      </Txt>
-      <View>
-        <Title>{t("shop")}</Title>
-        <Txt style={{ color: c.midBlue }}>{t("shopSub")}</Txt>
-      </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-        {items.map(([id, icon, name, price]) => (
-          <Pressable
-            key={id}
-            accessibilityRole="button"
-            accessibilityLabel={t("app.itemLabel", {
-              name,
-              price,
-              status: t(
-                s.purchases.includes(id) ? "app.owned" : "app.available",
-              ),
-            })}
-            accessibilityHint={t("app.buyHint")}
-            accessibilityState={{
-              disabled: s.purchases.includes(id) || s.coins < price,
-            }}
-            onPress={() => {
-              if (s.purchases.includes(id)) return;
-              const ok = s.buy(id, price);
-              setMessage({ itemId: id, success: ok });
-            }}
-            style={{ width: "48%" }}
-          >
-            <Card style={{ minHeight: 215 }}>
-              <View
-                style={{
-                  backgroundColor: c.iceBlue,
-                  borderRadius: 20,
-                  padding: 14,
-                  alignSelf: "flex-start",
-                }}
-              >
-                <Txt style={{ fontSize: 34, lineHeight: 42 }}>{icon}</Txt>
-              </View>
-              <Txt style={{ fontWeight: "700" }}>{name}</Txt>
-              <Row style={{ marginTop: "auto" }}>
-                <Txt style={{ color: c.coinGoldText, fontWeight: "700" }}>
-                  ● {price}
-                </Txt>
-                <Txt style={{ fontSize: 24 }}>
-                  {s.purchases.includes(id) ? "✓" : "+"}
-                </Txt>
-              </Row>
-            </Card>
-          </Pressable>
-        ))}
-      </View>
-      {message && (
-        <KikoNote
-          key={`${message.itemId}-${message.success}`}
-          live
-          mood={message.success ? "cheer" : "oops"}
-          tone={message.success ? "success" : "error"}
-          message={t(message.success ? "app.itemAdded" : "app.notEnoughCoins", {
-            name: items.find(([id]) => id === message.itemId)?.[2],
-          })}
-        />
-      )}
-      <Card style={{ backgroundColor: c.lightBlue, borderBottomWidth: 0 }}>
-        <Txt>{t("app.freeLessons")}</Txt>
-      </Card>
-      {s.purchases.length > 0 && (
-        <Card>
-          <Label>{t("app.collection")}</Label>
-          {items
-            .filter(([id]) => s.purchases.includes(id))
-            .map(([id, icon, name]) => (
-              <Txt key={id}>
-                {icon} {name}
-              </Txt>
-            ))}
-        </Card>
-      )}
-    </Screen>
-  );
-}
+export { Shop } from "./Shop";
 export function Practice() {
   const s = useApp();
   const { t } = useTranslation();

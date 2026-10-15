@@ -70,7 +70,7 @@ async function show(Component: React.ComponentType) {
 
 it.each([
   [Roadmap, "Money Basics", "Bases del dinero", "Misingi ya Pesa"],
-  [Shop, "Streak Freeze", "Protección de racha", "Kinga ya mfululizo"],
+  [Shop, "Streak Freeze", "Protector de racha", "Kinga ya mfululizo"],
   [
     Practice,
     "Practice makes progress.",
@@ -103,14 +103,14 @@ it.each([
 it("retranslates existing purchase feedback without requiring another purchase", async () => {
   await show(Shop);
   await fireEvent.press(
-    screen.getByRole("button", { name: "Extra Heart, 60 coins, Available" }),
+    screen.getByRole("button", { name: "Extra Heart. 100 coins" }),
   );
   expect(
     screen.getByText("Extra Heart added to your collection!"),
   ).toBeTruthy();
   await act(() => mockUseApp.getState().set({ language: "es" }));
   expect(
-    screen.getByText("¡Corazón extra se añadió a tu colección!"),
+    screen.getByText("¡Corazón extra añadido a tu colección!"),
   ).toBeTruthy();
   expect(
     screen.queryByText("Extra Heart added to your collection!"),

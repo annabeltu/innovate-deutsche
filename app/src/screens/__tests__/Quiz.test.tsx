@@ -23,6 +23,7 @@ it("submits the server's question and option ids against the quiz learner", asyn
   useApp.setState({ ...useApp.getInitialState() });
   const mutate = jest.fn((_payload, callbacks) => callbacks.onSuccess());
   jest.mocked(useStartQuiz).mockReturnValue({
+    mutate: jest.fn(),
     data: {
       user_id: "u_quiz",
       quiz: {
@@ -44,7 +45,7 @@ it("submits the server's question and option ids against the quiz learner", asyn
         ],
       },
     },
-  } as ReturnType<typeof useStartQuiz>);
+  } as unknown as ReturnType<typeof useStartQuiz>);
   jest.mocked(useSubmitQuiz).mockReturnValue({
     mutate,
     isPending: false,
@@ -67,7 +68,7 @@ it("submits the server's question and option ids against the quiz learner", asyn
   expect(useApp.getState().completed).toEqual([]);
 });
 
-it("starts the server quiz with the current onboarding answers", async () => {
+it("starts the server quiz automatically with the current onboarding answers", async () => {
   useApp.setState({
     ...useApp.getInitialState(),
     country: "KE",
@@ -81,7 +82,6 @@ it("starts the server quiz with the current onboarding answers", async () => {
     isError: false,
   } as unknown as ReturnType<typeof useStartQuiz>);
   await render(<QuizScreen />);
-  await fireEvent.press(screen.getByRole("button", { name: "Start quiz" }));
   expect(mutate).toHaveBeenCalledWith(
     expect.objectContaining({
       country: "KE",
@@ -107,7 +107,9 @@ it("shows server connection errors and lets the learner return to setup", async 
 
 it("stops displaying a cached quiz whose questions are in the previous language", async () => {
   useApp.getState().set({ ...useApp.getInitialState(), country: "MX" });
+  const startQuiz = jest.fn();
   jest.mocked(useStartQuiz).mockReturnValue({
+    mutate: startQuiz,
     data: {
       user_id: "u_old",
       quiz: {
@@ -134,7 +136,7 @@ it("stops displaying a cached quiz whose questions are in the previous language"
   expect(screen.getByText("Old English question")).toBeTruthy();
   await act(() => useApp.getState().set({ language: "es" }));
   expect(screen.queryByText("Old English question")).toBeNull();
-  expect(
-    screen.getByRole("button", { name: "Empezar cuestionario" }),
-  ).toBeTruthy();
+  expect(startQuiz).toHaveBeenLastCalledWith(
+    expect.objectContaining({ language: "es" }),
+  );
 });

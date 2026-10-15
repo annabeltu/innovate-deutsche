@@ -1,3 +1,4 @@
+import { experienceCopy } from "./experience";
 import { challengeCopy } from "./challenges";
 import { roadmapCopy } from "./roadmap";
 import { createInstance } from "i18next";
@@ -12,6 +13,7 @@ void i18n.use(initReactI18next).init({
     en: {
       translation: {
         ...en,
+        ...experienceCopy.en,
         roadmapScreen: roadmapCopy.en,
         challenge: challengeCopy.en,
       },
@@ -19,6 +21,7 @@ void i18n.use(initReactI18next).init({
     es: {
       translation: {
         ...es,
+        ...experienceCopy.es,
         roadmapScreen: roadmapCopy.es,
         challenge: challengeCopy.es,
       },
@@ -26,6 +29,7 @@ void i18n.use(initReactI18next).init({
     sw: {
       translation: {
         ...sw,
+        ...experienceCopy.sw,
         roadmapScreen: roadmapCopy.sw,
         challenge: challengeCopy.sw,
       },
