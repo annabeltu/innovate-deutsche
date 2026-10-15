@@ -13,8 +13,13 @@ from app.services.errors import SpeechUnavailableError
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
 from app.services.rate_limit import RateLimiter
+from app.services.speech_cache import SpeechCache
 from app.services.voice import SpeechClient
-from app.speech.gemini import GeminiSpeechClient, GeminiSpeechConfig
+from app.speech.gemini import (
+    GeminiSpeechClient,
+    GeminiSpeechConfig,
+    load_transcribe_prompt,
+)
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 UNKNOWN_CLIENT = "unknown"
@@ -46,9 +51,10 @@ def get_speech_client(settings: SettingsDep) -> Iterator[SpeechClient]:
     config = GeminiSpeechConfig(
         api_key=settings.gemini_api_key.get_secret_value(),
         interactions_url=settings.gemini_interactions_url,
-        transcribe_model=settings.gemini_transcribe_model,
-        tts_model=settings.gemini_tts_model,
+        transcribe_models=tuple(settings.gemini_transcribe_models),
+        tts_models=tuple(settings.gemini_tts_models),
         tts_voice=settings.gemini_tts_voice,
+        transcribe_prompt=load_transcribe_prompt(),
     )
     with httpx.Client(timeout=settings.speech_timeout_seconds) as http:
         yield GeminiSpeechClient(http, config)
@@ -65,3 +71,9 @@ def enforce_voice_rate_limit(
 ) -> None:
     """Reject the request with 429 when this client is over the voice limit."""
     limiter.check(request.client.host if request.client else UNKNOWN_CLIENT)
+
+
+@lru_cache
+def get_speech_cache() -> SpeechCache:
+    """Return the process-wide cache of generated speech."""
+    return SpeechCache(get_settings().speech_cache_max_bytes)

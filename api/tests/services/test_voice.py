@@ -8,6 +8,7 @@ from app.services.errors import (
     SpeechUnavailableError,
     UnsupportedAudioTypeError,
 )
+from app.services.speech_cache import SpeechCache
 from app.speech.errors import SpeechProviderError
 
 
@@ -74,16 +75,20 @@ def test_transcribe_rejects_empty_and_oversized_recordings() -> None:
         )
 
 
-def test_provider_failure_is_retried_once() -> None:
+def test_speak_reuses_cached_audio_for_repeated_text() -> None:
+    speech, cache = FakeSpeech(), SpeechCache(max_bytes=1_000)
+
+    first = voice.speak("Hola", speech, cache)
+    second = voice.speak("Hola", speech, cache)
+
+    assert first == second == b"RIFF....WAVE"
+    assert len(speech.calls) == 1
+
+
+def test_provider_failure_becomes_speech_unavailable() -> None:
     speech = FakeSpeech(failures=1)
-
-    assert voice.speak("Hola", speech) == b"RIFF....WAVE"
-    assert len(speech.calls) == 2
-
-
-def test_two_provider_failures_become_speech_unavailable() -> None:
-    speech = FakeSpeech(failures=2)
 
     with pytest.raises(SpeechUnavailableError):
         voice.transcribe(b"abc", "audio/wav", Language.EN, speech, max_bytes=10)
-    assert len(speech.calls) == 2
+    with pytest.raises(SpeechUnavailableError):
+        voice.speak("Hi", FakeSpeech(failures=1), SpeechCache(max_bytes=1_000))

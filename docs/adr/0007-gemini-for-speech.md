@@ -30,7 +30,12 @@ The app keeps `expo-speech` as the default read-aloud and calls `/v1/voice/speak
 ## Consequences
 
 - One secret, `GEMINI_API_KEY`, lives only in the API's `.env`. Without it, the voice endpoints return `503 speech_unavailable`, and the app falls back to typing and on-device speech.
-- Every Gemini call has a timeout and is retried once. Recordings stay in memory, and audio is never logged.
+- The free tier is small: 25 transcriptions a day on `gemini-3.5-transcribe` and 10 a day per TTS model. Each job therefore has an ordered list of models (`GEMINI_TRANSCRIBE_MODELS`, `GEMINI_TTS_MODELS`):
+  - Transcription falls back to `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite` and `gemini-3.8-flash`, with the versioned prompt `prompts/transcribe_v1.txt`.
+  - Read-aloud falls back to `gemini-3.1-flash-tts-preview`, `gemini-2.5-flash-preview-tts`, then `gemini-3.8-flash-lite-tts`, which can't do Swahili.
+  - A quota (429) or unknown-model error moves straight to the next model. Timeouts and 5xx errors retry the same model once first.
+- Generated speech is cached in memory by text, so a repeated screen costs no quota.
+- Every Gemini call has a timeout. Recordings stay in memory, and audio is never logged.
 - The inline-audio field name for transcription (`data`) follows the Interactions API's audio output shape. The docs only show file URIs for input, so this must be checked with a real key before the demo.
 - Swahili transcription quality is unproven. Test with Kenyan speakers before the demo.
 - Server read-aloud costs money per request, which is why on-device speech stays the default and responses are cacheable for a day.

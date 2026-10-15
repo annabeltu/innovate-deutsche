@@ -15,6 +15,7 @@ from app.services.errors import (
     SpeechUnavailableError,
     UnsupportedAudioTypeError,
 )
+from app.services.speech_cache import SpeechCache
 from app.speech.errors import SpeechProviderError
 
 logger = logging.getLogger(__name__)
@@ -78,32 +79,33 @@ def transcribe(
         InvalidRequestError: The recording is empty.
         AudioTooLargeError: The recording is over max_bytes.
         UnsupportedAudioTypeError: The recording is not an accepted audio type.
-        SpeechUnavailableError: The provider failed twice.
+        SpeechUnavailableError: Every configured model failed.
     """
     if not audio:
         raise InvalidRequestError("The recording is empty")
     if len(audio) > max_bytes:
         raise AudioTooLargeError("The recording is too long", {"max_bytes": max_bytes})
     mime_type = normalize_audio_type(content_type)
-    text = _retry_once(lambda: client.transcribe(audio, mime_type, language))
+    text = _provider_call(lambda: client.transcribe(audio, mime_type, language))
     return TranscriptionResponse(text=text, language=language)
 
 
-def speak(text: str, client: SpeechClient) -> bytes:
-    """Return WAV audio of the text read aloud.
+def speak(text: str, client: SpeechClient, cache: SpeechCache) -> bytes:
+    """Return WAV audio of the text read aloud, reusing earlier audio for the same text.
 
     Raises:
-        SpeechUnavailableError: The provider failed twice.
+        SpeechUnavailableError: Every configured model failed.
     """
-    return _retry_once(lambda: client.synthesize(text))
+    cached = cache.get(text)
+    if cached is not None:
+        return cached
+    audio = _provider_call(lambda: client.synthesize(text))
+    cache.put(text, audio)
+    return audio
 
 
-def _retry_once(call: Callable[[], Result]) -> Result:
-    """Run a provider call, retrying once before giving up with a 503."""
-    try:
-        return call()
-    except SpeechProviderError:
-        logger.info("speech provider failed; retrying once")
+def _provider_call(call: Callable[[], Result]) -> Result:
+    """Run a provider call; the client already falls back across models and retries."""
     try:
         return call()
     except SpeechProviderError as error:

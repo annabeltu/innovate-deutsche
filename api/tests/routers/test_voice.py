@@ -4,9 +4,14 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings, get_settings
-from app.dependencies import get_speech_client, get_voice_rate_limiter
+from app.dependencies import (
+    get_speech_cache,
+    get_speech_client,
+    get_voice_rate_limiter,
+)
 from app.main import app
 from app.services.rate_limit import RateLimiter
+from app.services.speech_cache import SpeechCache
 from tests.services.test_voice import FakeSpeech
 
 MAX_BYTES = 100
@@ -22,6 +27,8 @@ def voice_client(speech: FakeSpeech) -> Iterator[TestClient]:
     app.dependency_overrides[get_speech_client] = lambda: speech
     app.dependency_overrides[get_settings] = lambda: Settings(max_audio_bytes=MAX_BYTES)
     app.dependency_overrides[get_voice_rate_limiter] = lambda: RateLimiter(limit=100)
+    cache = SpeechCache(max_bytes=1_000)
+    app.dependency_overrides[get_speech_cache] = lambda: cache
     yield TestClient(app)
     app.dependency_overrides.clear()
 

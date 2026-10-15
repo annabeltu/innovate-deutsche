@@ -4,7 +4,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, Query, Response, UploadFile, status
 
-from app.dependencies import SettingsDep, enforce_voice_rate_limit, get_speech_client
+from app.dependencies import (
+    SettingsDep,
+    enforce_voice_rate_limit,
+    get_speech_cache,
+    get_speech_client,
+)
 from app.schemas.shared import (
     ErrorResponse,
     Language,
@@ -12,6 +17,7 @@ from app.schemas.shared import (
     TranscriptionResponse,
 )
 from app.services import voice
+from app.services.speech_cache import SpeechCache
 from app.services.voice import SpeechClient
 
 router = APIRouter(
@@ -21,6 +27,7 @@ router = APIRouter(
 )
 
 SpeechClientDep = Annotated[SpeechClient, Depends(get_speech_client)]
+SpeechCacheDep = Annotated[SpeechCache, Depends(get_speech_cache)]
 WAV_MEDIA_TYPE = "audio/wav"
 # Spoken screen text rarely changes, so the app may reuse audio for a day.
 SPEAK_CACHE_CONTROL = "private, max-age=86400"
@@ -64,11 +71,13 @@ def post_transcribe(
     },
 )
 def get_speak(
-    query: Annotated[SpeakQuery, Query()], client: SpeechClientDep
+    query: Annotated[SpeakQuery, Query()],
+    client: SpeechClientDep,
+    cache: SpeechCacheDep,
 ) -> Response:
     """GET so the app's audio player can stream it straight from the URL."""
     return Response(
-        content=voice.speak(query.text, client),
+        content=voice.speak(query.text, client, cache),
         media_type=WAV_MEDIA_TYPE,
         headers={"Cache-Control": SPEAK_CACHE_CONTROL},
     )
