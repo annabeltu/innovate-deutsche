@@ -1,37 +1,36 @@
 """Shared Pydantic models. Owned jointly by Faraz and Will.
 
-Mirrors docs/API_CONTRACTS.md and app/src/types/api.ts; change all three
-together.
+Mirrored in app/src/types/api.ts and documented in docs/API_CONTRACTS.md.
+Change all three together.
 """
 
 from datetime import datetime
-from enum import StrEnum
+from enum import IntEnum, StrEnum
+from typing import Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+UnitInterval = Annotated[float, Field(ge=0.0, le=1.0)]
 
 
 class Country(StrEnum):
-    """Supported countries; the demo MVP focuses on KE, US and MX."""
+    """Countries Kompass supports."""
 
-    KENYA = "KE"
-    UNITED_STATES = "US"
-    MEXICO = "MX"
-    INDIA = "IN"
-    GERMANY = "DE"
+    US = "US"
+    MX = "MX"
+    KE = "KE"
 
 
 class Language(StrEnum):
-    """Supported languages; the demo MVP focuses on en, es and sw."""
+    """Languages Kompass supports. Valid pairs per country live in the question bank."""
 
-    ENGLISH = "en"
-    SPANISH = "es"
-    SWAHILI = "sw"
-    HINDI = "hi"
-    GERMAN = "de"
+    EN = "en"
+    ES = "es"
+    SW = "sw"
 
 
 class Topic(StrEnum):
-    """Financial literacy topics a learning path is built from."""
+    """Core topics; each is also the lesson_id of its core lesson."""
 
     ACCOUNTS = "accounts"
     SAVING = "saving"
@@ -41,7 +40,7 @@ class Topic(StrEnum):
 
 
 class LifeStage(StrEnum):
-    """Learner's life stage, chosen during onboarding."""
+    """Where the learner is in life."""
 
     STUDENT = "student"
     FIRST_JOB = "first_job"
@@ -50,7 +49,7 @@ class LifeStage(StrEnum):
 
 
 class Goal(StrEnum):
-    """Learner's main money goal, chosen during onboarding."""
+    """The learner's main money goal."""
 
     SAVE_MORE = "save_more"
     AVOID_DEBT = "avoid_debt"
@@ -59,7 +58,7 @@ class Goal(StrEnum):
 
 
 class SavingsHabit(StrEnum):
-    """Where the learner keeps their savings today."""
+    """Where the learner usually keeps savings."""
 
     CASH_AT_HOME = "cash_at_home"
     SAVINGS_GROUP = "savings_group"
@@ -68,62 +67,235 @@ class SavingsHabit(StrEnum):
     NONE = "none"
 
 
+class Comfort(IntEnum):
+    """Overall comfort with money, from 1 (low) to 3 (high)."""
+
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+
+class Difficulty(IntEnum):
+    """Question and lesson difficulty, from 1 (easiest) to 3."""
+
+    EASY = 1
+    MEDIUM = 2
+    HARD = 3
+
+
 class Accessibility(BaseModel):
-    """Accessibility settings that change how lessons are presented."""
+    """Display and voice settings chosen during setup."""
 
     model_config = ConfigDict(extra="forbid")
 
-    voice_mode: bool = Field(description="Whole app is driven by speech.")
-    read_aloud: bool = Field(description="Screen text is read aloud.")
-    simple_mode: bool = Field(description="Shorter, simpler wording.")
-    large_text: bool = Field(description="Larger font sizes.")
-    speech_rate: float = Field(gt=0, description="Text-to-speech rate; 1.0 is normal.")
+    voice_mode: bool = Field(default=False, description="Whole app driven by voice.")
+    read_aloud: bool = Field(
+        default=False, description="Read cards aloud automatically."
+    )
+    simple_mode: bool = Field(default=False, description="Shorter, simpler sentences.")
+    large_text: bool = Field(default=False, description="Larger font sizes.")
+    speech_rate: float = Field(
+        default=1.0, ge=0.5, le=2.0, description="Text-to-speech speed multiplier."
+    )
 
 
 class TopicScore(BaseModel):
-    """How well the learner knows one topic."""
+    """The learner's standing on one topic."""
 
-    model_config = ConfigDict(extra="forbid")
-
-    confidence: float = Field(ge=0, le=1, description="Self-rated confidence, 0 to 1.")
-    quiz_score: float = Field(ge=0, le=1, description="Baseline quiz score, 0 to 1.")
-    proficiency: float = Field(
-        ge=0, le=1, description="0.4 x confidence + 0.6 x quiz_score, 0 to 1."
+    confidence: UnitInterval = Field(description="Onboarding slider value.")
+    quiz_score: UnitInterval | None = Field(
+        description="Share of baseline questions answered correctly; null if skipped."
     )
-    completed: bool = Field(description="Learner has finished this topic.")
+    proficiency: UnitInterval = Field(
+        description="0.4 × confidence + 0.6 × quiz_score, or confidence if skipped."
+    )
+    completed: bool = Field(
+        description="True once the topic's core lesson is finished."
+    )
 
 
 class LearnerProfile(BaseModel):
-    """Everything known about a learner; the only handoff between the two APIs."""
+    """Everything Faraz's API needs to personalize the path. Will writes, Faraz reads."""
+
+    user_id: str = Field(description="Created by POST /v1/onboarding.")
+    country: Country
+    language: Language
+    accessibility: Accessibility
+    life_stage: LifeStage
+    goal: Goal
+    comfort: Comfort
+    savings_habit: SavingsHabit
+    topic_scores: dict[Topic, TopicScore] = Field(description="One entry per topic.")
+    bonus_lesson_ids: list[str] = Field(default_factory=list)
+    updated_at: datetime = Field(description="UTC, ISO 8601.")
+
+
+class OnboardingRequest(BaseModel):
+    """Setup and onboarding answers sent by the app."""
 
     model_config = ConfigDict(extra="forbid")
 
-    user_id: str = Field(min_length=1, description="Stable learner id.")
-    country: Country = Field(description="Country used for data and examples.")
-    language: Language = Field(description="Language for lessons and speech.")
-    accessibility: Accessibility = Field(description="Accessibility settings.")
-    life_stage: LifeStage = Field(description="Learner's life stage.")
-    goal: Goal = Field(description="Learner's main money goal.")
-    comfort: int = Field(description="Comfort with money, as recorded at onboarding.")
-    savings_habit: SavingsHabit = Field(description="Where savings are kept today.")
-    topic_scores: dict[Topic, TopicScore] = Field(
-        description="One entry per topic.",
+    language: Language
+    country: Country
+    accessibility: Accessibility = Field(default_factory=Accessibility)
+    life_stage: LifeStage
+    goal: Goal
+    comfort: Comfort
+    savings_habit: SavingsHabit
+    confidence: dict[Topic, UnitInterval] = Field(
+        description="Confidence slider per topic, 0 to 1. Every topic is required.",
+        min_length=len(Topic),
     )
-    bonus_lesson_ids: list[str] = Field(
-        default_factory=list, description="Ids of AI bonus lessons added to the path."
-    )
-    updated_at: datetime = Field(description="Last time the profile changed (UTC).")
 
-    @field_validator("topic_scores")
-    @classmethod
-    def _require_every_topic(
-        cls, topic_scores: dict[Topic, TopicScore]
-    ) -> dict[Topic, TopicScore]:
-        """Reject profiles that skip a topic, since every path node needs a score."""
-        missing = set(Topic) - topic_scores.keys()
-        if missing:
-            raise ValueError(f"missing topic scores: {sorted(missing)}")
-        return topic_scores
+
+class QuizOption(BaseModel):
+    """One answer choice."""
+
+    option_id: str = Field(description="Letter shown and spoken: a, b, c.")
+    text: str
+
+
+class QuestionVoice(BaseModel):
+    """Spoken version of a question for voice mode."""
+
+    speak_text: str = Field(
+        description="Reads the question, every option with its letter, and how to answer."
+    )
+
+
+class QuizQuestion(BaseModel):
+    """A baseline question as sent to the app. The answer key stays on the server."""
+
+    question_id: str
+    topic: Topic
+    difficulty: Difficulty
+    prompt: str
+    options: list[QuizOption]
+    voice: QuestionVoice
+
+
+class Quiz(BaseModel):
+    """The baseline quiz, written in the learner's language for their country."""
+
+    quiz_id: str
+    language: Language
+    questions: list[QuizQuestion]
+
+
+class OnboardingResponse(BaseModel):
+    """Returned by POST /v1/onboarding."""
+
+    user_id: str
+    quiz: Quiz
+
+
+class QuizAnswer(BaseModel):
+    """One answer chosen by the learner."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    question_id: str
+    option_id: str
+
+
+class QuizSubmitRequest(BaseModel):
+    """Body of POST /v1/quiz/{quiz_id}/submit. Unanswered questions count as wrong."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    user_id: str
+    answers: list[QuizAnswer]
+
+
+class QuestionResult(BaseModel):
+    """Grading for one question, so the app can give feedback."""
+
+    question_id: str
+    correct: bool
+    correct_option_id: str
+
+
+class QuizSubmitResponse(BaseModel):
+    """Returned by POST /v1/quiz/{quiz_id}/submit."""
+
+    profile: LearnerProfile
+    results: list[QuestionResult]
+
+
+class QuizSkipRequest(BaseModel):
+    """Body of POST /v1/quiz/{quiz_id}/skip."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    user_id: str
+
+
+class QuizSkipResponse(BaseModel):
+    """Returned by POST /v1/quiz/{quiz_id}/skip."""
+
+    profile: LearnerProfile
+
+
+class AccessibilityUpdate(BaseModel):
+    """Body of PATCH /v1/profile/{user_id}/accessibility. Omitted fields keep their value."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    voice_mode: bool | None = None
+    read_aloud: bool | None = None
+    simple_mode: bool | None = None
+    large_text: bool | None = None
+    speech_rate: float | None = Field(default=None, ge=0.5, le=2.0)
+
+
+class LessonResultRequest(BaseModel):
+    """Body of POST /v1/profile/{user_id}/lesson-results."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    lesson_id: str = Field(min_length=1, description="A topic, or a bonus lesson id.")
+    correct: int = Field(
+        ge=0, description="Questions answered correctly in the lesson."
+    )
+    total: int = Field(ge=1, description="Questions in the lesson.")
+    completed: bool = Field(description="True if the learner finished the lesson.")
+
+    @model_validator(mode="after")
+    def check_correct_within_total(self) -> Self:
+        """A learner cannot get more questions right than the lesson has."""
+        if self.correct > self.total:
+            raise ValueError("correct cannot be greater than total")
+        return self
+
+
+class LessonResultResponse(BaseModel):
+    """Returned by POST /v1/profile/{user_id}/lesson-results."""
+
+    topic: Topic | None = Field(description="Null for bonus lessons.")
+    proficiency: UnitInterval | None = Field(
+        description="0.5 × old proficiency + 0.5 × correct / total; null for bonus lessons."
+    )
+    completed: bool
+    path_refresh_needed: bool = Field(
+        description="True when the topic's difficulty band changed; call POST /v1/path again."
+    )
+
+
+class ErrorDetail(BaseModel):
+    """Body of every error response."""
+
+    code: str
+    message: str
+    details: dict[str, object] = Field(default_factory=dict)
+
+
+class ErrorResponse(BaseModel):
+    """Every non-2xx response uses this shape."""
+
+    error: ErrorDetail
+
+
+# Path + Lessons API (Faraz)
 
 
 class TopicNeed(BaseModel):
@@ -231,5 +403,5 @@ class Lesson(BaseModel):
     topic: Topic = Field(description="Topic the lesson teaches.")
     title: str = Field(min_length=1, description="Lesson title.")
     goal: str = Field(min_length=1, description="What the learner will be able to do.")
-    difficulty: int = Field(ge=1, le=3, description="Difficulty served, 1 to 3.")
+    difficulty: Difficulty = Field(description="Difficulty served, 1 to 3.")
     cards: list[LessonCard] = Field(min_length=1, description="Cards in order.")

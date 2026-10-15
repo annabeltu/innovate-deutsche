@@ -17,7 +17,7 @@ from app.services.validation import LessonValidationError, validate_rewrite
 PROMPT_FILE = "lesson_wording_v1.md"
 PROMPT_VERSION = "lesson_wording_v1"
 MAX_ATTEMPTS = 2
-BASE_LESSON_LANGUAGE = Language.ENGLISH
+BASE_LESSON_LANGUAGE = Language.EN
 
 logger = logging.getLogger(__name__)
 

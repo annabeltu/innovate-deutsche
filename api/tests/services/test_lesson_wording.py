@@ -40,7 +40,7 @@ def test_skips_the_llm_for_english_without_simple_mode(
 ) -> None:
     llm = FakeLlm()
 
-    result = reword_lesson(customized_lesson, Language.ENGLISH, False, llm)
+    result = reword_lesson(customized_lesson, Language.EN, False, llm)
 
     assert result == customized_lesson
     assert llm.requests == []
@@ -48,7 +48,7 @@ def test_skips_the_llm_for_english_without_simple_mode(
 
 @pytest.mark.parametrize(
     ("language", "simple_mode"),
-    [(Language.SWAHILI, False), (Language.SPANISH, True), (Language.ENGLISH, True)],
+    [(Language.SW, False), (Language.ES, True), (Language.EN, True)],
 )
 def test_sends_language_simple_mode_and_lesson(
     customized_lesson: Lesson, language: Language, simple_mode: bool
@@ -71,7 +71,7 @@ def test_retries_once_after_a_failed_attempt(
 ) -> None:
     llm = FakeLlm(first_reply, translated(customized_lesson))
 
-    result = reword_lesson(customized_lesson, Language.SWAHILI, False, llm)
+    result = reword_lesson(customized_lesson, Language.SW, False, llm)
 
     assert result.title == SWAHILI_TITLE
     assert len(llm.requests) == 2
@@ -83,7 +83,7 @@ def test_falls_back_to_original_after_two_failures(
     llm = FakeLlm(LlmError("timeout"), "not json")
 
     with caplog.at_level(logging.WARNING):
-        result = reword_lesson(customized_lesson, Language.SWAHILI, False, llm)
+        result = reword_lesson(customized_lesson, Language.SW, False, llm)
 
     assert result == customized_lesson
     assert len(llm.requests) == 2
@@ -91,6 +91,6 @@ def test_falls_back_to_original_after_two_failures(
 
 
 def test_echo_client_returns_the_lesson_unchanged(customized_lesson: Lesson) -> None:
-    result = reword_lesson(customized_lesson, Language.SPANISH, True, EchoLlmClient())
+    result = reword_lesson(customized_lesson, Language.ES, True, EchoLlmClient())
 
     assert result == customized_lesson
