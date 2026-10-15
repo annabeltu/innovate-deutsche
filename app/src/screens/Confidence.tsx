@@ -7,6 +7,7 @@ import { Screen, Txt, Progress } from "../components/ui";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { topics } from "../onboarding/request";
+import { KompassLogo } from "../components/KompassLogo";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -36,10 +37,7 @@ export function Confidence() {
       }
     >
       <View className="flex-row items-center justify-between">
-        <View accessibilityRole="header">
-          <Txt className="font-bold text-brand">Deutsche Bank</Txt>
-          <Txt className="text-4xl font-extrabold text-brand">K◉mpass</Txt>
-        </View>
+        <KompassLogo size={36} />
       </View>
       <View className="h-2">
         <Progress value={1} />

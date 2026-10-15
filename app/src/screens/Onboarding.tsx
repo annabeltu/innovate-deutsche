@@ -14,6 +14,7 @@ import {
   Card,
   c,
 } from "../components/ui";
+import { KompassLogo } from "../components/KompassLogo";
 const countryNames = { US: "United States", MX: "Mexico", KE: "Kenya" };
 export { Welcome as Setup } from "./Welcome";
 export { JourneySetup as About } from "./JourneySetup";
@@ -30,9 +31,7 @@ export function Reveal() {
   const { t } = useTranslation();
   return (
     <Screen dark>
-      <Txt style={{ fontSize: 32, fontWeight: "800", color: c.white }}>
-        K◉mpass
-      </Txt>
+      <KompassLogo size={32} light showBank={false} />
       <Txt
         style={{ color: c.coinGold, letterSpacing: 20, textAlign: "center" }}
       >

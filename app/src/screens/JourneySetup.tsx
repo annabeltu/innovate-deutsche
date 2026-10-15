@@ -4,11 +4,11 @@ import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useWindowSize } from "../hooks/use-window-size";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
-import Svg, { Path, Rect } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
+import { KompassLogo } from "../components/KompassLogo";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -60,32 +60,7 @@ export function JourneySetup() {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <View
-            accessibilityRole="header"
-            accessibilityLabel="Deutsche Bank. Kompass"
-          >
-            <View style={styles.brandRow}>
-              <Svg
-                width={25}
-                height={25}
-                viewBox="0 0 30 30"
-                accessible={false}
-              >
-                <Rect
-                  x="2"
-                  y="2"
-                  width="26"
-                  height="26"
-                  stroke="#0012B3"
-                  strokeWidth="3"
-                  fill="none"
-                />
-                <Path d="M8 23 L18 7 H24 L14 23Z" fill="#0012B3" />
-              </Svg>
-              <Txt style={styles.bank}>Deutsche Bank</Txt>
-            </View>
-            <Txt style={styles.logo}>Kompass</Txt>
-          </View>
+          <KompassLogo size={36} />
           <View
             accessibilityRole="progressbar"
             accessibilityValue={{ min: 0, max: 100, now: 58 }}
@@ -145,15 +120,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingTop: 26,
     paddingBottom: 16,
-  },
-  brandRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  bank: { color: "#0012B3", fontSize: 18, fontWeight: "700" },
-  logo: {
-    color: "#0012B3",
-    fontSize: 36,
-    lineHeight: 43,
-    fontWeight: "800",
-    letterSpacing: -1.8,
   },
   track: {
     height: 8,

@@ -14,11 +14,12 @@ import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
-import Svg, { Image as SvgImage, Path, Rect } from "react-native-svg";
+import Svg, { Image as SvgImage } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 import { speak as speakAloud, stopSpeaking } from "../voice/speech";
+import { KompassLogo } from "../components/KompassLogo";
 
 const blue = "#0012B3";
 const ink = "#000C62";
@@ -144,8 +145,6 @@ export function Welcome() {
               </>
             )}
             <View
-              accessibilityRole="header"
-              accessibilityLabel="Deutsche Bank. Kompass"
               style={{
                 position: "absolute",
                 left: padding,
@@ -154,58 +153,7 @@ export function Welcome() {
                 height: pageWidth * 0.188,
               }}
             >
-              {s.country === "US" ? (
-                <ReferenceArt crop="103 133 370 145" />
-              ) : (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 6 * unit,
-                    }}
-                  >
-                    <Svg
-                      width={20 * unit}
-                      height={20 * unit}
-                      viewBox="0 0 30 30"
-                      accessible={false}
-                    >
-                      <Rect
-                        x="2"
-                        y="2"
-                        width="26"
-                        height="26"
-                        stroke={blue}
-                        strokeWidth="3"
-                        fill="none"
-                      />
-                      <Path d="M8 23 L18 7 H24 L14 23Z" fill={blue} />
-                    </Svg>
-                    <Txt
-                      style={{
-                        fontSize: 15 * unit,
-                        lineHeight: 22 * unit,
-                        color: blue,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Deutsche Bank
-                    </Txt>
-                  </View>
-                  <Txt
-                    style={{
-                      fontSize: 42 * unit,
-                      lineHeight: 50 * unit,
-                      letterSpacing: -2,
-                      color: blue,
-                      fontWeight: "800",
-                    }}
-                  >
-                    Kompass
-                  </Txt>
-                </View>
-              )}
+              <KompassLogo size={42 * unit} />
             </View>
           </View>
           <View

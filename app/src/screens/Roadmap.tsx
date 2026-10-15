@@ -10,6 +10,7 @@ import { useApp } from "../state/useApp";
 import { Badge, RoadmapNavigation } from "../components/RoadmapChrome";
 import { colors } from "../theme/tokens";
 import { buildRoadmap } from "../onboarding/roadmap";
+import { KompassLogo } from "../components/KompassLogo";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -51,10 +52,7 @@ export function Roadmap() {
       footer={<RoadmapNavigation />}
     >
       <View className="flex-row items-center justify-between gap-2">
-        <View accessibilityRole="header">
-          <Text className="text-xs font-bold text-brand">Deutsche Bank</Text>
-          <Text className="text-2xl font-extrabold text-brand">K◉mpass</Text>
-        </View>
+        <KompassLogo size={24} />
         <View className="flex-row gap-1">
           {[
             ["🔥", streak, "streak"],
