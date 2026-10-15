@@ -35,6 +35,7 @@ def test_serves_lesson_tester_page(dev_client: TestClient) -> None:
 
     assert response.status_code == 200
     assert "Customize lesson" in response.text
+    assert "Generate lesson" in response.text
     for country in ("Mexico", "USA", "Kenya"):
         assert country in response.text
 
