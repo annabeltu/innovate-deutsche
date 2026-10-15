@@ -176,3 +176,46 @@ it("reloads saved bonus titles in the new language without displaying the persis
   await waitFor(() => expect(result.current[0].data?.title).toBe("Bima"));
   expect(request).toHaveBeenCalledTimes(2);
 });
+
+async function submitQuizAs(userId: string) {
+  request.mockResolvedValue({ profile: { user_id: userId }, results: [] });
+  const { result } = await renderHook(() => useSubmitQuiz("q_test"), {
+    wrapper,
+  });
+  await act(() =>
+    result.current.mutateAsync({
+      user_id: userId,
+      answers: [{ question_id: "question-1", option_id: "a" }],
+    }),
+  );
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+}
+
+it("drops the previous learner's bonus lessons when the quiz creates a new learner", async () => {
+  useApp.setState({
+    learnerId: "u_old",
+    bonus: ["Save for a bike"],
+    bonusLessonIds: { "Save for a bike": "bonus_old" },
+  });
+
+  await submitQuizAs("u_new");
+
+  // The API returns 404 for another learner's bonus lessons.
+  expect(useApp.getState().learnerId).toBe("u_new");
+  expect(useApp.getState().bonus).toEqual([]);
+  expect(useApp.getState().bonusLessonIds).toEqual({});
+});
+
+it("keeps bonus lessons when the quiz confirms the same learner", async () => {
+  useApp.setState({
+    learnerId: "u_same",
+    bonus: ["Save for a bike"],
+    bonusLessonIds: { "Save for a bike": "bonus_kept" },
+  });
+
+  await submitQuizAs("u_same");
+
+  expect(useApp.getState().bonusLessonIds).toEqual({
+    "Save for a bike": "bonus_kept",
+  });
+});

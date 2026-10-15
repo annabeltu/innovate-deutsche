@@ -30,11 +30,12 @@ export function useSubmitQuiz(quizId: string) {
         { method: "POST", body: request },
       ),
     onSuccess: (result) => {
-      useApp.getState().set({
-        learnerId: result.profile.user_id,
-        learnerKey: JSON.stringify(toOnboardingRequest(useApp.getState())),
-        onboarded: true,
-      });
+      const state = useApp.getState();
+      state.adoptLearner(
+        result.profile.user_id,
+        JSON.stringify(toOnboardingRequest(state)),
+      );
+      state.set({ onboarded: true });
       void client.invalidateQueries({ queryKey: ["path"] });
     },
   });

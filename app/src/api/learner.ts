@@ -176,13 +176,6 @@ async function createLearner(
     method: "POST",
     body: { user_id: started.user_id },
   });
-  // Bonus lessons are stored per server learner, so the previous learner's
-  // ids return 404 for the new one and must not stay on the roadmap.
-  useApp.getState().set({
-    learnerId: started.user_id,
-    learnerKey: key,
-    bonus: [],
-    bonusLessonIds: {},
-  });
+  useApp.getState().adoptLearner(started.user_id, key);
   return started.user_id;
 }
