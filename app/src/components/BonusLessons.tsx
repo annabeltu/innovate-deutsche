@@ -26,9 +26,16 @@ export function BonusLessons() {
         : "lessonError",
     );
   };
+  // A lesson the API reports as missing will never load (e.g. it belonged to
+  // an earlier learner), so leave it off the roadmap instead of erroring.
+  const missing = (index: number) => {
+    const error = lessons[index]?.error;
+    return error instanceof ApiError && error.code === "lesson_not_found";
+  };
   return (
     <View className="gap-3 py-2">
       {bonus.map((title, index) => {
+        if (missing(index)) return null;
         const label = labelFor(title, index);
         const id = `bonus-${index}`;
         return (
