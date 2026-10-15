@@ -17,6 +17,7 @@ export default function Ask() {
   const { t } = useTranslation();
   async function spokenQuestion(text: string) {
     const command = await recognizeIntent(text, language);
+    if (useApp.getState().language !== language) return;
     if (command.intent === "back") {
       router.replace("/roadmap");
       return;
@@ -61,7 +62,7 @@ export default function Ask() {
         className="min-h-28 rounded-2xl bg-white p-5 text-lg text-ink"
       />
       <LessonRequest
-        key={question}
+        key={`${language}-${question}`}
         question={question}
         confirmedByVoice={confirmed}
       />

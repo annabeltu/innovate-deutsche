@@ -16,6 +16,7 @@ from app.services.lesson_service import LessonSources
 from app.services.lesson_templates import load_lesson_templates
 from app.services.needs import load_findex
 from app.services.question_bank import load_question_bank
+from tests.lesson_replies import translated_reply
 
 SWAHILI_TITLE = "Kuweka Akiba Salama"
 
@@ -35,13 +36,24 @@ class FakeLlm:
         self.requests.append(request)
         if isinstance(self.reply, Exception):
             raise self.reply
-        return json.dumps({**request["lesson"], "title": self.reply})
+        return translated_reply(request["lesson"], request["language"], self.reply)
 
 
 @pytest.fixture
-def lessons_client(client: TestClient) -> Iterator[TestClient]:
+def lessons_client(
+    client: TestClient, onboarding_body: dict[str, object]
+) -> Iterator[TestClient]:
     """Will's test client with the echo LLM, so no test ever calls OpenAI."""
-    app.dependency_overrides[get_llm_client] = EchoLlmClient
+    onboarding_body["language"] = "en"
+
+    class WordingEcho:
+        model_name = "fake"
+
+        def complete_json(self, instructions: str, request_json: str) -> str:
+            request = json.loads(request_json)
+            return translated_reply(request["lesson"], request["language"])
+
+    app.dependency_overrides[get_llm_client] = WordingEcho
     yield client
 
 
@@ -120,6 +132,7 @@ def test_every_core_lesson_is_served(
 def test_rewords_lesson_in_learners_language(
     lessons_client: TestClient, onboarding_body: dict[str, object]
 ) -> None:
+    onboarding_body["language"] = "sw"
     llm = FakeLlm(SWAHILI_TITLE)
     app.dependency_overrides[get_llm_client] = lambda: llm
     user_id = onboard(lessons_client, onboarding_body)
@@ -131,16 +144,17 @@ def test_rewords_lesson_in_learners_language(
     assert llm.requests[0]["simple_mode"] is True
 
 
-def test_serves_english_lesson_when_llm_fails(
+def test_returns_retryable_error_instead_of_english_when_translation_fails(
     lessons_client: TestClient, onboarding_body: dict[str, object]
 ) -> None:
+    onboarding_body["language"] = "sw"
     app.dependency_overrides[get_llm_client] = lambda: FakeLlm(LlmError("timeout"))
     user_id = onboard(lessons_client, onboarding_body)
 
     response = lessons_client.get(f"/v1/lessons/saving?user_id={user_id}")
 
-    assert response.status_code == 200
-    assert response.json()["title"] == "Safe Saving"
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "lesson_translation_failed"
 
 
 def test_unknown_lesson_returns_404(

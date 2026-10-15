@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from app.dependencies import get_llm_client
 from app.llm.client import LlmError
 from app.main import app
+from tests.lesson_replies import translated_reply
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 GENERATION_PROMPT_MARKER = "You plan short personal-finance lessons"
@@ -27,7 +28,8 @@ class FakeLlm:
     def complete_json(self, instructions: str, request_json: str) -> str:
         """Return the next generation reply, or the lesson unchanged for wording."""
         if not instructions.startswith(GENERATION_PROMPT_MARKER):
-            return json.dumps(json.loads(request_json)["lesson"])
+            request = json.loads(request_json)
+            return translated_reply(request["lesson"], request["language"])
         self.generation_calls += 1
         reply = self.generation_replies.pop(0)
         if isinstance(reply, Exception):
@@ -43,7 +45,9 @@ def insurance_reply() -> str:
 @pytest.fixture
 def onboarded(client: TestClient, onboarding_body: dict[str, object]) -> Iterator[str]:
     """A learner created through Will's onboarding API; yields their user_id."""
-    started = client.post("/v1/onboarding", json=onboarding_body).json()
+    started = client.post(
+        "/v1/onboarding", json={**onboarding_body, "language": "en"}
+    ).json()
     user_id = started["user_id"]
     client.post(
         f"/v1/quiz/{started['quiz']['quiz_id']}/skip", json={"user_id": user_id}
@@ -159,5 +163,27 @@ def test_generation_without_llm_returns_service_unavailable(
     app.dependency_overrides[get_llm_client] = EchoLlmClient
     response = ask(client, onboarded)
     assert response.status_code == 503
+    profile = client.get(f"/v1/profile/{onboarded}").json()
+    assert profile["bonus_lesson_ids"] == []
+
+
+def test_translation_failure_never_adds_an_english_bonus_lesson(
+    client: TestClient, onboarded: str
+) -> None:
+    """A language switch also applies to new generated lessons and their questions."""
+    client.patch(f"/v1/profile/{onboarded}/language", json={"language": "sw"})
+    llm = FakeLlm(insurance_reply())
+    original_complete = llm.complete_json
+
+    def fail_wording(instructions: str, request_json: str) -> str:
+        if instructions.startswith(GENERATION_PROMPT_MARKER):
+            return original_complete(instructions, request_json)
+        raise LlmError("translation unavailable")
+
+    llm.complete_json = fail_wording
+    use_llm(llm)
+    response = ask(client, onboarded)
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "lesson_translation_failed"
     profile = client.get(f"/v1/profile/{onboarded}").json()
     assert profile["bonus_lesson_ids"] == []

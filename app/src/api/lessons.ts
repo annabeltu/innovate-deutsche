@@ -1,7 +1,7 @@
 // Server state for lessons: the customized lesson API and lesson requests
 // (generation). Uses TanStack Query; nothing here is copied into Zustand
 // except the ids the roadmap needs to find a generated lesson again.
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueries } from "@tanstack/react-query";
 import { queryClient } from "./query-client";
 import { apiRequest, isApiConfigured } from "./client";
 import { ensureLearner, toOnboardingRequest } from "./learner";
@@ -89,5 +89,27 @@ export function useRequestLesson() {
         },
       });
     },
+  });
+}
+
+/** Fetch bonus titles from translated lessons; persisted titles are identity keys only. */
+export function useBonusLessons() {
+  const titles = useApp((state) => state.bonus);
+  const ids = useApp((state) => state.bonusLessonIds);
+  const learnerKey = useLearnerKey();
+  return useQueries({
+    queries: titles.map((title) => {
+      const id = ids[title] ?? "";
+      return {
+        queryKey: ["lesson", id, learnerKey],
+        enabled: isApiConfigured() && Boolean(id),
+        queryFn: async () => {
+          const userId = await ensureLearner();
+          return apiRequest<Lesson>(
+            `/v1/lessons/${encodeURIComponent(id)}?user_id=${encodeURIComponent(userId)}`,
+          );
+        },
+      };
+    }),
   });
 }

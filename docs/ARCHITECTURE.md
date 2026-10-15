@@ -23,7 +23,7 @@ Expo app ──HTTP /v1──▶ FastAPI
 
 1. **Setup + onboarding:** the app posts answers to `/v1/onboarding`, gets a quiz, then submits it. Will's API stores the `LearnerProfile`.
 2. **Path:** Faraz's API reads the profile with `profile_store.get_profile(user_id)`, which is an in-process call today and could become HTTP later. It scores topics with Findex data from `data/` and returns an ordered path.
-3. **Lessons:** `GET /v1/lessons/{lesson_id}` reads two models: Will's `LearnerProfile` (via `get_profile()`) and `LearnerNeeds`, built from `data/findex` for the learner's country and age group. The base lesson from `data/lesson_templates` keeps only the cards that fit the learner's difficulty, life stage and goal, and code fills every fact (Findex numbers, local facts from `data/question_bank/countries.json`). Every card carries a `voice` block. The LLM (OpenAI, ADR 0001) rewrites only the wording into the learner's language; the result is validated, retried once, and otherwise served in English. Caching is a follow-up.
+3. **Lessons:** `GET /v1/lessons/{lesson_id}` reads two models: Will's `LearnerProfile` (via `get_profile()`) and `LearnerNeeds`, built from `data/findex` for the learner's country and age group. The base lesson from `data/lesson_templates` keeps only the cards that fit the learner's difficulty, life stage and goal, and code fills every fact (Findex numbers, local facts from `data/question_bank/countries.json`). Every card carries a `voice` block. The LLM (OpenAI, ADR 0001) rewrites only the wording into the learner's language; the result is validated and retried once. Non-English translation failures return a retryable error instead of an English lesson. Caching is a follow-up.
 4. **Ask Kiko:** speech goes to `/v1/voice/transcribe`, then to `/v1/ask`. On "yes", `/v1/bonus-lessons` adds a new lesson to the path.
 5. **Voice mode:** the app speaks each screen's text, listens, and maps the reply to an intent with `/v1/voice/intent`.
 
@@ -61,3 +61,19 @@ options, next/back, repeat and help. Read-aloud uses expo-speech; the hosted
 TTS endpoint remains available as an optional service. CORS is configured once,
 accepting both CORS_ALLOWED_ORIGINS and the voice branch's CORS_ALLOW_ORIGINS
 alias. Microphone/device checks are still needed before a release.
+
+## Language consistency
+
+The three complete JSON resources in `app/src/i18n/locales/` are the UI source
+of truth. Nested key parity and source-string tests cover new and existing
+screens, accessibility labels and hints. Changing the stored language updates
+i18next immediately; the root also sets the browser document language and
+stops old speech. Shop feedback stores semantic ids, and saved bonus titles
+are fetched as translated server lessons rather than shown from persisted text.
+Quiz sessions restart when their language becomes stale. Lesson queries include
+the active language and stale voice results are ignored after a switch.
+
+The wording v3 prompt translates all questions, choices, voice text and feedback.
+Unchanged card prose or voice text is rejected as a partial translation. After
+two failures Spanish/Swahili receive `503 lesson_translation_failed`, rendered
+as a localized retry message. English simplification retains template fallback.

@@ -2,8 +2,8 @@
 
 The lesson is already customized and every fact filled in by code. The LLM
 only rewrites wording; its output is validated, retried once on failure,
-and otherwise the original lesson is served, so learners always get a
-working lesson.
+and otherwise English learners get the original lesson. Other languages receive
+a retryable error instead of unexpected English content.
 """
 
 import json
@@ -12,11 +12,12 @@ import time
 
 from app.llm.client import LlmClient, LlmError, load_prompt
 from app.schemas.shared import Language, Lesson
+from app.services.errors import LessonTranslationError
 from app.services.lesson_templates import BASE_LESSON_LANGUAGE
 from app.services.validation import LessonValidationError, validate_rewrite
 
-PROMPT_FILE = "lesson_wording_v2.md"
-PROMPT_VERSION = "lesson_wording_v2"
+PROMPT_FILE = "lesson_wording_v3.md"
+PROMPT_VERSION = "lesson_wording_v3"
 LESSON_WRAPPER_KEY = "lesson"
 MAX_ATTEMPTS = 2
 
@@ -36,7 +37,7 @@ def reword_lesson(
 
     Returns:
         The reworded lesson, or the original lesson if no rewrite is needed
-        or every attempt failed validation.
+        or English simplification failed. Translation failures raise LessonTranslationError.
     """
     if language == BASE_LESSON_LANGUAGE and not simple_mode:
         return lesson
@@ -48,6 +49,8 @@ def reword_lesson(
         try:
             reply = llm.complete_json(instructions, request_json)
             rewritten = validate_rewrite(lesson, _unwrap_lesson(reply))
+            if language != BASE_LESSON_LANGUAGE:
+                _require_translated_prose(lesson, rewritten)
         except (LlmError, LessonValidationError) as error:
             logger.warning(
                 "lesson rewrite failed: lesson=%s model=%s prompt=%s attempt=%d "
@@ -62,6 +65,11 @@ def reword_lesson(
         _log_success(lesson, llm, attempt, started)
         return rewritten
 
+    if language != BASE_LESSON_LANGUAGE:
+        raise LessonTranslationError(
+            "Lesson translation is temporarily unavailable",
+            {"lesson_id": lesson.lesson_id, "language": language},
+        )
     logger.error(
         "serving original wording after %d failed rewrites: lesson=%s language=%s",
         MAX_ATTEMPTS,
@@ -69,6 +77,16 @@ def reword_lesson(
         language,
     )
     return lesson
+
+
+def _require_translated_prose(original: Lesson, translated: Lesson) -> None:
+    """Reject echoed English cards and partial rewrites that only translate headings."""
+    for before, after in zip(original.cards, translated.cards, strict=True):
+        if (
+            before.text.strip() == after.text.strip()
+            or before.voice.speak_text.strip() == after.voice.speak_text.strip()
+        ):
+            raise LessonValidationError(f"Untranslated prose on card {before.card_id}")
 
 
 def _unwrap_lesson(reply: str) -> str:

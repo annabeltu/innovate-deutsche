@@ -6,7 +6,8 @@ import { recognizeIntent } from "../../api/voice";
 import { useLesson, saveLessonResult } from "../../api/lessons";
 import { useApp } from "../../state/useApp";
 import type { Lesson } from "../../types/api";
-import "../../i18n";
+import i18n from "../../i18n";
+import { ApiError } from "../../api/client";
 
 jest.mock("../../api/voice", () => ({ recognizeIntent: jest.fn() }));
 jest.mock("../VoiceInput", () => {
@@ -83,7 +84,8 @@ async function showLesson(result: object) {
 }
 
 describe("ApiLesson", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("en");
     jest.clearAllMocks();
     jest.mocked(recognizeIntent).mockImplementation(async (text) => ({
       intent:
@@ -200,6 +202,29 @@ describe("ApiLesson", () => {
     expect(screen.getByText(lesson.cards[0].text)).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Say back" }));
     expect(router.replace).toHaveBeenCalledWith("/roadmap");
+  });
+
+  it("shows a Spanish retry message instead of untranslated lesson content", async () => {
+    useApp.getState().set({ language: "es", country: "MX" });
+    await showLesson({
+      isPending: false,
+      isError: true,
+      error: new ApiError(
+        503,
+        "lesson_translation_failed",
+        "English server error",
+      ),
+      refetch: jest.fn(),
+    });
+    expect(
+      screen.getByText(
+        "Esta lección no está disponible en tu idioma ahora. Inténtalo de nuevo en un momento.",
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText("English server error")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Intentar de nuevo" }),
+    ).toBeTruthy();
   });
 
   it("reads each card's voice text aloud in read-aloud mode", async () => {

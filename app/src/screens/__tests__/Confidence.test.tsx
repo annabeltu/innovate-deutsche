@@ -16,6 +16,7 @@ jest.mock("../../api/path", () => ({
 }));
 jest.mock("expo-router", () => ({ router: { push: jest.fn() } }));
 jest.mock("react-i18next", () => ({
+  ...jest.requireActual("react-i18next"),
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 jest.mock("@react-native-async-storage/async-storage", () =>

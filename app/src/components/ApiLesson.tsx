@@ -1,3 +1,4 @@
+import { ApiError } from "../api/client";
 // A lesson from the API (customized for this learner), shown card by card
 // with the shared UI pieces. Used by the Lesson screen when the API is set.
 import React, { useEffect, useState } from "react";
@@ -34,6 +35,11 @@ export function ApiLesson({
   const { t } = useTranslation();
   const lesson = useLesson(lessonId);
   const [index, setIndex] = useState(0);
+  const language = useApp((state) => state.language);
+  useEffect(() => {
+    setIndex(0);
+    setWrongCards([]);
+  }, [language]);
   const [wrongCards, setWrongCards] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
@@ -52,7 +58,12 @@ export function ApiLesson({
     return (
       <Screen>
         <Txt accessibilityLiveRegion="polite" style={{ color: c.error }}>
-          {t("lessonError")}
+          {t(
+            lesson.error instanceof ApiError &&
+              lesson.error.code === "lesson_translation_failed"
+              ? "app.noTranslation"
+              : "lessonError",
+          )}
         </Txt>
         <Button title={t("tryAgain")} onPress={() => void lesson.refetch()} />
         <Button
@@ -159,6 +170,7 @@ function LessonCardView({
     : card.voice.incorrect_feedback;
   async function spokenReply(text: string) {
     const command = await recognizeIntent(text, language);
+    if (useApp.getState().language !== language) return;
     if (command.intent === "back") {
       onBack();
       return;
@@ -194,9 +206,14 @@ function LessonCardView({
   return (
     <Screen>
       <Row>
-        <Choice title="‹" onPress={() => router.replace("/roadmap")} />
+        <Choice
+          title={t("app.back")}
+          onPress={() => router.replace("/roadmap")}
+        />
         <Progress value={progress} />
-        <Txt>♥ {hearts}</Txt>
+        <Txt accessibilityLabel={t("app.hearts", { count: hearts })}>
+          ♥ {hearts}
+        </Txt>
       </Row>
       <Label>{title.toUpperCase()}</Label>
       <Card>

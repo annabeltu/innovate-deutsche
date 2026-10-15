@@ -27,22 +27,16 @@ const ink = "#000C62";
 const reference = require("../../assets/welcome/reference.png");
 const countries = {
   US: {
-    name: "United States",
     crop: "120 1085 185 132",
     image: require("../../assets/welcome/us.png"),
-    scene: "Statue of Liberty and the New York skyline",
   },
   MX: {
-    name: "Mexico",
     crop: "349 1085 186 132",
     image: require("../../assets/welcome/mx.png"),
-    scene: "Mexican colonial architecture, blue tiled domes and palm trees",
   },
   KE: {
-    name: "Kenya",
     crop: "578 1085 187 132",
     image: require("../../assets/welcome/ke.png"),
-    scene: "Kenyan savannah, acacia trees and Mount Kenya at sunrise",
   },
 };
 
@@ -81,7 +75,7 @@ export function Welcome() {
   const speak = useCallback(() => {
     void Speech.stop();
     Speech.speak(
-      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${countries[s.country].name}. ${t("access")}. ${t("getStarted")}`,
+      `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`onboarding.country.${s.country}`)}. ${t("access")}. ${t("getStarted")}`,
       { language: s.language },
     );
   }, [s.country, s.language, t]);
@@ -128,7 +122,9 @@ export function Welcome() {
                   resizeMode="cover"
                   style={{ width: "100%", height: "100%" }}
                   accessible
-                  accessibilityLabel={countries[s.country].scene}
+                  accessibilityLabel={t(
+                    `app.${{ US: "usaScene", MX: "mexicoScene", KE: "kenyaScene" }[s.country]}`,
+                  )}
                 />
                 <LinearGradient
                   pointerEvents="none"
@@ -159,58 +155,54 @@ export function Welcome() {
                 height: pageWidth * 0.188,
               }}
             >
-              {s.country === "US" ? (
-                <ReferenceArt crop="103 133 370 145" />
-              ) : (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 6 * unit,
-                    }}
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6 * unit,
+                  }}
+                >
+                  <Svg
+                    width={20 * unit}
+                    height={20 * unit}
+                    viewBox="0 0 30 30"
+                    accessible={false}
                   >
-                    <Svg
-                      width={20 * unit}
-                      height={20 * unit}
-                      viewBox="0 0 30 30"
-                      accessible={false}
-                    >
-                      <Rect
-                        x="2"
-                        y="2"
-                        width="26"
-                        height="26"
-                        stroke={blue}
-                        strokeWidth="3"
-                        fill="none"
-                      />
-                      <Path d="M8 23 L18 7 H24 L14 23Z" fill={blue} />
-                    </Svg>
-                    <Txt
-                      style={{
-                        fontSize: 15 * unit,
-                        lineHeight: 22 * unit,
-                        color: blue,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Deutsche Bank
-                    </Txt>
-                  </View>
+                    <Rect
+                      x="2"
+                      y="2"
+                      width="26"
+                      height="26"
+                      stroke={blue}
+                      strokeWidth="3"
+                      fill="none"
+                    />
+                    <Path d="M8 23 L18 7 H24 L14 23Z" fill={blue} />
+                  </Svg>
                   <Txt
                     style={{
-                      fontSize: 42 * unit,
-                      lineHeight: 50 * unit,
-                      letterSpacing: -2,
+                      fontSize: 15 * unit,
+                      lineHeight: 22 * unit,
                       color: blue,
-                      fontWeight: "800",
+                      fontWeight: "700",
                     }}
                   >
-                    Kompass
+                    Deutsche Bank
                   </Txt>
                 </View>
-              )}
+                <Txt
+                  style={{
+                    fontSize: 42 * unit,
+                    lineHeight: 50 * unit,
+                    letterSpacing: -2,
+                    color: blue,
+                    fontWeight: "800",
+                  }}
+                >
+                  Kompass
+                </Txt>
+              </View>
             </View>
           </View>
           <View
@@ -235,7 +227,8 @@ export function Welcome() {
                 <Pressable
                   key={code}
                   accessibilityRole="button"
-                  accessibilityLabel={countries[code].name}
+                  accessibilityLabel={t(`onboarding.country.${code}`)}
+                  accessibilityHint={t("app.selectHint")}
                   accessibilityState={{ selected: s.country === code }}
                   onPress={() =>
                     s.set({
@@ -281,7 +274,7 @@ export function Welcome() {
                         },
                       ]}
                     >
-                      {countries[code].name}
+                      {t(`onboarding.country.${code}`)}
                     </Txt>
                     <Feather
                       name="chevron-right"
@@ -372,15 +365,19 @@ export function Welcome() {
             {s.readAloud && (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t("app.repeat")}
+                accessibilityHint={t("app.repeatHint")}
                 onPress={speak}
                 style={styles.extraAction}
               >
-                <Txt style={styles.option}>Repeat screen aloud</Txt>
+                <Txt style={styles.option}>{t("app.repeat")}</Txt>
               </Pressable>
             )}
             {s.onboarded && (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel={t("roadmap")}
+                accessibilityHint={t("app.navHint", { screen: t("path") })}
                 onPress={() => router.replace("/roadmap")}
                 style={styles.extraAction}
               >
@@ -402,6 +399,7 @@ export function Welcome() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t("getStarted")}
+            accessibilityHint={t("actionHint")}
             onPress={() => router.push("/onboarding")}
             style={[
               styles.go,

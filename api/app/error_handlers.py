@@ -20,6 +20,7 @@ STATUS_BY_CODE = {
     "quiz_already_submitted": status.HTTP_409_CONFLICT,
     "unsupported_language": status.HTTP_422_UNPROCESSABLE_CONTENT,
     "off_topic_request": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "lesson_translation_failed": status.HTTP_503_SERVICE_UNAVAILABLE,
     "lesson_generation_failed": status.HTTP_503_SERVICE_UNAVAILABLE,
     "audio_too_large": status.HTTP_413_CONTENT_TOO_LARGE,
     "unsupported_audio": status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,

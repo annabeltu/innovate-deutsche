@@ -138,13 +138,14 @@ export function Choice({
   icon?: string;
   style?: ViewStyle;
 }) {
+  const { t } = useTranslation();
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
       accessibilityState={{ selected }}
-      accessibilityHint="Selects this option"
+      accessibilityHint={t("app.selectHint")}
       style={[
         s.choice,
         selected && { borderColor: c.deepBlue, backgroundColor: "#F7FAFF" },
@@ -204,6 +205,7 @@ export function Screen({
   compact?: boolean;
   background?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   const readAloud = useApp((s) => s.readAloud);
   const language = useApp((s) => s.language);
   const narration = spokenText([children, footer]);
@@ -245,7 +247,7 @@ export function Screen({
         >
           {children}
           {readAloud && (
-            <Button secondary title="Repeat screen aloud" onPress={speak} />
+            <Button secondary title={t("app.repeat")} onPress={speak} />
           )}
         </View>
       </ScrollView>
@@ -277,9 +279,11 @@ export function Row({
   );
 }
 export function Progress({ value }: { value: number }) {
+  const { t } = useTranslation();
   return (
     <View
       accessibilityRole="progressbar"
+      accessibilityLabel={t("app.progress")}
       accessibilityValue={{ min: 0, max: 100, now: Math.round(value * 100) }}
       style={{
         height: 8,
@@ -307,6 +311,7 @@ export function Kiko({
   size?: number;
   pulse?: boolean;
 }) {
+  const { t } = useTranslation();
   const scale = useSharedValue(1);
   const [reduce, setReduce] = useState(false);
   const simple = useApp((s) => s.simple);
@@ -330,7 +335,7 @@ export function Kiko({
   return (
     <Animated.View
       accessible
-      accessibilityLabel="Kiko, your friendly compass guide"
+      accessibilityLabel={t("app.kikoDescription")}
       style={[{ width: size, height: size, alignSelf: "center" }, animated]}
     >
       <Svg width="100%" height="100%" viewBox="0 0 140 140">
@@ -460,6 +465,7 @@ export function Nav({ active }: { active: string }) {
           onPress={() => router.replace(url)}
           accessibilityRole="tab"
           accessibilityLabel={t(name)}
+          accessibilityHint={t("app.navHint", { screen: t(name) })}
           accessibilityState={{ selected: active === name }}
           style={{ flex: 1, minHeight: 48, alignItems: "center", gap: 4 }}
         >

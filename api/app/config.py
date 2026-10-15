@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     )
     # Local-only test pages under /dev; off unless explicitly enabled.
     dev_tools_enabled: bool = False
-    # LLM (OpenAI). With no key, lessons keep their original English wording.
+    # Without an LLM key, English templates work; other lesson languages return 503.
     llm_api_key: SecretStr | None = None
     llm_model: str | None = None
     llm_base_url: str = "https://api.openai.com/v1"

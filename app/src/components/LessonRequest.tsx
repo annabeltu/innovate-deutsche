@@ -76,7 +76,12 @@ export function LessonRequest({
       />
       {request.isError && (
         <Txt accessibilityLiveRegion="polite" style={{ color: c.error }}>
-          {isOffTopic ? t("lessonOffTopic") : t("lessonRequestError")}
+          {isOffTopic
+            ? t("lessonOffTopic")
+            : request.error instanceof ApiError &&
+                request.error.code === "lesson_translation_failed"
+              ? t("app.noTranslation")
+              : t("lessonRequestError")}
         </Txt>
       )}
     </>

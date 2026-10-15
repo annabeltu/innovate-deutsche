@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -55,7 +56,10 @@ export const useApp = create<State>()(
       learnerId: null,
       learnerKey: null,
       bonusLessonIds: {},
-      set: (value) => set(value),
+      set: (value) => {
+        set(value);
+        if (value.language) void i18n.changeLanguage(value.language);
+      },
       complete: (id) => {
         if (!get().completed.includes(id))
           set((s) => ({

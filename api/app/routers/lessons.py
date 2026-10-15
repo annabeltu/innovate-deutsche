@@ -31,6 +31,7 @@ SourcesDep = Annotated[LessonSources, Depends(get_lesson_sources)]
         status.HTTP_400_BAD_REQUEST: {"model": ErrorResponse},
         status.HTTP_404_NOT_FOUND: {"model": ErrorResponse},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"model": ErrorResponse},
+        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ErrorResponse},
     },
 )
 def get_lesson(

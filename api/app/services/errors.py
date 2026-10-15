@@ -94,3 +94,9 @@ class VoiceProviderTimeoutError(KompassError):
     """The speech provider did not answer in time."""
 
     code = "voice_provider_timeout"
+
+
+class LessonTranslationError(KompassError):
+    """A lesson could not be fully rewritten in the requested language."""
+
+    code = "lesson_translation_failed"

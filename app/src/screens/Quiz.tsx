@@ -14,6 +14,11 @@ import type { OnboardingResponse, QuizAnswer } from "../types/api";
 
 /** Load the server quiz with explicit errors and no hidden language fallback. */
 export function QuizScreen() {
+  const language = useApp((state) => state.language);
+  return <QuizSession key={language} />;
+}
+
+function QuizSession() {
   const { t } = useTranslation();
   const start = useStartQuiz();
   let request: ReturnType<typeof buildOnboardingRequest> | undefined;
@@ -23,7 +28,8 @@ export function QuizScreen() {
   } catch {
     invalid = true;
   }
-  if (start.data) return <QuizQuestions session={start.data} />;
+  if (start.data && start.data.quiz.language === useApp.getState().language)
+    return <QuizQuestions session={start.data} />;
   return (
     <Screen>
       <Txt accessibilityRole="header" className="text-3xl font-bold">
@@ -87,6 +93,7 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
   };
   async function spokenReply(text: string) {
     const command = await recognizeIntent(text, session.quiz.language);
+    if (useApp.getState().language !== session.quiz.language) return;
     if (
       command.intent === "option" &&
       command.option_id &&

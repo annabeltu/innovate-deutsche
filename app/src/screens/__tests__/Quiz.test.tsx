@@ -1,6 +1,6 @@
 import React from "react";
 import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
-import { render, screen, fireEvent } from "@testing-library/react-native";
+import { render, screen, fireEvent, act } from "@testing-library/react-native";
 import { QuizScreen } from "../Quiz";
 import { useStartQuiz, useSubmitQuiz } from "../../api/onboarding";
 import { router } from "expo-router";
@@ -103,4 +103,38 @@ it("shows server connection errors and lets the learner return to setup", async 
   expect(screen.getByRole("alert")).toBeTruthy();
   await fireEvent.press(screen.getByRole("button", { name: "Back" }));
   expect(router.back).toHaveBeenCalled();
+});
+
+it("stops displaying a cached quiz whose questions are in the previous language", async () => {
+  useApp.getState().set({ ...useApp.getInitialState(), country: "MX" });
+  jest.mocked(useStartQuiz).mockReturnValue({
+    data: {
+      user_id: "u_old",
+      quiz: {
+        quiz_id: "q_old",
+        language: "en",
+        questions: [
+          {
+            question_id: "q1",
+            topic: "saving",
+            difficulty: 1,
+            prompt: "Old English question",
+            options: [],
+            voice: { speak_text: "Old English question" },
+          },
+        ],
+      },
+    },
+  } as unknown as ReturnType<typeof useStartQuiz>);
+  jest.mocked(useSubmitQuiz).mockReturnValue({
+    mutate: jest.fn(),
+    isPending: false,
+  } as unknown as ReturnType<typeof useSubmitQuiz>);
+  await render(<QuizScreen />);
+  expect(screen.getByText("Old English question")).toBeTruthy();
+  await act(() => useApp.getState().set({ language: "es" }));
+  expect(screen.queryByText("Old English question")).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Empezar cuestionario" }),
+  ).toBeTruthy();
 });

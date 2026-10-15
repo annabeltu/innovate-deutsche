@@ -221,7 +221,7 @@ Submitting or skipping a finished quiz returns `409 quiz_already_submitted`; a q
 }
 ```
 
-Errors (contract error shape): unknown `user_id` → `404 profile_not_found`; unknown `lesson_id` → `404 lesson_not_found`; missing `user_id` → `400 validation_error`; a stored lesson or data file that cannot be customized → `500 lesson_build_failed`. If the LLM rewrite fails twice, the lesson is still served (`200`) in its original English wording.
+Errors (contract error shape): unknown `user_id` → `404 profile_not_found`; unknown `lesson_id` → `404 lesson_not_found`; missing `user_id` → `400 validation_error`; a stored lesson or data file that cannot be customized → `500 lesson_build_failed`. If English simplification fails twice, the original English template is served. For Spanish or Swahili, failed or partial translations return `503 lesson_translation_failed`; English teaching is never silently substituted.
 
 ## Bonus lessons
 
@@ -268,7 +268,7 @@ Unknown learner: `404 profile_not_found`; unsupported country/language pair:
 `422 unsupported_language`; invalid or extra fields: `400 validation_error`.
 Subsequent GET lesson and POST bonus-lesson requests use the saved language,
 including question text, options and voice text, through `reword_lesson`.
-Translation failures still fall back to the original English lesson.
+Translation failures return `503 lesson_translation_failed` for non-English learners. The app displays a translated retry message.
 
 ## Server-personalized learning path
 

@@ -23,7 +23,6 @@ export function LanguageChooser() {
       await client.invalidateQueries({ queryKey: ["lesson"] });
       await client.invalidateQueries({ queryKey: ["path"] });
     } catch {
-      useApp.getState().set({ language });
       setFailed(true);
     } finally {
       setBusy(false);
@@ -42,7 +41,15 @@ export function LanguageChooser() {
         />
       ))}
       {busy && <Txt accessibilityLiveRegion="polite">{t("saving")}</Txt>}
-      {failed && <Txt accessibilityLiveRegion="polite">{t("lessonError")}</Txt>}
+      {failed && (
+        <>
+          <Txt accessibilityLiveRegion="polite">{t("lessonError")}</Txt>
+          <Button
+            title={t("tryAgain")}
+            onPress={() => void changeLanguage(language)}
+          />
+        </>
+      )}
     </Card>
   );
 }

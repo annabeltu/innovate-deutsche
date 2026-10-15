@@ -2,7 +2,12 @@ import React from "react";
 import mockAsyncStorage from "@react-native-async-storage/async-storage/jest/async-storage-mock";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { useLesson, useRequestLesson, saveLessonResult } from "../lessons";
+import {
+  useLesson,
+  useRequestLesson,
+  saveLessonResult,
+  useBonusLessons,
+} from "../lessons";
 import { apiRequest } from "../client";
 import { ensureLearner } from "../learner";
 import { useApp } from "../../state/useApp";
@@ -16,7 +21,9 @@ jest.mock("../client", () => ({
 }));
 jest.mock("../learner", () => ({
   ensureLearner: jest.fn(),
-  toOnboardingRequest: () => ({ language: "en" }),
+  toOnboardingRequest: (state: { language: string }) => ({
+    language: state.language,
+  }),
 }));
 const request = jest.mocked(apiRequest);
 
@@ -146,4 +153,26 @@ it("starts a baseline quiz through the shared API client", async () => {
     method: "POST",
     body,
   });
+});
+
+it("reloads saved bonus titles in the new language without displaying the persisted title", async () => {
+  useApp.setState({
+    bonus: ["Persisted English title"],
+    bonusLessonIds: { "Persisted English title": "bonus_saved" },
+  });
+  request.mockResolvedValueOnce({ title: "Insurance", cards: [] });
+  let finishTranslation: (value: unknown) => void = () => {
+    throw new Error("Translation not started");
+  };
+  const translated = new Promise((resolve) => {
+    finishTranslation = resolve;
+  });
+  request.mockReturnValueOnce(translated);
+  const { result } = await renderHook(() => useBonusLessons(), { wrapper });
+  await waitFor(() => expect(result.current[0].data?.title).toBe("Insurance"));
+  await act(() => useApp.getState().set({ language: "sw", country: "KE" }));
+  expect(result.current[0].data).toBeUndefined();
+  await act(async () => finishTranslation({ title: "Bima", cards: [] }));
+  await waitFor(() => expect(result.current[0].data?.title).toBe("Bima"));
+  expect(request).toHaveBeenCalledTimes(2);
 });

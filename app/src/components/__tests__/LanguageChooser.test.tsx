@@ -10,7 +10,7 @@ import {
 import { LanguageChooser } from "../LanguageChooser";
 import { ensureLearner } from "../../api/learner";
 import { useApp } from "../../state/useApp";
-import "../../i18n";
+import i18n from "../../i18n";
 
 jest.mock("@react-native-async-storage/async-storage", () => mockAsyncStorage);
 jest.mock("expo-router", () => ({ useFocusEffect: jest.fn() }));
@@ -20,7 +20,8 @@ jest.mock("../../api/learner", () => ({
   ensureLearner: jest.fn(),
 }));
 
-beforeEach(() => {
+beforeEach(async () => {
+  await i18n.changeLanguage("en");
   jest.clearAllMocks();
   useApp.setState({
     ...useApp.getInitialState(),
@@ -47,7 +48,7 @@ it("offers supported languages and saves the chosen language", async () => {
   expect(invalidate).toHaveBeenCalledWith({ queryKey: ["lesson"] });
 });
 
-it("restores the previous language and shows an error if saving fails", async () => {
+it("keeps the selected UI language and shows its translated error if saving fails", async () => {
   jest.mocked(ensureLearner).mockRejectedValue(new Error("offline"));
   const client = new QueryClient();
   await render(
@@ -61,9 +62,9 @@ it("restores the previous language and shows an error if saving fails", async ()
   await waitFor(() =>
     expect(
       screen.getByText(
-        "This lesson could not load. Check your connection and try again.",
+        "Somo hili halikupakia. Angalia muunganisho wako kisha ujaribu tena.",
       ),
     ).toBeTruthy(),
   );
-  expect(useApp.getState().language).toBe("en");
+  expect(useApp.getState().language).toBe("sw");
 });

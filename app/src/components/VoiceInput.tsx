@@ -27,7 +27,7 @@ export function VoiceInput({
   const { t } = useTranslation();
   function announce(key: string) {
     const text = t(key);
-    setMessage(text);
+    setMessage(key);
     if (readAloud) Speech.speak(text, { language });
   }
   async function record() {
@@ -39,6 +39,7 @@ export function VoiceInput({
         await setAudioModeAsync({ allowsRecording: false });
         if (!recorder.uri) throw new Error("Recording has no URI");
         const transcript = await transcribeRecording(recorder.uri, language);
+        if (useApp.getState().language !== language) return;
         if (transcript.is_fixture) announce("voiceFixture");
         if (transcript.text.trim()) await onText(transcript.text);
         else announce("voice.askKiko.nothingHeard");
@@ -76,7 +77,7 @@ export function VoiceInput({
         disabled={busy}
         onPress={() => void record()}
       />
-      {message && <Txt accessibilityLiveRegion="polite">{message}</Txt>}
+      {message && <Txt accessibilityLiveRegion="polite">{t(message)}</Txt>}
     </>
   );
 }

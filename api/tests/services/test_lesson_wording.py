@@ -7,7 +7,9 @@ import pytest
 
 from app.llm.client import EchoLlmClient, LlmError, load_prompt
 from app.schemas.shared import Language, Lesson
+from app.services.errors import LessonTranslationError
 from app.services.lesson_wording import PROMPT_FILE, PROMPT_VERSION, reword_lesson
+from tests.lesson_replies import translated_reply
 
 SWAHILI_TITLE = "Kuweka Akiba Salama"
 
@@ -32,7 +34,7 @@ class FakeLlm:
 
 def translated(lesson: Lesson) -> str:
     """A valid rewrite: same lesson, new title."""
-    return lesson.model_copy(update={"title": SWAHILI_TITLE}).model_dump_json()
+    return translated_reply(lesson.model_dump(mode="json"), "sw", SWAHILI_TITLE)
 
 
 def test_skips_the_llm_for_english_without_simple_mode(
@@ -82,18 +84,16 @@ def test_falls_back_to_original_after_two_failures(
 ) -> None:
     llm = FakeLlm(LlmError("timeout"), "not json")
 
-    with caplog.at_level(logging.WARNING):
-        result = reword_lesson(customized_lesson, Language.SW, False, llm)
+    with caplog.at_level(logging.WARNING), pytest.raises(LessonTranslationError):
+        reword_lesson(customized_lesson, Language.SW, False, llm)
 
-    assert result == customized_lesson
     assert len(llm.requests) == 2
-    assert "serving original wording" in caplog.text
+    assert "serving original wording" not in caplog.text
 
 
 def test_echo_client_returns_the_lesson_unchanged(customized_lesson: Lesson) -> None:
-    result = reword_lesson(customized_lesson, Language.ES, True, EchoLlmClient())
-
-    assert result == customized_lesson
+    with pytest.raises(LessonTranslationError):
+        reword_lesson(customized_lesson, Language.ES, True, EchoLlmClient())
 
 
 def test_accepts_a_lesson_wrapped_in_a_lesson_key(customized_lesson: Lesson) -> None:
@@ -107,5 +107,27 @@ def test_accepts_a_lesson_wrapped_in_a_lesson_key(customized_lesson: Lesson) -> 
 
 
 def test_uses_prompt_that_asks_for_an_unwrapped_lesson() -> None:
-    assert PROMPT_VERSION == "lesson_wording_v2"
+    assert PROMPT_VERSION == "lesson_wording_v3"
     assert "Do not wrap it" in load_prompt(PROMPT_FILE)
+
+
+@pytest.mark.parametrize("language", [Language.ES, Language.SW])
+def test_rejects_title_only_translation_instead_of_serving_english_questions(
+    customized_lesson: Lesson, language: Language
+) -> None:
+    """A translated heading must not hide unchanged English teaching or voice text."""
+    title_only = customized_lesson.model_copy(
+        update={"title": SWAHILI_TITLE}
+    ).model_dump_json()
+    llm = FakeLlm(title_only, title_only)
+    with pytest.raises(LessonTranslationError):
+        reword_lesson(customized_lesson, language, False, llm)
+    assert len(llm.requests) == 2
+
+
+def test_english_simplification_still_falls_back_to_the_english_template(
+    customized_lesson: Lesson,
+) -> None:
+    """English learners retain the safe template fallback when simplification fails."""
+    llm = FakeLlm(LlmError("timeout"), "invalid")
+    assert reword_lesson(customized_lesson, Language.EN, True, llm) == customized_lesson
