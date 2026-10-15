@@ -20,6 +20,7 @@ import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
 import { Txt } from "../components/ui";
 import { LanguageSelector } from "../components/LanguageSelector";
+import { ACCESSIBILITY_OPTIONS } from "../onboarding/options";
 
 const blue = "#0012B3";
 const ink = "#000C62";
@@ -295,74 +296,78 @@ export function Welcome() {
               {t("access")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
-              {(
-                [
-                  ["readAloud", "Read aloud", "volume-2"],
-                  ["simple", "Simple mode", "help-circle"],
-                  ["large", "Larger text", "type"],
-                ] as const
-              ).map(([key, name, icon]) => (
-                <View
-                  key={key}
-                  style={[
-                    styles.accessTile,
-                    {
-                      flexBasis: narrow ? "100%" : "28%",
-                      flexGrow: 1,
-                      minHeight: 82 * unit,
-                      paddingVertical: 8 * unit,
-                      gap: 5 * unit,
-                    },
-                  ]}
-                >
-                  {key === "large" ? (
-                    <Txt
-                      style={{
-                        color: ink,
-                        fontSize: 22 * unit,
-                        lineHeight: 25 * unit,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Aa
-                    </Txt>
-                  ) : (
-                    <Feather name={icon} size={23 * unit} color={ink} />
-                  )}
-                  <Txt
+              {ACCESSIBILITY_OPTIONS.map((option) => {
+                const controls = {
+                  readAloud: { key: "readAloud", icon: "volume-2" },
+                  simpleMode: { key: "simple", icon: "help-circle" },
+                  largerText: { key: "large", icon: "type" },
+                } as const;
+                const { key, icon } = controls[option.id];
+                const name = t(option.labelKey);
+                return (
+                  <View
+                    key={key}
                     style={[
-                      styles.accessName,
+                      styles.accessTile,
                       {
-                        fontSize: s.large ? 17 : 10.5 * unit,
-                        lineHeight: s.large ? 24 : 15 * unit,
+                        flexBasis: narrow ? "100%" : "28%",
+                        flexGrow: 1,
+                        minHeight: 82 * unit,
+                        paddingVertical: 8 * unit,
+                        gap: 5 * unit,
                       },
                     ]}
                   >
-                    {name}
-                  </Txt>
-                  <View
-                    style={{
-                      height: 24,
-                      minWidth: 44,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Switch
-                      accessibilityLabel={name}
-                      value={s[key]}
-                      onValueChange={(value) => s.set({ [key]: value })}
-                      trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
-                      thumbColor="#FFFFFF"
-                      style={
-                        Platform.OS === "ios"
-                          ? { transform: [{ scale: 0.72 }] }
-                          : undefined
-                      }
-                    />
+                    {key === "large" ? (
+                      <Txt
+                        style={{
+                          color: ink,
+                          fontSize: 22 * unit,
+                          lineHeight: 25 * unit,
+                          fontWeight: "700",
+                        }}
+                      >
+                        Aa
+                      </Txt>
+                    ) : (
+                      <Feather name={icon} size={23 * unit} color={ink} />
+                    )}
+                    <Txt
+                      style={[
+                        styles.accessName,
+                        {
+                          fontSize: s.large ? 17 : 10.5 * unit,
+                          lineHeight: s.large ? 24 : 15 * unit,
+                        },
+                      ]}
+                    >
+                      {name}
+                    </Txt>
+                    <View
+                      style={{
+                        height: 24,
+                        minWidth: 44,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Switch
+                        accessibilityLabel={name}
+                        accessibilityHint={t(option.helperKey)}
+                        value={s[key]}
+                        onValueChange={(value) => s.set({ [key]: value })}
+                        trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
+                        thumbColor="#FFFFFF"
+                        style={
+                          Platform.OS === "ios"
+                            ? { transform: [{ scale: 0.72 }] }
+                            : undefined
+                        }
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
             {s.readAloud && (
               <Pressable

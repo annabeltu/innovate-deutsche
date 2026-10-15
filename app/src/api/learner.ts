@@ -1,3 +1,5 @@
+import { COUNTRIES } from "../onboarding/countries";
+import { TOPICS } from "../types/onboarding";
 // Creates the learner on the server from the app's onboarding answers, so the
 // lesson APIs (which need a user_id) can personalize for them.
 import { apiRequest } from "./client";
@@ -29,31 +31,31 @@ export type OnboardingAnswers = {
 };
 
 const LIFE_STAGES: Record<string, LifeStage> = {
+  student: "student",
+  first_job: "first_job",
+  parent: "parent",
+  retired: "retired",
   Student: "student",
   "First job": "first_job",
   Parent: "parent",
   Retired: "retired",
 };
 const GOALS: Record<string, Goal> = {
+  save_more: "save_more",
+  avoid_debt: "avoid_debt",
+  stay_safe_online: "stay_safe_online",
+  handle_emergencies: "handle_emergencies",
   "Save more": "save_more",
   "Avoid debt": "avoid_debt",
   "Stay safe online": "stay_safe_online",
   "Handle emergencies": "handle_emergencies",
 };
 // Order of the sliders on the confidence screen.
-const CONFIDENCE_TOPICS: Topic[] = [
-  "accounts",
-  "saving",
-  "borrowing",
-  "scams",
-  "budget",
-];
-// Languages the API offers per country; the first is the default.
-export const LANGUAGES_BY_COUNTRY: Record<Country, Language[]> = {
-  US: ["en", "es"],
-  MX: ["es", "en"],
-  KE: ["en", "sw"],
-};
+const CONFIDENCE_TOPICS: readonly Topic[] = TOPICS;
+/** Country/language pairs from the shared onboarding configuration. */
+export const LANGUAGES_BY_COUNTRY = Object.fromEntries(
+  COUNTRIES.map((country) => [country.countryCode, country.supportedLanguages]),
+) as Record<Country, Language[]>;
 const DEFAULT_CONFIDENCE = 0.5;
 const COMFORT_STEP = 1 / 3;
 // Onboarding does not ask where savings are kept; lessons do not use it.

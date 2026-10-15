@@ -61,3 +61,29 @@ def test_path_for_unknown_learner_returns_not_found(client: TestClient) -> None:
     response = client.get("/v1/path/u_missing")
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "profile_not_found"
+
+
+@pytest.mark.parametrize("country", ["US", "MX", "KE"])
+def test_latest_onboarding_fixture_is_accepted_by_the_api(
+    client: TestClient, country: str
+) -> None:
+    """Incoming frontend fixtures use the actual numeric API scales."""
+    import json
+
+    from app.config import REPO_ROOT
+
+    payload = json.loads(
+        (REPO_ROOT / "data" / "fixtures" / "onboarding" / f"{country}.json").read_text()
+    )
+    started = client.post("/v1/onboarding", json=payload)
+    assert started.status_code == 201
+    session = started.json()
+    skipped = client.post(
+        f"/v1/quiz/{session['quiz']['quiz_id']}/skip",
+        json={"user_id": session["user_id"]},
+    )
+    assert skipped.status_code == 200
+    profile = skipped.json()["profile"]
+    assert profile["goal"] == payload["goal"]
+    assert profile["life_stage"] == payload["life_stage"]
+    assert all(not score["completed"] for score in profile["topic_scores"].values())

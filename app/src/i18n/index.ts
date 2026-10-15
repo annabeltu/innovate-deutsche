@@ -1,3 +1,6 @@
+import onboardingEn from "./locales/en.json";
+import onboardingEs from "./locales/es.json";
+import onboardingSw from "./locales/sw.json";
 import { integrationCopy } from "./integration";
 import voiceEn from "../voice/locales/en.json";
 import voiceEs from "../voice/locales/es.json";
@@ -162,6 +165,7 @@ void i18n.use(initReactI18next).init({
         ...confidenceCopy.en,
         ...integrationCopy.en,
         ...voiceEn,
+        ...onboardingEn,
         pathPreview: pathPreviewCopy.en,
       },
     },
@@ -171,6 +175,7 @@ void i18n.use(initReactI18next).init({
         ...confidenceCopy.es,
         ...integrationCopy.es,
         ...voiceEs,
+        ...onboardingEs,
         pathPreview: pathPreviewCopy.es,
       },
     },
@@ -180,6 +185,7 @@ void i18n.use(initReactI18next).init({
         ...confidenceCopy.sw,
         ...integrationCopy.sw,
         ...voiceSw,
+        ...onboardingSw,
         pathPreview: pathPreviewCopy.sw,
       },
     },

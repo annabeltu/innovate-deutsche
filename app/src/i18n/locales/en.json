@@ -1,0 +1,107 @@
+{
+  "onboarding": {
+    "country": {
+      "US": "United States",
+      "MX": "Mexico",
+      "KE": "Kenya"
+    },
+    "language": {
+      "en": "English",
+      "es": "Spanish",
+      "sw": "Kiswahili"
+    },
+    "accessibility": {
+      "readAloud": {
+        "label": "Read aloud",
+        "helper": "Kompass reads every screen out loud."
+      },
+      "simpleMode": {
+        "label": "Simple mode",
+        "helper": "Shorter sentences and fewer words on each screen."
+      },
+      "largerText": {
+        "label": "Larger text",
+        "helper": "Makes all text bigger and easier to read."
+      }
+    },
+    "lifeStage": {
+      "student": {
+        "label": "Student",
+        "helper": "I am in school or studying."
+      },
+      "first_job": {
+        "label": "First job",
+        "helper": "I recently started earning my own money."
+      },
+      "parent": {
+        "label": "Parent",
+        "helper": "I manage money for my family."
+      },
+      "retired": {
+        "label": "Retired",
+        "helper": "I have stopped working and live on savings or a pension."
+      }
+    },
+    "goal": {
+      "save_more": {
+        "label": "Save more",
+        "helper": "Put money aside and keep it safe."
+      },
+      "avoid_debt": {
+        "label": "Avoid debt",
+        "helper": "Borrow wisely and avoid costly loans."
+      },
+      "stay_safe_online": {
+        "label": "Stay safe online",
+        "helper": "Spot scams and protect my money."
+      },
+      "handle_emergencies": {
+        "label": "Handle emergencies",
+        "helper": "Be ready for unexpected costs."
+      }
+    },
+    "comfort": {
+      "beginner": {
+        "label": "Beginner",
+        "helper": "Money topics are new to me."
+      },
+      "somewhat_comfortable": {
+        "label": "Somewhat comfortable",
+        "helper": "I know the basics but have questions."
+      },
+      "confident": {
+        "label": "Confident",
+        "helper": "I manage my money well and want to learn more."
+      }
+    },
+    "confidence": {
+      "accounts": {
+        "label": "Bank accounts and payments",
+        "question": "How confident are you using an account to keep, send and receive money?"
+      },
+      "saving": {
+        "label": "Saving",
+        "question": "How confident are you choosing a safe place to save money?"
+      },
+      "borrowing": {
+        "label": "Borrowing and credit",
+        "question": "How confident are you understanding the total cost of a loan?"
+      },
+      "scams": {
+        "label": "Spotting scams",
+        "question": "How confident are you recognizing a money scam?"
+      },
+      "budget": {
+        "label": "Budgeting and emergencies",
+        "question": "How confident are you planning a monthly budget and saving for emergencies?"
+      }
+    },
+    "confidenceScale": {
+      "1": "Very low",
+      "2": "Low",
+      "3": "Moderate",
+      "4": "Good",
+      "5": "High"
+    }
+  }
+}
