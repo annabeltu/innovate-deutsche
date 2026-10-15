@@ -40,6 +40,8 @@ TRANSCRIBE_PROMPT_FILE = (
     Path(__file__).resolve().parents[1] / "prompts" / "transcribe_v1.txt"
 )
 MODEL_OUTPUT_STEP = "model_output"
+# Kompass talks like a patient friend, not an announcement system.
+SPEECH_STYLE = "warm, friendly and natural, like a patient guide, at a calm pace"
 FIRST_SERVER_ERROR = 500
 ATTEMPTS_PER_MODEL = 2
 
@@ -129,7 +131,18 @@ class GeminiSpeechClient:
         body = {
             "model": model,
             "input": [
-                {"type": "user_input", "content": [{"type": "text", "text": text}]}
+                {
+                    "type": "user_input",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": text,
+                            "annotations": [
+                                {"type": "speech_metadata", "style": SPEECH_STYLE}
+                            ],
+                        }
+                    ],
+                }
             ],
             "response_format": {"type": "audio"},
             "generation_config": {"speech_config": [{"voice": self._config.tts_voice}]},
