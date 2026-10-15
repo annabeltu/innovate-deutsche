@@ -92,16 +92,13 @@ def profile_json() -> dict[str, Any]:
 
 @pytest.fixture
 def learner_profile(profile_json: dict[str, Any]) -> LearnerProfile:
-    """Stand-in for profile_store.get_profile(), which returns a LearnerProfile.
-
-    Will's get_profile() is not built yet; pass this into services instead.
-    """
+    """A Kenyan student's LearnerProfile, as ProfileStore.get_profile() returns it."""
     return LearnerProfile.model_validate(profile_json)
 
 
 @pytest.fixture
 def learner_needs() -> LearnerNeeds:
-    """Stand-in for the data teammate's needs object for the same learner."""
+    """Stand-in for the data teammate's needs object; not built yet."""
     return LearnerNeeds.model_validate(_load_fixture("learner_needs_ke_student.json"))
 
 
