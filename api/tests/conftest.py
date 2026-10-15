@@ -13,14 +13,14 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 @pytest.fixture
 def profile_json() -> dict[str, Any]:
-    """Sample LearnerProfile JSON, standing in for profile_store.get_profile().
-
-    Will's get_profile() is not built yet; it will return this same JSON shape.
-    """
+    """Sample LearnerProfile JSON, as stored and as served by GET /v1/profile."""
     return json.loads((FIXTURES_DIR / "learner_profile_in_student.json").read_text())
 
 
 @pytest.fixture
 def learner_profile(profile_json: dict[str, Any]) -> LearnerProfile:
-    """The sample profile validated the same way production code will."""
+    """Stand-in for profile_store.get_profile(), which returns a LearnerProfile.
+
+    Will's get_profile() is not built yet; pass this into services instead.
+    """
     return LearnerProfile.model_validate(profile_json)
