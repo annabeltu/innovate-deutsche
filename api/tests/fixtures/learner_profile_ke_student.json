@@ -1,0 +1,25 @@
+{
+  "user_id": "u_8f3c2a91",
+  "country": "KE",
+  "language": "sw",
+  "accessibility": {
+    "voice_mode": true,
+    "read_aloud": true,
+    "simple_mode": true,
+    "large_text": false,
+    "speech_rate": 1.0
+  },
+  "life_stage": "student",
+  "goal": "save_more",
+  "comfort": 1,
+  "savings_habit": "cash_at_home",
+  "topic_scores": {
+    "accounts": {"confidence": 0.6, "quiz_score": 0.5, "proficiency": 0.54, "completed": false},
+    "saving": {"confidence": 0.5, "quiz_score": 0.5, "proficiency": 0.5, "completed": false},
+    "borrowing": {"confidence": 0.2, "quiz_score": 0.0, "proficiency": 0.08, "completed": false},
+    "scams": {"confidence": 0.9, "quiz_score": 1.0, "proficiency": 0.96, "completed": true},
+    "budget": {"confidence": 0.4, "quiz_score": 0.5, "proficiency": 0.46, "completed": false}
+  },
+  "bonus_lesson_ids": [],
+  "updated_at": "2026-10-15T15:30:00Z"
+}

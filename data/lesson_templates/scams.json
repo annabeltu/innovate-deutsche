@@ -1,0 +1,145 @@
+{
+  "lesson_id": "scams",
+  "topic": "scams",
+  "title": "Spot the Scam",
+  "goal": "Recognize the common red flags in financial scams.",
+  "cards": [
+    {
+      "card_id": "red-flags",
+      "type": "concept",
+      "text": "Scams often rush you, promise easy money, or ask for your PIN or a one-time code.",
+      "voice": {
+        "speak_text": "Scams often rush you, promise easy money, or ask for your PIN or a one-time code. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "people-like-you",
+      "type": "bridge",
+      "text": "In your country, {group_percent}% of {who} {indicator}. The more we pay by phone and online, the more chances scammers get.",
+      "voice": {
+        "speak_text": "In your country, {group_percent} percent of {who} {indicator}. The more we pay by phone and online, the more chances scammers get. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "prize-message",
+      "type": "scam_swipe",
+      "text": "A message says: You won a prize! Send {cur}50 today to claim it. Is this a scam or safe?",
+      "options": {
+        "a": "Scam",
+        "b": "Safe"
+      },
+      "correct_option": "a",
+      "voice": {
+        "speak_text": "A message says: You won a prize! Send {cur}50 today to claim it. Is this a scam or safe? A: scam. B: safe. Say A or B.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "scam",
+          "b": "safe"
+        },
+        "correct_feedback": "Correct. Paying to receive a prize is a red flag.",
+        "incorrect_feedback": "Not quite. The answer is A. Paying to receive a prize is a red flag."
+      }
+    },
+    {
+      "card_id": "fake-job-offers",
+      "type": "concept",
+      "text": "Fake job offers that ask for a fee first are a common scam. Real employers do not charge you to start.",
+      "life_stages": [
+        "student",
+        "first_job"
+      ],
+      "voice": {
+        "speak_text": "Fake job offers that ask for a fee first are a common scam. Real employers do not charge you to start. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "family-in-trouble",
+      "type": "concept",
+      "text": "Scammers may pretend to be a family member in trouble. Call them back on a number you already know.",
+      "life_stages": [
+        "parent",
+        "retired"
+      ],
+      "voice": {
+        "speak_text": "Scammers may pretend to be a family member in trouble. Call them back on a number you already know. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "links-in-messages",
+      "type": "concept",
+      "text": "Be careful with links in messages. Banks never ask for your PIN or password by message.",
+      "goals": [
+        "stay_safe_online"
+      ],
+      "voice": {
+        "speak_text": "Be careful with links in messages. Banks never ask for your PIN or password by message. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "bank-call-quiz",
+      "type": "mc_quiz",
+      "text": "Someone calls saying they are from your bank and asks for your one-time code. What do you do?",
+      "options": {
+        "a": "Give them the code",
+        "b": "Hang up and call your bank on its official number",
+        "c": "Give them your PIN instead"
+      },
+      "correct_option": "b",
+      "voice": {
+        "speak_text": "Someone calls saying they are from your bank and asks for your one-time code. What do you do? A: give them the code. B: hang up and call your bank on its official number. C: give them your PIN instead. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "give them the code",
+          "b": "hang up and call your bank on its official number",
+          "c": "give them your PIN instead"
+        },
+        "correct_feedback": "Correct. Your bank will never ask for your code. Call the official number yourself.",
+        "incorrect_feedback": "Not quite. The answer is B. Your bank will never ask for your code. Call the official number yourself."
+      }
+    },
+    {
+      "card_id": "double-your-money",
+      "type": "scam_swipe",
+      "text": "An investment promises to double your money in one week with no risk. Is this a scam or safe?",
+      "options": {
+        "a": "Scam",
+        "b": "Safe"
+      },
+      "correct_option": "a",
+      "min_difficulty": 2,
+      "voice": {
+        "speak_text": "An investment promises to double your money in one week with no risk. Is this a scam or safe? A: scam. B: safe. Say A or B.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "scam",
+          "b": "safe"
+        },
+        "correct_feedback": "Correct. Big, fast, risk-free returns are a red flag.",
+        "incorrect_feedback": "Not quite. The answer is A. Big, fast, risk-free returns are a red flag."
+      }
+    },
+    {
+      "card_id": "report-it",
+      "type": "concept",
+      "text": "If you think you were scammed, tell your bank right away and report it to {scam_report_agency}.",
+      "voice": {
+        "speak_text": "If you think you were scammed, tell your bank right away and report it to {scam_report_agency}. Say next to continue.",
+        "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "takeaway",
+      "type": "takeaway",
+      "text": "Slow down, never share your PIN or codes, and check before you send money.",
+      "voice": {
+        "speak_text": "Remember: slow down, never share your PIN or codes, and check before you send money. Say next to finish the lesson.",
+        "answer_mode": "say_next"
+      }
+    }
+  ]
+}

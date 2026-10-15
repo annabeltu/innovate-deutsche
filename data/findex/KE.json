@@ -1,0 +1,188 @@
+{
+  "country": "KE",
+  "source": "World Bank, The Global Findex Database 2025",
+  "source_url": "https://www.worldbank.org/en/publication/globalfindex/download-data",
+  "benchmark_name": "upper-middle-income countries",
+  "indicators": [
+    {
+      "indicator_id": "account_t_d",
+      "topic": "accounts",
+      "kind": "lacking",
+      "label": "have an account",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.9012,
+        "ages_15_24": 0.8985,
+        "age_25_plus": 0.9026
+      },
+      "benchmark_rate": 0.8404
+    },
+    {
+      "indicator_id": "fiaccount_t_d",
+      "topic": "accounts",
+      "kind": "lacking",
+      "label": "have a bank account",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.4543,
+        "ages_15_24": 0.4056,
+        "age_25_plus": 0.479
+      },
+      "benchmark_rate": 0.8324
+    },
+    {
+      "indicator_id": "fin2_t_d",
+      "topic": "accounts",
+      "kind": "could_use",
+      "label": "own a debit card",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.1951,
+        "ages_15_24": 0.1149,
+        "age_25_plus": 0.236
+      },
+      "benchmark_rate": 0.7341
+    },
+    {
+      "indicator_id": "save_any_t_d",
+      "topic": "saving",
+      "kind": "lacking",
+      "label": "saved any money in the past year",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.7019,
+        "ages_15_24": 0.7159,
+        "age_25_plus": 0.6948
+      },
+      "benchmark_rate": 0.6663
+    },
+    {
+      "indicator_id": "fin17a",
+      "topic": "saving",
+      "kind": "lacking",
+      "label": "saved at a bank in the past year",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.2015,
+        "ages_15_24": 0.2031,
+        "age_25_plus": 0.2007
+      },
+      "benchmark_rate": 0.5408
+    },
+    {
+      "indicator_id": "fin17e",
+      "topic": "saving",
+      "kind": "could_use",
+      "label": "earned interest on their savings",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.1406,
+        "ages_15_24": 0.1791,
+        "age_25_plus": 0.1211
+      },
+      "benchmark_rate": 0.4123
+    },
+    {
+      "indicator_id": "fin22d",
+      "topic": "borrowing",
+      "kind": "struggle",
+      "label": "borrowed money to pay for health costs",
+      "higher_is_better": false,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.2744,
+        "ages_15_24": 0.2318,
+        "age_25_plus": 0.2961
+      },
+      "benchmark_rate": 0.1291
+    },
+    {
+      "indicator_id": "fin22a",
+      "topic": "borrowing",
+      "kind": "could_use",
+      "label": "borrowed from a bank in the past year",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.1091,
+        "ages_15_24": 0.0456,
+        "age_25_plus": 0.1415
+      },
+      "benchmark_rate": 0.1649
+    },
+    {
+      "indicator_id": "merchant_pay",
+      "topic": "scams",
+      "kind": "exposure",
+      "label": "paid a shop digitally in the past year",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.5576,
+        "ages_15_24": 0.5883,
+        "age_25_plus": 0.5419
+      },
+      "benchmark_rate": 0.6838
+    },
+    {
+      "indicator_id": "fin26a",
+      "topic": "scams",
+      "kind": "exposure",
+      "label": "paid bills by phone or online",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.5501,
+        "ages_15_24": 0.5557,
+        "age_25_plus": 0.5472
+      },
+      "benchmark_rate": 0.6184
+    },
+    {
+      "indicator_id": "fin24aVD",
+      "topic": "budget",
+      "kind": "struggle",
+      "label": "would find it very hard to get emergency money within 30 days",
+      "higher_is_better": false,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.4683,
+        "ages_15_24": 0.444,
+        "age_25_plus": 0.4807
+      },
+      "benchmark_rate": 0.1845
+    },
+    {
+      "indicator_id": "fin24sav",
+      "topic": "budget",
+      "kind": "lacking",
+      "label": "would pay for an emergency from savings",
+      "higher_is_better": true,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.0981
+      },
+      "benchmark_rate": 0.321
+    },
+    {
+      "indicator_id": "fin45d",
+      "topic": "budget",
+      "kind": "struggle",
+      "label": "worry most about paying monthly bills",
+      "higher_is_better": false,
+      "survey_year": 2024,
+      "rates": {
+        "all": 0.3006,
+        "ages_15_24": 0.3226,
+        "age_25_plus": 0.2894
+      },
+      "benchmark_rate": 0.2516
+    }
+  ]
+}

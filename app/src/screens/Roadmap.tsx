@@ -15,6 +15,8 @@ import { useApp } from "../state/useApp";
 import { Badge, RoadmapNavigation } from "../components/RoadmapChrome";
 import { colors } from "../theme/tokens";
 import { buildRoadmap } from "../onboarding/roadmap";
+import { useBonusLessons } from "../api/lessons";
+import { ApiError } from "../api/client";
 
 const scenes = {
   US: require("../../assets/welcome/us.png"),
@@ -33,6 +35,8 @@ export function Roadmap() {
   const coins = useApp((state) => state.coins);
   const hearts = useApp((state) => state.hearts);
   const bonus = useApp((state) => state.bonus);
+  // Reload bonus titles in the active language instead of the saved title.
+  const bonusLessons = useBonusLessons();
   const { width, fontScale } = useWindowDimensions();
   const { t } = useTranslation();
   const path = buildRoadmap(confidence, completed);
@@ -222,19 +226,34 @@ export function Roadmap() {
           </Pressable>
         </View>
       </View>
-      {bonus.map((title, index) => (
-        <Pressable
-          key={`${title}-${index}`}
-          accessibilityRole="button"
-          accessibilityLabel={title}
-          accessibilityHint={t("roadmapScreen.lessonHint")}
-          onPress={() => openLesson(`bonus-${index}`)}
-          className="min-h-14 rounded-2xl bg-white p-3"
-        >
-          <Text className="font-bold text-ink">✦ {title}</Text>
-          <Text className="text-xs text-brand">{t("roadmapScreen.bonus")}</Text>
-        </Pressable>
-      ))}
+      {bonus.map((saved, index) => {
+        const lesson = bonusLessons[index];
+        const title =
+          lesson?.data?.title ??
+          t(
+            !lesson?.isError
+              ? "app.loadingBonus"
+              : lesson.error instanceof ApiError &&
+                  lesson.error.code === "lesson_translation_failed"
+                ? "app.bonusError"
+                : "lessonError",
+          );
+        return (
+          <Pressable
+            key={`${saved}-${index}`}
+            accessibilityRole="button"
+            accessibilityLabel={title}
+            accessibilityHint={t("roadmapScreen.lessonHint")}
+            onPress={() => openLesson(`bonus-${index}`)}
+            className="min-h-14 rounded-2xl bg-white p-3"
+          >
+            <Text className="font-bold text-ink">✦ {title}</Text>
+            <Text className="text-xs text-brand">
+              {t("roadmapScreen.bonus")}
+            </Text>
+          </Pressable>
+        );
+      })}
     </Screen>
   );
 }
