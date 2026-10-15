@@ -31,6 +31,21 @@ const en = {
   check: "Check",
   wallet: "YOUR WALLET",
   shopSub: "Spend coins on things that help you keep going.",
+  lessonLoading: "Kiko is preparing your lesson…",
+  lessonError:
+    "This lesson could not load. Check your connection and try again.",
+  tryAgain: "Try again",
+  next: "Next",
+  finish: "Finish",
+  makingLesson: "Kiko is making your lesson…",
+  lessonMatched: "Kiko found a lesson for this:",
+  openLesson: "Open the lesson",
+  lessonOffTopic:
+    "Kiko can only teach about money. Try a question about saving, borrowing, payments or scams.",
+  lessonRequestError:
+    "Kiko could not make a lesson right now. Please try again.",
+  turnIntoLesson: "✦ Turn this into a lesson",
+  addedToRoadmap: "✓ Added to your roadmap",
 };
 const hi = {
   ...en,
@@ -62,6 +77,20 @@ const hi = {
   check: "जाँचें",
   wallet: "आपका बटुआ",
   shopSub: "सीखते रहने के लिए सिक्के खर्च करें।",
+  lessonLoading: "कीको आपका पाठ तैयार कर रहा है…",
+  lessonError:
+    "यह पाठ लोड नहीं हो सका। अपना कनेक्शन जाँचें और फिर से कोशिश करें।",
+  tryAgain: "फिर से कोशिश करें",
+  next: "आगे",
+  finish: "पूरा करें",
+  makingLesson: "कीको आपका पाठ बना रहा है…",
+  lessonMatched: "कीको को इसके लिए एक पाठ मिला:",
+  openLesson: "पाठ खोलें",
+  lessonOffTopic:
+    "कीको सिर्फ़ पैसों के बारे में सिखा सकता है। बचत, उधार, भुगतान या धोखाधड़ी के बारे में पूछें।",
+  lessonRequestError: "कीको अभी पाठ नहीं बना सका। कृपया फिर से कोशिश करें।",
+  turnIntoLesson: "✦ इसे पाठ बनाएँ",
+  addedToRoadmap: "✓ आपके रोडमैप में जोड़ा गया",
 };
 const sw = {
   ...en,
@@ -93,6 +122,21 @@ const sw = {
   check: "Angalia",
   wallet: "POCHI YAKO",
   shopSub: "Tumia sarafu kukusaidia kuendelea.",
+  lessonLoading: "Kiko anaandaa somo lako…",
+  lessonError:
+    "Somo hili halikupakia. Angalia muunganisho wako kisha ujaribu tena.",
+  tryAgain: "Jaribu tena",
+  next: "Endelea",
+  finish: "Maliza",
+  makingLesson: "Kiko anatengeneza somo lako…",
+  lessonMatched: "Kiko amepata somo la hili:",
+  openLesson: "Fungua somo",
+  lessonOffTopic:
+    "Kiko anafundisha kuhusu pesa tu. Uliza kuhusu kuweka akiba, kukopa, malipo au utapeli.",
+  lessonRequestError:
+    "Kiko hakuweza kutengeneza somo sasa hivi. Tafadhali jaribu tena.",
+  turnIntoLesson: "✦ Ligeuze kuwa somo",
+  addedToRoadmap: "✓ Limeongezwa kwenye ramani yako",
 };
 const de = {
   ...en,
@@ -125,6 +169,21 @@ const de = {
   check: "Prüfen",
   wallet: "DEIN GUTHABEN",
   shopSub: "Nutze Münzen, die dir beim Weiterlernen helfen.",
+  lessonLoading: "Kiko bereitet deine Lektion vor…",
+  lessonError:
+    "Diese Lektion konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+  tryAgain: "Erneut versuchen",
+  next: "Weiter",
+  finish: "Fertig",
+  makingLesson: "Kiko erstellt deine Lektion…",
+  lessonMatched: "Kiko hat eine Lektion dazu gefunden:",
+  openLesson: "Lektion öffnen",
+  lessonOffTopic:
+    "Kiko kann nur über Geld lehren. Frag nach Sparen, Leihen, Zahlungen oder Betrug.",
+  lessonRequestError:
+    "Kiko konnte gerade keine Lektion erstellen. Bitte versuche es erneut.",
+  turnIntoLesson: "✦ Daraus eine Lektion machen",
+  addedToRoadmap: "✓ Zu deiner Roadmap hinzugefügt",
 };
 void i18n.use(initReactI18next).init({
   resources: {

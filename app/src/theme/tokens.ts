@@ -9,8 +9,12 @@ export const colors = {
   grey: "#C9D1E0",
   white: "#FFFFFF",
   success: "#1FA463",
+  successSoft: "#EAF8EF",
   error: "#E5484D",
+  errorSoft: "#FFF1F1",
   coinGold: "#F5B700",
+  // Readable warning text on dark backgrounds.
+  noticeOnDark: "#FFE08A",
 } as const;
 
 // Country scenery accents; interface controls retain the brand blues.

@@ -1,6 +1,8 @@
 import "../../global.css";
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../api/query-client";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AccessibilityInfo } from "react-native";
@@ -17,11 +19,13 @@ export default function Layout() {
     });
   }, []);
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#E8F0FF" }}>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#E8F0FF" }}>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

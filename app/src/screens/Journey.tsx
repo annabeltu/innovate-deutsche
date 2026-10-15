@@ -21,6 +21,9 @@ import {
   c,
 } from "../components/ui";
 import { lessons } from "./Onboarding";
+import { ApiLesson } from "../components/ApiLesson";
+import { isApiConfigured } from "../api/client";
+import { serverLessonId } from "../api/lessons";
 const money = { US: "$", MX: "MX$", KE: "KSh" };
 export function Roadmap() {
   const s = useApp();
@@ -172,6 +175,10 @@ export function Lesson() {
   const [checked, setChecked] = useState(false);
   const s = useApp();
   const { t } = useTranslation();
+  const apiLessonId = serverLessonId(id, s);
+  if (isApiConfigured() && apiLessonId) {
+    return <ApiLesson routeId={id} lessonId={apiLessonId} />;
+  }
   const scam = id === "scams";
   const budget = id === "budget";
   const title =

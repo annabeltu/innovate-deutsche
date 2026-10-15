@@ -10,6 +10,8 @@ import {
 } from "expo-audio";
 import * as Speech from "expo-speech";
 import { useApp } from "../state/useApp";
+import { isApiConfigured } from "../api/client";
+import { LessonRequest } from "../components/LessonRequest";
 import {
   Screen,
   Txt,
@@ -186,6 +188,7 @@ export default function Ask() {
         disabled={busy || !question.trim() || recording.isRecording}
         onPress={() => void ask(question)}
       />
+      {isApiConfigured() && <LessonRequest question={question} />}
       {!process.env.EXPO_PUBLIC_API_URL && (
         <>
           <Label light>DEMO MODE · SAMPLE ANSWER</Label>
@@ -219,16 +222,18 @@ export default function Ask() {
               onPress={() => Speech.speak(answer, { language: s.language })}
             />
           </Card>
-          <Button
-            title={
-              added ? "✓ Added to your roadmap" : "✦ Turn this into a lesson"
-            }
-            disabled={added}
-            onPress={() => {
-              s.addBonus("Sending money abroad");
-              setAdded(true);
-            }}
-          />
+          {!isApiConfigured() && (
+            <Button
+              title={
+                added ? "✓ Added to your roadmap" : "✦ Turn this into a lesson"
+              }
+              disabled={added}
+              onPress={() => {
+                s.addBonus("Sending money abroad");
+                setAdded(true);
+              }}
+            />
+          )}
           {added && (
             <Button
               secondary
