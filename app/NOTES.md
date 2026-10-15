@@ -1,0 +1,7 @@
+# Expo app: first tasks (@frontend-placeholder)
+
+1. **Navigation + placeholder screens.** Set up Expo Router screens for Setup, Onboarding, Path reveal, Roadmap, Lesson player, Ask Kiko and Shop, using the brand tokens in `src/theme/tokens.ts`. Kiko the mascot is an original compass character; use a placeholder circle for now.
+2. **Typed API client with mocks.** Write `src/api/client.ts` against `src/types/api.ts`, with a `USE_MOCKS` flag that reads fixtures from `src/mocks/`.
+3. **Screen reader support.** Give every interactive element `accessibilityLabel`, `accessibilityRole` and `accessibilityHint`. Sliders need `accessibilityValue` and increment/decrement actions. Roadmap nodes form a list in path order with their status in the label. Use tap targets of at least 44 points and text contrast of at least 4.5:1.
+4. **Voice mode.** Build `src/voice/VoiceProvider.tsx` with `speak()` (expo-speech), `listen()` (record → `/v1/voice/transcribe` → `/v1/voice/intent`) and a loop that speaks, listens, acts and re-asks on `unknown`. Offer voice mode automatically when `AccessibilityInfo.isScreenReaderEnabled()` is true. Add a voice-mode toggle and a "repeat" control on every screen.
+5. **Lesson player.** Render each card type, plus a voice-mode player that plays a whole lesson from the cards' `voice` blocks, with spoken feedback, coins announced out loud, and distinct sounds and haptics for correct, wrong and complete. No time limits.
