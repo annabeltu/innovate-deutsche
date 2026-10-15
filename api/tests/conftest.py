@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from app.schemas.lesson_template import LessonTemplate
-from app.schemas.shared import LearnerNeeds, LearnerProfile
+from app.schemas.shared import LearnerNeeds, LearnerProfile, Lesson
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -37,6 +37,12 @@ def learner_needs() -> LearnerNeeds:
 def saving_template() -> LessonTemplate:
     """Stand-in base lesson for Lesson 2, Safe Saving."""
     return LessonTemplate.model_validate(_load_fixture("lesson_template_saving.json"))
+
+
+@pytest.fixture
+def customized_lesson() -> Lesson:
+    """Safe Saving as customized for the sample student, before rewording."""
+    return Lesson.model_validate(_load_fixture("lesson_saving_customized.json"))
 
 
 def _load_fixture(file_name: str) -> dict[str, Any]:
