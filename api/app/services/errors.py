@@ -42,6 +42,12 @@ class LessonNotFoundError(KompassError):
     code = "lesson_not_found"
 
 
+class LessonBuildError(KompassError):
+    """A stored lesson could not be customized; a content or data bug, not the user's."""
+
+    code = "lesson_build_failed"
+
+
 class UnsupportedLanguageError(KompassError):
     """The language is valid but not offered for the chosen country."""
 

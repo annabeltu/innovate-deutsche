@@ -5,6 +5,7 @@ the learner's country picks the data, their life stage picks the age group,
 and each indicator becomes a signal with a 0-1 gap against the benchmark.
 """
 
+from functools import lru_cache
 from pathlib import Path
 
 from pydantic import ValidationError
@@ -33,6 +34,7 @@ AGE_GROUP_BY_LIFE_STAGE = {
 }
 
 
+@lru_cache
 def load_findex(directory: Path = FINDEX_DIR) -> dict[Country, FindexCountry]:
     """Load and validate the Findex file for every supported country.
 

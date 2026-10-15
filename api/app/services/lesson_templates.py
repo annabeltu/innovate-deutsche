@@ -4,6 +4,7 @@ Loaded once at startup and validated up front, so a broken lesson file stops
 the API from starting instead of failing when a learner opens the lesson.
 """
 
+from functools import lru_cache
 from pathlib import Path
 
 from pydantic import ValidationError
@@ -15,6 +16,7 @@ BASE_LESSON_LANGUAGE = Language.EN
 LESSON_TEMPLATES_DIR = Path(__file__).resolve().parents[3] / "data" / "lesson_templates"
 
 
+@lru_cache
 def load_lesson_templates(
     directory: Path = LESSON_TEMPLATES_DIR,
 ) -> dict[Topic, LessonTemplate]:

@@ -221,6 +221,8 @@ Submitting or skipping a finished quiz returns `409 quiz_already_submitted`; a q
 }
 ```
 
+Errors (contract error shape): unknown `user_id` → `404 profile_not_found`; unknown `lesson_id` → `404 lesson_not_found`; missing `user_id` → `400 validation_error`; a stored lesson or data file that cannot be customized → `500 lesson_build_failed`. If the LLM rewrite fails twice, the lesson is still served (`200`) in its original English wording.
+
 ## Lesson cards
 
 Card types: `concept`, `bridge`, `mc_quiz`, `drag_match`, `compare_chart`, `clause_tap`, `scam_swipe`, `budget_sim`, `takeaway`.

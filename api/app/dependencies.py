@@ -9,6 +9,9 @@ from fastapi import Depends
 
 from app.config import Settings, get_settings
 from app.llm.client import EchoLlmClient, LlmClient, OpenAiClient
+from app.services.lesson_service import LessonSources
+from app.services.lesson_templates import load_lesson_templates
+from app.services.needs import load_findex
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank, load_question_bank
 
@@ -53,3 +56,17 @@ def _openai_client(
     """Build one OpenAI client per configuration so connections are reused."""
     http_client = httpx.Client(base_url=base_url, timeout=timeout_seconds)
     return OpenAiClient(api_key, model_name, http_client)
+
+
+def get_lesson_sources(
+    settings: SettingsDep,
+    question_bank: Annotated[QuestionBank, Depends(get_question_bank)],
+    llm: Annotated[LlmClient, Depends(get_llm_client)],
+) -> LessonSources:
+    """Return the base lessons, Findex data, country facts and LLM (loaded once)."""
+    return LessonSources(
+        templates=load_lesson_templates(settings.lesson_templates_dir),
+        findex=load_findex(settings.findex_dir),
+        question_bank=question_bank,
+        llm=llm,
+    )

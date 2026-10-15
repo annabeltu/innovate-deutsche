@@ -16,6 +16,8 @@ class Settings(BaseSettings):
 
     database_path: Path = Path("kompass.db")
     question_bank_dir: Path = REPO_ROOT / "data" / "question_bank"
+    lesson_templates_dir: Path = REPO_ROOT / "data" / "lesson_templates"
+    findex_dir: Path = REPO_ROOT / "data" / "findex"
     # LLM (OpenAI). With no key, lessons keep their original English wording.
     llm_api_key: SecretStr | None = None
     llm_model: str | None = None
