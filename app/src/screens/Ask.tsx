@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextInput, View, Platform } from "react-native";
+import { TextInput, View } from "react-native";
 import { router } from "expo-router";
 import {
   AudioModule,
@@ -8,8 +8,11 @@ import {
   useAudioRecorder,
   useAudioRecorderState,
 } from "expo-audio";
-import * as Speech from "expo-speech";
+import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
+import { askKiko } from "../api/ask";
+import { VoiceApiError, apiBaseUrl, transcribeRecording } from "../api/voice";
+import { speak, stopSpeaking } from "../voice/speech";
 import {
   Screen,
   Txt,
@@ -20,9 +23,23 @@ import {
   Card,
   c,
 } from "../components/ui";
-const example = "How do I send money to my mom in another country?";
+
+/** Error keys with their own message; anything else reads as "could not connect". */
+const KNOWN_ERRORS = [
+  "microphoneOff",
+  "transcription",
+  "audio_too_large",
+  "rate_limited",
+  "speech_unavailable",
+];
+const BONUS_TITLE = "Sending money abroad";
+
 export default function Ask() {
-  const s = useApp();
+  const { t } = useTranslation();
+  const language = useApp((s) => s.language);
+  const country = useApp((s) => s.country);
+  const readAloud = useApp((s) => s.readAloud);
+  const addBonus = useApp((s) => s.addBonus);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
@@ -30,116 +47,80 @@ export default function Ask() {
   const [added, setAdded] = useState(false);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recording = useAudioRecorderState(recorder);
-  useEffect(
-    () => () => {
-      void Speech.stop();
-    },
-    [],
-  );
+  const demo = apiBaseUrl() === null;
+  useEffect(() => stopSpeaking, []);
+
+  function say(text: string) {
+    if (readAloud) void speak(text, { language, country });
+  }
+  function fail(key: string) {
+    const message = t(
+      `voice.errors.${KNOWN_ERRORS.includes(key) ? key : "apiUnavailable"}`,
+    );
+    setError(message);
+    say(message);
+  }
   async function ask(text: string) {
     if (!text.trim()) return;
     setBusy(true);
     setError("");
     setAdded(false);
     try {
-      const base = process.env.EXPO_PUBLIC_API_URL;
-      if (!base) {
-        setAnswer(
-          "You can use a trusted bank or mobile money service. Compare the fee, check the exchange rate, and never share your PIN.",
-        );
-        return;
-      }
-      const response = await fetch(`${base}/v1/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: text,
-          country: s.country,
-          language: s.language,
-        }),
-      });
-      if (!response.ok)
-        throw new Error("Kiko could not connect. Please try again.");
-      const data = await response.json();
-      if (typeof data.answer !== "string")
-        throw new Error("Kiko received an unexpected response.");
-      setAnswer(data.answer);
-      if (s.readAloud) Speech.speak(data.answer, { language: s.language });
+      const reply =
+        (await askKiko(text, country, language)) ?? t("voice.sampleAnswer");
+      setAnswer(reply);
+      say(reply);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      fail(e instanceof VoiceApiError ? e.code : "apiUnavailable");
     } finally {
       setBusy(false);
     }
   }
-  async function record() {
-    setError("");
+  async function startRecording() {
+    const permission = await AudioModule.requestRecordingPermissionsAsync();
+    if (!permission.granted) return fail("microphoneOff");
+    stopSpeaking();
+    await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+    await recorder.prepareToRecordAsync();
+    recorder.record();
+  }
+  async function finishRecording() {
+    await recorder.stop();
+    await setAudioModeAsync({
+      allowsRecording: false,
+      playsInSilentMode: true,
+    });
+    if (!recorder.uri) return fail("transcription");
+    setBusy(true);
     try {
-      if (recording.isRecording) {
-        await recorder.stop();
-        await setAudioModeAsync({ allowsRecording: false });
-        const base = process.env.EXPO_PUBLIC_API_URL;
-        if (!base) {
-          setError(
-            "Recording saved for this session. Connect the voice API to transcribe it, or type your question below.",
-          );
-          return;
-        }
-        setBusy(true);
-        const body = new FormData();
-        if (Platform.OS === "web") {
-          const blob = await (await fetch(recorder.uri!)).blob();
-          body.append("file", blob, "question.webm");
-        } else
-          body.append("file", {
-            uri: recorder.uri,
-            name: "question.m4a",
-            type: "audio/mp4",
-          } as unknown as Blob);
-        const response = await fetch(`${base}/v1/voice/transcribe`, {
-          method: "POST",
-          body,
-        });
-        if (!response.ok)
-          throw new Error("Transcription failed. Please type your question.");
-        const data = await response.json();
-        if (typeof data.text !== "string")
-          throw new Error("No transcript was returned.");
-        setQuestion(data.text);
-        await ask(data.text);
-      } else {
-        const permission = await AudioModule.requestRecordingPermissionsAsync();
-        if (!permission.granted) {
-          setError(
-            "Microphone access is off. You can still type your question.",
-          );
-          return;
-        }
-        await setAudioModeAsync({
-          allowsRecording: true,
-          playsInSilentMode: true,
-        });
-        await recorder.prepareToRecordAsync();
-        recorder.record();
-      }
+      const text = await transcribeRecording(recorder.uri, language);
+      if (!text.trim()) return fail("transcription");
+      setQuestion(text);
+      await ask(text);
     } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : "Recording failed. Please type your question.",
-      );
+      fail(e instanceof VoiceApiError ? e.code : "transcription");
     } finally {
       setBusy(false);
     }
+  }
+  function record() {
+    setError("");
+    const action = recording.isRecording ? finishRecording : startRecording;
+    void action().catch(() => fail("transcription"));
   }
   return (
     <Screen dark>
       <Row>
-        <Txt style={{ color: c.white, fontSize: 22, fontWeight: "700" }}>
-          Ask Kiko
+        <Txt
+          accessibilityRole="header"
+          style={{ color: c.white, fontSize: 22, fontWeight: "700" }}
+        >
+          {t("voice.askTitle")}
         </Txt>
         <Button
           secondary
           title="×"
+          accessibilityLabel={t("voice.close")}
           onPress={() => router.replace("/roadmap")}
         />
       </Row>
@@ -150,23 +131,29 @@ export default function Ask() {
           style={{ textAlign: "center", color: c.lightBlue }}
         >
           {recording.isRecording
-            ? "Kiko is listening…"
+            ? t("voice.listening")
             : busy
-              ? "Kiko is thinking…"
-              : "Big questions. Small, helpful steps."}
+              ? t("voice.thinking")
+              : t("voice.askIntro")}
         </Txt>
       </View>
       <Button
         secondary
         title={
-          recording.isRecording ? "■ Stop recording" : "♩ Record a question"
+          recording.isRecording
+            ? `■ ${t("voice.stopRecording")}`
+            : `♩ ${t("voice.record")}`
         }
+        accessibilityLabel={
+          recording.isRecording ? t("voice.stopRecording") : t("voice.record")
+        }
+        accessibilityHint={t("voice.recordHint")}
         disabled={busy}
-        onPress={() => void record()}
+        onPress={record}
       />
       <TextInput
-        accessibilityLabel="Your question for Kiko"
-        placeholder={example}
+        accessibilityLabel={t("voice.questionLabel")}
+        placeholder={t("voice.example")}
         placeholderTextColor={c.midBlue}
         value={question}
         onChangeText={setQuestion}
@@ -182,57 +169,60 @@ export default function Ask() {
         }}
       />
       <Button
-        title={busy ? "Thinking…" : "Ask Kiko →"}
+        title={busy ? t("voice.thinking") : `${t("voice.askButton")} →`}
+        accessibilityLabel={busy ? t("voice.thinking") : t("voice.askButton")}
         disabled={busy || !question.trim() || recording.isRecording}
         onPress={() => void ask(question)}
       />
-      {!process.env.EXPO_PUBLIC_API_URL && (
+      {demo && (
         <>
-          <Label light>DEMO MODE · SAMPLE ANSWER</Label>
+          <Label light>{t("voice.demoMode")}</Label>
           <Button
             secondary
-            title="Try the example question"
+            title={t("voice.tryExample")}
             onPress={() => {
-              setQuestion(example);
-              void ask(example);
+              setQuestion(t("voice.example"));
+              void ask(t("voice.example"));
             }}
           />
         </>
       )}
-      {error && (
-        <Txt accessibilityLiveRegion="polite" style={{ color: "#FFE08A" }}>
+      {error !== "" && (
+        <Txt accessibilityLiveRegion="assertive" style={{ color: c.coinGold }}>
           {error}
         </Txt>
       )}
-      {answer && (
+      {answer !== "" && (
         <>
           <Card>
             <Txt accessibilityLiveRegion="polite">{answer}</Txt>
             <Label>
-              {process.env.EXPO_PUBLIC_API_URL
-                ? "KIKO RESPONSE"
-                : "SAMPLE · COUNTRY GUIDE"}
+              {demo ? t("voice.sampleGuide") : t("voice.kikoResponse")}
             </Label>
             <Button
               secondary
-              title="Read answer aloud"
-              onPress={() => Speech.speak(answer, { language: s.language })}
+              title={t("voice.readAnswer")}
+              onPress={() => void speak(answer, { language, country })}
             />
           </Card>
           <Button
             title={
-              added ? "✓ Added to your roadmap" : "✦ Turn this into a lesson"
+              added ? `✓ ${t("voice.added")}` : `✦ ${t("voice.makeLesson")}`
+            }
+            accessibilityLabel={
+              added ? t("voice.added") : t("voice.makeLesson")
             }
             disabled={added}
             onPress={() => {
-              s.addBonus("Sending money abroad");
+              addBonus(BONUS_TITLE);
               setAdded(true);
             }}
           />
           {added && (
             <Button
               secondary
-              title="See my roadmap →"
+              title={`${t("roadmap")} →`}
+              accessibilityLabel={t("roadmap")}
               onPress={() => router.replace("/roadmap")}
             />
           )}
