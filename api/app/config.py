@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     database_path: Path = Path("kompass.db")
     question_bank_dir: Path = REPO_ROOT / "data" / "question_bank"
 
+    # Browser origins allowed to call the API (Expo web only; native apps need none).
+    cors_allow_origins: list[str] = []
+
     # Voice: speech-to-text (any OpenAI-compatible transcription endpoint).
     whisper_api_key: SecretStr | None = None
     whisper_api_url: str = "https://api.openai.com/v1/audio/transcriptions"
