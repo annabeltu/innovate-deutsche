@@ -8,7 +8,7 @@ Kompass is a gamified mobile app, with a lesson roadmap, coins, streaks and hear
 |---|---|---|---|
 | Faraz | @faraz999shah | Path + Lessons API, LLM layer | `feature/faraz-path-lessons` |
 | Will | @willapat | LearnerProfile API (onboarding, baseline quiz, profile) | `feature/will-learner-profile` |
-| Frontend | @frontend-placeholder | Expo React Native app | `feature/frontend-app` |
+| Frontend | @annabeltu | Expo React Native app | `feature/annabel-frontend-app` |
 | Data & content | @data-placeholder | Findex data, country packs, lesson templates | `feature/data-content` |
 | Voice & integration | @voice-placeholder | Speech-to-text, voice intents, text-to-speech, deployment, CI | `feature/voice-integration` |
 

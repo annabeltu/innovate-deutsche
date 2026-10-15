@@ -1,4 +1,4 @@
-# Expo app: first tasks (@frontend-placeholder)
+# Expo app: first tasks (@annabeltu)
 
 1. **Navigation + placeholder screens.** Set up Expo Router screens for Setup, Onboarding, Path reveal, Roadmap, Lesson player, Ask Kiko and Shop, using the brand tokens in `src/theme/tokens.ts`. Kiko the mascot is an original compass character; use a placeholder circle for now.
 2. **Typed API client with mocks.** Write `src/api/client.ts` against `src/types/api.ts`, with a `USE_MOCKS` flag that reads fixtures from `src/mocks/`.

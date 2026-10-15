@@ -1,7 +1,7 @@
 # GitHub uses the LAST matching rule, so broad folders come first
 # and the jointly-owned contract files come last.
 
-/app/                         @frontend-placeholder
+/app/                         @annabeltu
 /data/                        @data-placeholder
 /.github/                     @voice-placeholder
 
