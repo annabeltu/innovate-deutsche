@@ -26,7 +26,7 @@ Monorepo: **`api/`** (FastAPI, Python 3.11), **`app/`** (Expo React Native, Type
 | Sliders        | **@react-native-community/slider**            | Onboarding confidence sliders                                  |
 | Read-aloud     | **expo-speech**                               | Multilingual text-to-speech, voice mode                        |
 | Voice record   | **expo-audio**                                | Records "Ask Kiko" and voice-mode replies                      |
-| i18n           | **i18next** (+ react-i18next)                 | English, Hindi, Swahili, German                                |
+| i18n           | **i18next** (+ react-i18next)                 | English, Spanish, Swahili                                      |
 | Client state   | **Zustand** + `persist` with **AsyncStorage** | Coins, streak, hearts, progress survive restarts               |
 | Server state   | **TanStack Query** (with `fetch`)             | Caching, loading states, retries for API calls                 |
 | Testing        | **Jest** (`jest-expo`) + **React Native Testing Library** | Unit and component tests                           |
@@ -153,7 +153,7 @@ BREAKING CHANGE: app must read card.steps instead of card.body.
 - **TypeScript strict; no `any`** (use `unknown` + narrowing). Function components + hooks only.
 - **Route files stay thin:** they compose components and hooks. No business logic, fetch calls, or large JSX trees in route files.
 - **Styling:** NativeWind `className`. **`src/theme/tokens.ts` is the single source of brand colors**; the Tailwind config must read from it, and components must never hardcode hex values. Inline `style={{}}` only for animated/computed values (Reanimated, SVG coordinates). Remove the Expo template's `constants/Colors.ts` once screens use tokens.
-- **i18n:** **No hardcoded user-facing strings.** Every string uses `t('screen.key')` and must exist in **all four** locale files (`en`, `hi`, `sw`, `de`). Use the active language for `expo-speech` and API calls.
+- **i18n:** **No hardcoded user-facing strings.** Every string uses `t('screen.key')` and must exist in **all three** locale files (`en`, `es`, `sw`). Use the active language for `expo-speech` and API calls.
 - **State:**
   - **Server data** (path, lessons, transcripts) → **TanStack Query** hooks in `src/api/`. Never copy server data into Zustand.
   - **Client/game state** (coins, streak, hearts, progress, voice-mode toggle) → **Zustand** stores in `src/stores/`, one per domain, persisted with `persist` + AsyncStorage, with `version` + `migrate`.
@@ -245,7 +245,7 @@ UTF-8, LF line endings, final newline, 2-space indent (TS/JS/JSON/YAML), 4-space
 - Unit tests for **scoring, template filling, loan math, intent mapping, and validation**. These are the core of the app; target ≥ 90% coverage.
 - Endpoint tests with FastAPI `TestClient`, overriding dependencies (`app.dependency_overrides`).
 - **Never call the real LLM or Whisper API in tests.** Mock them, and test the invalid-output → retry → template-fallback path.
-- Use `pytest.mark.parametrize` for edge cases (zero/negative amounts, every language and country: IN, KE, DE).
+- Use `pytest.mark.parametrize` for edge cases (zero/negative amounts, every language and country: US, MX, KE).
 - Use `data/fixtures/` for shared test data.
 
 **App (Jest + React Native Testing Library):**
@@ -315,7 +315,7 @@ Local enforcement (recommended): **Husky + lint-staged** for formatting/linting 
 A task is done only when **all** are true:
 - [ ] Code follows this file; format, lint, and type checks pass
 - [ ] Tests written and passing; coverage not decreased
-- [ ] UI strings in all 4 locales; works by voice alone; works on a real device via Expo Go
+- [ ] UI strings in all 3 locales; works by voice alone; works on a real device via Expo Go
 - [ ] PR template fully filled in (incl. accessibility checklist); reviewed and approved; CI green
 - [ ] Shared contract files in sync (if touched); docs/ADR updated where relevant
 - [ ] Merged into `dev` with a Conventional Commit title
@@ -331,7 +331,7 @@ A task is done only when **all** are true:
 5. **Use only the §0 stack.** Install app packages with `npx expo install`, API packages by adding a pinned line to `requirements.txt`. Any new dependency needs a stated justification (and an ADR if significant).
 6. Do not disable lint rules, add `# type: ignore`/`@ts-ignore`, skip tests, or use `--no-verify` to get around a failing check. Fix the underlying problem.
 7. Write tests with every change (§4). Never call real LLM/Whisper APIs in tests.
-8. Never hardcode user-facing strings or colors: use i18n keys (all 4 locales) and `tokens.ts`.
+8. Never hardcode user-facing strings or colors: use i18n keys (all 3 locales) and `tokens.ts`.
 9. Every new screen or lesson must meet §2.4 (voice mode + accessibility).
 10. Never put secrets in files or in `EXPO_PUBLIC_*` variables; update `.env.example` when adding config.
 11. **Shared contract changes** touch `shared.py`, `api.ts`, and `API_CONTRACTS.md` together, and need both @faraz999shah and @willapat to approve. Mark the commit breaking if the shape changed.
