@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     question_bank_dir: Path = REPO_ROOT / "data" / "question_bank"
     lesson_templates_dir: Path = REPO_ROOT / "data" / "lesson_templates"
     findex_dir: Path = REPO_ROOT / "data" / "findex"
+    # Browser origins allowed to call the API (Expo web in local development).
+    cors_allowed_origins: list[str] = [
+        "http://localhost:8081",
+        "http://127.0.0.1:8081",
+    ]
     # Local-only test pages under /dev; off unless explicitly enabled.
     dev_tools_enabled: bool = False
     # LLM (OpenAI). With no key, lessons keep their original English wording.
