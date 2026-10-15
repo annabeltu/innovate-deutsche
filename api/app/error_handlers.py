@@ -16,6 +16,7 @@ STATUS_BY_CODE = {
     "validation_error": status.HTTP_400_BAD_REQUEST,
     "profile_not_found": status.HTTP_404_NOT_FOUND,
     "quiz_not_found": status.HTTP_404_NOT_FOUND,
+    "lesson_not_found": status.HTTP_404_NOT_FOUND,
     "quiz_already_submitted": status.HTTP_409_CONFLICT,
     "unsupported_language": status.HTTP_422_UNPROCESSABLE_CONTENT,
 }

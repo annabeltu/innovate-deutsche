@@ -36,6 +36,12 @@ class QuizAlreadySubmittedError(KompassError):
     code = "quiz_already_submitted"
 
 
+class LessonNotFoundError(KompassError):
+    """The lesson id is neither a core topic nor one of the learner's bonus lessons."""
+
+    code = "lesson_not_found"
+
+
 class UnsupportedLanguageError(KompassError):
     """The language is valid but not offered for the chosen country."""
 

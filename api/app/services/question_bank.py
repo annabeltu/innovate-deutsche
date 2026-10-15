@@ -24,11 +24,10 @@ from app.schemas.shared import (
     QuizQuestion,
     Topic,
 )
+from app.services.proficiency import difficulty_band
 
 QUESTIONS_PER_TOPIC = 2
 OPTION_IDS = ("a", "b", "c")
-EASY_CONFIDENCE_BELOW = 0.4
-MEDIUM_CONFIDENCE_BELOW = 0.7
 
 OptionId = Literal["a", "b", "c"]
 
@@ -134,11 +133,7 @@ def load_question_bank(directory: Path) -> QuestionBank:
 
 def difficulty_for_confidence(confidence: float) -> Difficulty:
     """Map a slider value to question difficulty: below 0.4 → 1, below 0.7 → 2, else 3."""
-    if confidence < EASY_CONFIDENCE_BELOW:
-        return Difficulty.EASY
-    if confidence < MEDIUM_CONFIDENCE_BELOW:
-        return Difficulty.MEDIUM
-    return Difficulty.HARD
+    return difficulty_band(confidence)
 
 
 def select_questions(

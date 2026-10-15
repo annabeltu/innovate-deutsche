@@ -10,8 +10,11 @@ from fastapi import APIRouter, Depends, status
 
 from app.dependencies import get_profile_store, get_question_bank, get_rng
 from app.schemas.shared import (
+    AccessibilityUpdate,
     ErrorResponse,
     LearnerProfile,
+    LessonResultRequest,
+    LessonResultResponse,
     OnboardingRequest,
     OnboardingResponse,
     QuizSkipRequest,
@@ -19,7 +22,7 @@ from app.schemas.shared import (
     QuizSubmitRequest,
     QuizSubmitResponse,
 )
-from app.services import onboarding
+from app.services import onboarding, profile_updates
 from app.services.profile_store import ProfileStore
 from app.services.question_bank import QuestionBank
 
@@ -89,3 +92,29 @@ def post_quiz_skip(
 def get_profile(user_id: str, store: StoreDep) -> LearnerProfile:
     """Return the profile, or 404 profile_not_found if onboarding never finished."""
     return store.get_profile(user_id)
+
+
+@router.patch(
+    "/profile/{user_id}/accessibility",
+    response_model=LearnerProfile,
+    summary="Change accessibility settings at any time",
+    responses={**VALIDATION_ERROR, status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
+)
+def patch_accessibility(
+    user_id: str, update: AccessibilityUpdate, store: StoreDep
+) -> LearnerProfile:
+    """Update only the settings sent and return the full profile."""
+    return profile_updates.update_accessibility(user_id, update, store)
+
+
+@router.post(
+    "/profile/{user_id}/lesson-results",
+    response_model=LessonResultResponse,
+    summary="Update a topic's proficiency after a lesson",
+    responses={**VALIDATION_ERROR, status.HTTP_404_NOT_FOUND: {"model": ErrorResponse}},
+)
+def post_lesson_results(
+    user_id: str, result: LessonResultRequest, store: StoreDep
+) -> LessonResultResponse:
+    """Record a finished lesson; path_refresh_needed tells the app to rebuild the path."""
+    return profile_updates.record_lesson_result(user_id, result, store)

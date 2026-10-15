@@ -89,6 +89,26 @@ class ProfileStore:
             )
         return LearnerProfile.model_validate_json(row[0])
 
+    def update_profile(self, profile: LearnerProfile) -> None:
+        """Overwrite an existing profile.
+
+        Raises:
+            ProfileNotFoundError: If the user has no profile yet.
+        """
+        with self._connect() as connection:
+            updated = connection.execute(
+                "UPDATE profiles SET profile_json = ?, updated_at = ? WHERE user_id = ?",
+                (
+                    profile.model_dump_json(),
+                    profile.updated_at.isoformat(),
+                    profile.user_id,
+                ),
+            ).rowcount
+        if updated == 0:
+            raise ProfileNotFoundError(
+                f"No profile for {profile.user_id}", {"user_id": profile.user_id}
+            )
+
     def save_quiz(self, quiz: StoredQuiz) -> None:
         """Store a newly served quiz and its answer key."""
         with self._connect() as connection:

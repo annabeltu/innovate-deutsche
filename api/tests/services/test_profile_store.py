@@ -78,3 +78,22 @@ def test_finish_quiz_refuses_a_second_finish(
 
     assert store.finish_quiz("qz_1", QuizStatus.SKIPPED, profile) is False
     assert store.get_quiz("qz_1").status == QuizStatus.SUBMITTED
+
+
+def test_update_profile_overwrites_saved_profile(
+    store: ProfileStore, stored_quiz: StoredQuiz, profile: LearnerProfile
+) -> None:
+    store.save_quiz(stored_quiz)
+    store.finish_quiz("qz_1", QuizStatus.SKIPPED, profile)
+    changed = profile.model_copy(update={"bonus_lesson_ids": ["bonus_x"]})
+
+    store.update_profile(changed)
+
+    assert store.get_profile("u_1").bonus_lesson_ids == ["bonus_x"]
+
+
+def test_update_profile_raises_for_unknown_user(
+    store: ProfileStore, profile: LearnerProfile
+) -> None:
+    with pytest.raises(ProfileNotFoundError):
+        store.update_profile(profile)

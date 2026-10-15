@@ -2,11 +2,14 @@
 
 from decimal import ROUND_HALF_UP, Decimal
 
-from app.schemas.shared import Topic, TopicScore
+from app.schemas.shared import Difficulty, Topic, TopicScore
 
 CONFIDENCE_WEIGHT = Decimal("0.4")
 QUIZ_WEIGHT = Decimal("0.6")
 SCORE_PLACES = Decimal("0.01")
+LESSON_WEIGHT = Decimal("0.5")
+EASY_BELOW = 0.4
+MEDIUM_BELOW = 0.7
 
 
 def round_score(value: Decimal) -> float:
@@ -46,3 +49,22 @@ def build_topic_scores(
             completed=False,
         )
     return topic_scores
+
+
+def difficulty_band(score: float) -> Difficulty:
+    """Map a 0-1 score to difficulty: below 0.4 → 1, below 0.7 → 2, otherwise 3.
+
+    Used for both quiz questions (from confidence) and lessons (from proficiency).
+    """
+    if score < EASY_BELOW:
+        return Difficulty.EASY
+    if score < MEDIUM_BELOW:
+        return Difficulty.MEDIUM
+    return Difficulty.HARD
+
+
+def update_after_lesson(old_proficiency: float, correct: int, total: int) -> float:
+    """Move proficiency halfway toward the lesson score: 0.5 × old + 0.5 × correct / total."""
+    lesson_score = Decimal(correct) / Decimal(total)
+    old = Decimal(str(old_proficiency))
+    return round_score(LESSON_WEIGHT * old + LESSON_WEIGHT * lesson_score)

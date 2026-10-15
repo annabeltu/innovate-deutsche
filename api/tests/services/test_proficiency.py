@@ -1,7 +1,12 @@
 import pytest
 
 from app.schemas.shared import Topic
-from app.services.proficiency import build_topic_scores, compute_proficiency
+from app.services.proficiency import (
+    build_topic_scores,
+    compute_proficiency,
+    difficulty_band,
+    update_after_lesson,
+)
 
 
 @pytest.mark.parametrize(
@@ -44,3 +49,27 @@ def test_build_topic_scores_leaves_quiz_score_null_when_skipped() -> None:
         score.quiz_score is None and score.proficiency == 0.4
         for score in scores.values()
     )
+
+
+@pytest.mark.parametrize(
+    ("score", "expected"),
+    [(0.0, 1), (0.39, 1), (0.4, 2), (0.69, 2), (0.7, 3), (1.0, 3)],
+)
+def test_difficulty_band_boundaries(score: float, expected: int) -> None:
+    assert difficulty_band(score) == expected
+
+
+@pytest.mark.parametrize(
+    ("old", "correct", "total", "expected"),
+    [
+        (0.12, 4, 5, 0.46),
+        (0.5, 0, 5, 0.25),
+        (0.0, 3, 3, 0.5),
+        (1.0, 3, 3, 1.0),
+        (0.33, 1, 3, 0.33),
+    ],
+)
+def test_update_after_lesson_moves_halfway_to_lesson_score(
+    old: float, correct: int, total: int, expected: float
+) -> None:
+    assert update_after_lesson(old, correct, total) == expected
