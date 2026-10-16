@@ -4,12 +4,11 @@ import { Feather } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Nav, Screen } from "../components/ui";
+import { Button, Nav, Screen } from "../components/ui";
 import { AccountHeader } from "../components/AccountHeader";
 import { AppScenery } from "../components/AppScenery";
 import { KikoAvatar } from "../components/KikoAvatar";
 
-import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { TRANSFER_LESSON } from "../shop/catalog";
@@ -128,9 +127,9 @@ export default function Ask() {
           }}
           className="min-h-20 text-base leading-6 text-white"
         />
-        <Action
+        <Button
           title={t("askScreen.send")}
-          hint={t("askScreen.sendHint")}
+          accessibilityHint={t("askScreen.sendHint")}
           disabled={busy || voice.isRecording || !question.trim()}
           onPress={() => ask(question)}
         />
@@ -192,17 +191,17 @@ export default function Ask() {
             </Text>
           </View>
           {answer.data.canAddLesson && (
-            <Action
+            <Button
               title={t(added ? "askScreen.added" : "askScreen.turnIntoLesson")}
-              hint={t("askScreen.addHint")}
+              accessibilityHint={t("askScreen.addHint")}
               disabled={added}
               onPress={() => useApp.getState().addBonus(TRANSFER_LESSON)}
             />
           )}
           {added && (
-            <Action
+            <Button
               title={t("roadmap")}
-              hint={t("challenge.backHint")}
+              accessibilityHint={t("challenge.backHint")}
               onPress={() => router.replace("/roadmap")}
             />
           )}

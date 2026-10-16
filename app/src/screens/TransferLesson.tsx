@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Screen } from "../components/ui";
+import { ActionBar, Button, Screen } from "../components/ui";
 import { AppScenery } from "../components/AppScenery";
 import { AccountHeader } from "../components/AccountHeader";
 import { KikoAvatar } from "../components/KikoAvatar";
 import { ChallengeSuccess } from "../components/ChallengeSuccess";
-import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 
 /** Pre-written transfer lesson unlocked by the sample conversation or the shop. */
@@ -38,14 +37,14 @@ export function TransferLesson({ id }: { id: string }) {
           compact
           background={<AppScenery />}
           footer={
-            <View className="px-5 pb-4 pt-2">
-              <Action
+            <ActionBar>
+              <Button
                 title={t("check")}
-                hint={t("quizNextHint")}
+                accessibilityHint={t("quizNextHint")}
                 disabled={!selected || reward !== null}
                 onPress={check}
               />
-            </View>
+            </ActionBar>
           }
         >
           <AccountHeader />

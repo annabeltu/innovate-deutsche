@@ -1,10 +1,20 @@
 import React from "react";
 import { SCENERY_FILL } from "../components/AppScenery";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { KikoNote, Screen, Txt, Progress } from "../components/ui";
+import {
+  ActionBar,
+  Button,
+  Card,
+  KikoNote,
+  Label,
+  Progress,
+  Screen,
+  Title,
+  Txt,
+} from "../components/ui";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { topics } from "../onboarding/request";
@@ -39,6 +49,21 @@ export function Confidence() {
           accessible={false}
         />
       }
+      footer={
+        <ActionBar>
+          <Button
+            title={t("quizBegin")}
+            accessibilityHint={t("quizStartHint")}
+            onPress={() => router.push("/quiz")}
+          />
+          <Button
+            secondary
+            title={t("build")}
+            accessibilityHint={t("quizStartHint")}
+            onPress={() => router.push("/quiz")}
+          />
+        </ActionBar>
+      }
     >
       <View className="flex-row items-center justify-between">
         <KompassLogo size={36} />
@@ -46,28 +71,22 @@ export function Confidence() {
       <View className="h-2">
         <Progress value={1} />
       </View>
-      <View className="gap-2">
-        <Txt className="font-bold uppercase tracking-widest text-ink">
-          {t("confidence")}
-        </Txt>
-        <Txt accessibilityRole="header" className="text-3xl font-bold text-ink">
-          {t("confident")}
-        </Txt>
+      <View>
+        <Label>{t("confidence")}</Label>
+        <Title>{t("confident")}</Title>
       </View>
       <KikoNote message={t("noWrong")} />
       <View className="gap-3">
         {topics.map((topic, index) => (
-          <View
+          <Card
             key={topic}
-            className="mx-2 flex-row items-center gap-3 rounded-3xl bg-white p-4"
+            style={{ flexDirection: "row", alignItems: "center" }}
           >
-            <Txt accessible={false} className="text-4xl">
+            <Txt accessible={false} variant="title">
               {icons[index]}
             </Txt>
             <View className="flex-1">
-              <Txt className="font-bold text-ink">
-                {t(`confidenceTopics.${topic}`)}
-              </Txt>
+              <Txt variant="subheading">{t(`confidenceTopics.${topic}`)}</Txt>
               <View className="relative">
                 <Slider
                   minimumValue={CONFIDENCE_MIN}
@@ -117,52 +136,17 @@ export function Confidence() {
                 </View>
               </View>
               <View className="flex-row justify-between gap-2">
-                <Txt className="flex-1 text-xs">{t("notConfident")}</Txt>
-                <Txt className="flex-1 text-right text-xs">
+                <Txt variant="small" className="flex-1">
+                  {t("notConfident")}
+                </Txt>
+                <Txt variant="small" className="flex-1 text-right">
                   {t("veryConfident")}
                 </Txt>
               </View>
             </View>
-          </View>
+          </Card>
         ))}
       </View>
-      <Action
-        title={t("quizBegin")}
-        hint={t("quizStartHint")}
-        onPress={() => router.push("/quiz")}
-      />
-      <Action
-        title={t("build")}
-        hint={t("quizStartHint")}
-        onPress={() => router.push("/quiz")}
-      />
     </Screen>
-  );
-}
-
-/** Accessible onboarding action using the shared brand palette. */
-export function Action({
-  title,
-  hint,
-  onPress,
-  disabled = false,
-}: {
-  title: string;
-  hint: string;
-  onPress: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={title}
-      accessibilityHint={hint}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={onPress}
-      className="min-h-16 items-center justify-center rounded-2xl bg-brand p-4"
-    >
-      <Text className="text-center text-lg font-bold text-white">{title}</Text>
-    </Pressable>
   );
 }

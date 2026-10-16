@@ -5,10 +5,9 @@ import { useTranslation } from "react-i18next";
 import * as Speech from "expo-speech";
 import { recognizeIntent } from "../api/voice";
 import { VoiceInput } from "../components/VoiceInput";
-import { Screen, Progress } from "../components/ui";
+import { ActionBar, Button, Screen, Progress } from "../components/ui";
 import { AppScenery } from "../components/AppScenery";
 import { AccountHeader } from "../components/AccountHeader";
-import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 import { useStartQuiz, useSubmitQuiz } from "../api/onboarding";
 import { buildOnboardingRequest } from "../onboarding/request";
@@ -89,9 +88,9 @@ function QuizSession() {
           {t("quizLoading")}
         </Text>
       ) : (
-        <Action
+        <Button
           title={t("experience.retry")}
-          hint={t("quizStartHint")}
+          accessibilityHint={t("quizStartHint")}
           disabled={!request}
           onPress={() => {
             if (request) mutate(request);
@@ -185,8 +184,8 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
       compact
       background={<AppScenery />}
       footer={
-        <View className="px-5 pb-3 pt-2">
-          <Action
+        <ActionBar>
+          <Button
             title={t(
               submit.isPending
                 ? "quizLoading"
@@ -194,7 +193,7 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
                   ? "quizFinish"
                   : "continue",
             )}
-            hint={t("quizNextHint")}
+            accessibilityHint={t("quizNextHint")}
             disabled={!selected || submit.isPending}
             onPress={() => (last ? finish() : setIndex(index + 1))}
           />
@@ -202,7 +201,7 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
             disabled={submit.isPending}
             onPress={() => (index > 0 ? setIndex(index - 1) : router.back())}
           />
-        </View>
+        </ActionBar>
       }
     >
       <AccountHeader />

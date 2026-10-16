@@ -3,9 +3,8 @@ import { SCENERY_FILL } from "./AppScenery";
 import { Image, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen, Progress } from "./ui";
+import { ActionBar, Button, Screen, Progress } from "./ui";
 import { ChallengeArt } from "./ChallengeArt";
-import { Action } from "../screens/Confidence";
 import { useApp } from "../state/useApp";
 import { personalizePath } from "../onboarding/personalized-path";
 import { KompassLogo } from "./KompassLogo";
@@ -54,14 +53,14 @@ export function ChallengeFrame({
       }
       footer={
         onCheck && (
-          <View className="w-full self-center px-5 pb-4 pt-2">
-            <Action
+          <ActionBar>
+            <Button
               title={t("check")}
-              hint={t("challenge.checkHint")}
+              accessibilityHint={t("challenge.checkHint")}
               disabled={disabled}
               onPress={onCheck}
             />
-          </View>
+          </ActionBar>
         )
       }
     >

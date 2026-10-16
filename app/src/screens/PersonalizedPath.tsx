@@ -4,8 +4,13 @@ import { useWindowSize } from "../hooks/use-window-size";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { KikoNote, Screen, Progress } from "../components/ui";
-import { Action } from "./Confidence";
+import {
+  ActionBar,
+  Button,
+  KikoNote,
+  Screen,
+  Progress,
+} from "../components/ui";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { usePath } from "../api/path";
@@ -60,9 +65,9 @@ export function PersonalizedPath() {
     return (
       <Screen>
         <KikoNote live mood="oops" tone="error" message={t("app.pathError")} />
-        <Action
+        <Button
           title={t("tryAgain")}
-          hint={t("pathPreview.previewHint")}
+          accessibilityHint={t("pathPreview.previewHint")}
           onPress={() => void result.refetch()}
         />
       </Screen>
@@ -103,16 +108,16 @@ export function PersonalizedPath() {
         </View>
       }
       footer={
-        <View className="self-center px-6 pb-3 pt-2" style={{ width }}>
-          <Action
+        <ActionBar>
+          <Button
             title={t("pathPreview.start")}
-            hint={t("pathPreview.previewHint")}
+            accessibilityHint={t("pathPreview.previewHint")}
             onPress={() => {
               useApp.getState().set({ onboarded: true });
               router.push("/roadmap");
             }}
           />
-        </View>
+        </ActionBar>
       }
     >
       <View className="px-2">

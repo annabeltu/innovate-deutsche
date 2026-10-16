@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import { Modal, ScrollView, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Action } from "../screens/Confidence";
 import { ChallengeArt } from "./ChallengeArt";
+import { Button } from "./ui";
 import { useApp } from "../state/useApp";
 import { stopSpeaking } from "../voice/speech";
 import { useNarration } from "../voice/narration";
@@ -117,9 +117,9 @@ export function ChallengeSuccess({
                 <Text className="text-sm leading-5 text-ink">{tip}</Text>
               </View>
             </View>
-            <Action
+            <Button
               title={t("continue")}
-              hint={t("challenge.backHint")}
+              accessibilityHint={t("challenge.backHint")}
               onPress={finish}
             />
           </ScrollView>
