@@ -51,7 +51,7 @@ it("protects the fixed footer without adding a bottom gap to the scrolling conte
     paddingBottom: 34,
   });
   expect(screen.getByTestId("tab-bar")).toHaveStyle({
-    paddingBottom: 34 - spacing.md,
+    paddingBottom: spacing.lg,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   });

@@ -426,6 +426,10 @@ export function bottomPadding(inset: number, minimum: number): number {
   return Math.max(inset - spacing.md, minimum);
 }
 
+// The home indicator reaches about 13 pt up from the bottom edge; tab labels
+// stop just above it.
+const HOME_INDICATOR_CLEARANCE = 16;
+
 const NAV_ITEMS = [
   ["path", "home", "/roadmap"],
   ["practice", "book-open", "/practice"],
@@ -444,7 +448,10 @@ export function Nav({ active = "path" }: { active?: string }) {
       testID="tab-bar"
       style={[
         s.nav,
-        { paddingBottom: bottomPadding(insets.bottom, spacing.sm) },
+        {
+          paddingBottom:
+            insets.bottom > 0 ? HOME_INDICATOR_CLEARANCE : spacing.sm,
+        },
       ]}
     >
       {NAV_ITEMS.map(([name, icon, route]) => {
@@ -460,13 +467,14 @@ export function Nav({ active = "path" }: { active?: string }) {
             onPress={() => router.replace(route)}
             style={s.navItem}
           >
+            {/* Marker above the icon, so nothing sits near the home indicator. */}
+            <View
+              style={[s.navMarker, selected && { backgroundColor: c.deepBlue }]}
+            />
             <Feather name={icon} size={NAV_ICON_SIZE} color={color} />
             <Txt variant="caption" weight="bold" style={{ color }}>
               {t(name)}
             </Txt>
-            <View
-              style={[s.navMarker, selected && { backgroundColor: c.deepBlue }]}
-            />
           </Pressable>
         );
       })}
@@ -742,7 +750,7 @@ const s = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
+    paddingTop: spacing.xs,
   },
   navItem: {
     flex: 1,
