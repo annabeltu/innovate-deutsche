@@ -134,6 +134,16 @@ export default function Ask() {
           onPress={() => ask(question)}
         />
       </View>
+      {/* Right under the question, where the learner just asked. */}
+      {(voice.error || answer.isError) && (
+        <Txt
+          accessibilityRole="alert"
+          tone="danger"
+          className="rounded-xl bg-white p-3"
+        >
+          {voice.error || t("askScreen.connectionError")}
+        </Txt>
+      )}
       {/* Turn the learner's own question into a real lesson from the API. */}
       {isApiConfigured() && (
         <LessonRequest key={`${language}-${question}`} question={question} />
@@ -150,15 +160,6 @@ export default function Ask() {
           {t("askScreen.tryExample")}
         </Txt>
       </Pressable>
-      {(voice.error || answer.isError) && (
-        <Txt
-          accessibilityRole="alert"
-          tone="danger"
-          className="rounded-xl bg-white p-3"
-        >
-          {voice.error || t("askScreen.connectionError")}
-        </Txt>
-      )}
       {answer.data && (
         <>
           <View className="gap-3 rounded-3xl bg-white p-4">

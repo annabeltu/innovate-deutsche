@@ -112,3 +112,20 @@ it("offers the same real lesson for a recorded question", async () => {
     body: { user_id: "u_live", request: "Teach me insurance" },
   });
 });
+
+it("shows a connection error right under the question, above the example link", async () => {
+  await showAsk();
+
+  await fireEvent.changeText(
+    screen.getByLabelText("Your question for Kiko"),
+    "How do I save?",
+  );
+  await fireEvent.press(screen.getByRole("button", { name: "Ask Kiko →" }));
+  const error = await screen.findByRole("alert");
+
+  const tree = JSON.stringify(screen.toJSON());
+  expect(error).toBeTruthy();
+  expect(tree.indexOf("Kiko could not connect")).toBeLessThan(
+    tree.indexOf("Try an example conversation"),
+  );
+});
