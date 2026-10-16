@@ -21,6 +21,10 @@ _NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 _WORD = re.compile(r"[a-z]+")
 _PLACEHOLDER = re.compile(r"\{([a-z_]+)\}")
 _DIGIT = re.compile(r"\d")
+# Generated lessons need practice, not just reading.
+MIN_GENERATED_QUIZZES = 2
+# A bridge links the topic to people like the learner, so it must use their Findex share.
+BRIDGE_FACT = "{group_percent}"
 GENERATED_CARD_TYPES = frozenset(
     {CardType.CONCEPT, CardType.BRIDGE, CardType.MC_QUIZ, CardType.TAKEAWAY}
 )
@@ -149,7 +153,13 @@ def check_draft(draft: LessonDraft, allowed_placeholders: frozenset[str]) -> Non
         "uses a card type generated lessons cannot use",
     )
     _require(draft.cards[-1].type == CardType.TAKEAWAY, "does not end with a takeaway")
-    _require(any(card.type == CardType.MC_QUIZ for card in draft.cards), "has no quiz")
+    quizzes = sum(card.type == CardType.MC_QUIZ for card in draft.cards)
+    _require(quizzes >= MIN_GENERATED_QUIZZES, "has fewer than two quizzes")
+    for card in draft.cards:
+        _require(
+            card.type != CardType.BRIDGE or BRIDGE_FACT in card.text,
+            f"bridge card {card.card_id} does not compare people like the learner",
+        )
     texts = [draft.title, draft.goal]
     for card in draft.cards:
         _check_generated_card(card)

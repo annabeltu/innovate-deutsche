@@ -7,6 +7,7 @@ Generated lessons are English base lessons with {placeholders}; customization
 and the wording step then treat them exactly like the five core lessons.
 """
 
+import hashlib
 import json
 import logging
 from collections.abc import Mapping
@@ -17,11 +18,31 @@ from app.schemas.shared import Topic
 from app.services.errors import LessonGenerationError
 from app.services.validation import LessonValidationError, validate_generation
 
-PROMPT_FILE = "lesson_generation_v1.md"
-PROMPT_VERSION = "lesson_generation_v1"
+PROMPT_FILE = "lesson_generation_v2.md"
+PROMPT_VERSION = "lesson_generation_v2"
 MAX_ATTEMPTS = 2
 
+# Lesson shapes a new lesson follows, so generated lessons don't all share one
+# order. Code picks one per request; the LLM only writes the cards.
+CARD_ORDERS: tuple[tuple[str, ...], ...] = (
+    ("concept", "bridge", "mc_quiz", "concept", "mc_quiz", "takeaway"),
+    ("mc_quiz", "concept", "bridge", "concept", "mc_quiz", "takeaway"),
+    ("concept", "mc_quiz", "bridge", "mc_quiz", "concept", "takeaway"),
+    ("concept", "mc_quiz", "concept", "bridge", "mc_quiz", "takeaway"),
+)
+
 logger = logging.getLogger(__name__)
+
+
+def card_order_for(request_text: str) -> tuple[str, ...]:
+    """The lesson shape for a request: varied across requests, stable for one.
+
+    Hashing (not random) keeps it deterministic, so a retry or a repeated
+    request gets the same shape.
+    """
+    normalized = " ".join(request_text.casefold().split())
+    digest = hashlib.sha256(normalized.encode("utf-8")).digest()
+    return CARD_ORDERS[digest[0] % len(CARD_ORDERS)]
 
 
 def plan_lesson_request(
@@ -66,10 +87,11 @@ def _build_request(
     core_lessons: Mapping[Topic, LessonTemplate],
     allowed_placeholders: frozenset[str],
 ) -> str:
-    """The JSON the LLM receives: the request, the core lessons, the fact names."""
+    """The JSON the LLM receives: the request, core lessons, fact names and shape."""
     return json.dumps(
         {
             "request": request_text,
+            "card_order": list(card_order_for(request_text)),
             "core_lessons": [
                 {"topic": topic, "title": lesson.title, "goal": lesson.goal}
                 for topic, lesson in core_lessons.items()

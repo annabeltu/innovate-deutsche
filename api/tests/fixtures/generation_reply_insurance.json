@@ -17,14 +17,44 @@
         "card_id": "premium-quiz",
         "type": "mc_quiz",
         "text": "What is the regular payment for insurance called?",
-        "options": {"a": "A premium", "b": "A loan", "c": "A tip"},
+        "options": {
+          "a": "A premium",
+          "b": "A loan",
+          "c": "A tip"
+        },
         "correct_option": "a",
         "voice": {
           "speak_text": "What is the regular payment for insurance called? A: a premium. B: a loan. C: a tip. Say A, B or C.",
           "answer_mode": "say_option",
-          "spoken_options": {"a": "a premium", "b": "a loan", "c": "a tip"},
+          "spoken_options": {
+            "a": "a premium",
+            "b": "a loan",
+            "c": "a tip"
+          },
           "correct_feedback": "Correct. The regular payment is called a premium.",
           "incorrect_feedback": "Not quite. The answer is A, a premium."
+        }
+      },
+      {
+        "card_id": "insurance-when-quiz",
+        "type": "mc_quiz",
+        "text": "When does insurance help you most?",
+        "options": {
+          "a": "When a big, sudden cost happens",
+          "b": "When you want to buy something new",
+          "c": "When you have no bills at all"
+        },
+        "correct_option": "a",
+        "voice": {
+          "speak_text": "When does insurance help you most? A: when a big, sudden cost happens. B: when you want to buy something new. C: when you have no bills at all. Say A, B or C.",
+          "answer_mode": "say_option",
+          "spoken_options": {
+            "a": "when a big, sudden cost happens",
+            "b": "when you want to buy something new",
+            "c": "when you have no bills at all"
+          },
+          "correct_feedback": "Correct. Insurance helps most when a big, sudden cost happens.",
+          "incorrect_feedback": "Not quite. The answer is A. Insurance helps most when a big, sudden cost happens."
         }
       },
       {
