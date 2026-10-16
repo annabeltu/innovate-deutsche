@@ -9,6 +9,7 @@ import { VoiceInput } from "../components/VoiceInput";
 import {
   ActionBar,
   Button,
+  Label,
   OptionRow,
   Progress,
   Screen,
@@ -230,14 +231,7 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
       </View>
       <View className="flex-row items-center gap-3">
         <View className="flex-1 gap-2">
-          <Txt
-            variant="caption"
-            tone="brand"
-            weight="bold"
-            className="uppercase tracking-widest"
-          >
-            {t("experience.knowledgeCheck")}
-          </Txt>
+          <Label>{t("experience.knowledgeCheck")}</Label>
           <Txt accessibilityRole="header" variant="heading" weight="bold">
             {t(`confidenceTopics.${question.topic}`)}
           </Txt>

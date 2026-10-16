@@ -59,7 +59,12 @@ export function Label({
     <Txt
       variant="caption"
       weight="bold"
-      style={{ letterSpacing: 2, color: light ? c.lightBlue : c.midBlue }}
+      style={{
+        letterSpacing: 2,
+        // Every kicker reads the same, whatever casing the translation uses.
+        textTransform: "uppercase",
+        color: light ? c.lightBlue : c.midBlue,
+      }}
     >
       {children}
     </Txt>
