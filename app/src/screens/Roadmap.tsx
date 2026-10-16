@@ -5,6 +5,7 @@ import {
   BonusLessons,
 } from "../components/BonusLessons";
 import { RoadLine, useRoad } from "../components/RoadLine";
+import { IconBubble } from "../components/BenefitBubbles";
 import { Txt } from "../components/Txt";
 import { SCENERY_FILL } from "../components/AppScenery";
 import { BonusNotification } from "../components/BonusNotification";
@@ -12,13 +13,12 @@ import { KikoAvatar } from "../components/KikoAvatar";
 import React from "react";
 import { Image, Pressable, View } from "react-native";
 import Svg, { Image as SvgImage } from "react-native-svg";
-import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Card, Nav, Screen } from "../components/ui";
 import { useApp } from "../state/useApp";
 import { Badge } from "../components/RoadmapChrome";
-import { colors, layout } from "../theme/tokens";
+import { layout, spacing } from "../theme/tokens";
 import { buildRoadmap } from "../onboarding/roadmap";
 import { KompassLogo } from "../components/KompassLogo";
 import { useWindowSize } from "../hooks/use-window-size";
@@ -30,6 +30,9 @@ const scenes = {
 };
 const reference = require("../../assets/roadmap/reference.png");
 const nodePositions = [0.32, 0.42, 0.4, 0.43, 0.4];
+const ASK_BUBBLE_SIZE = 40;
+// How far the Ask bubble sinks while pressed, like the other 3D buttons.
+const PRESS_SINK = 2;
 
 /** Scenic roadmap using the same confidence ordering as the preceding preview. */
 export function Roadmap() {
@@ -213,12 +216,20 @@ export function Roadmap() {
           accessibilityLabel={t("roadmapScreen.ask")}
           accessibilityHint={t("roadmapScreen.askHint")}
           onPress={() => router.push("/ask")}
-          className="min-h-14 min-w-14 items-center justify-center rounded-full bg-brand p-3"
+          hitSlop={spacing.sm}
+          className="items-center"
         >
-          <Feather name="mic" size={22} color={colors.white} />
-          <Txt variant="caption" light>
-            {t("ask")}
-          </Txt>
+          {({ pressed }) => (
+            <View
+              className="items-center gap-1"
+              style={{ transform: [{ translateY: pressed ? PRESS_SINK : 0 }] }}
+            >
+              <IconBubble icon="mic" size={ASK_BUBBLE_SIZE} />
+              <Txt variant="caption" tone="brand" weight="bold">
+                {t("ask")}
+              </Txt>
+            </View>
+          )}
         </Pressable>
       </Card>
     </Screen>
