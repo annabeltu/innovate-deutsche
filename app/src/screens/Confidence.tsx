@@ -56,12 +56,6 @@ export function Confidence() {
             accessibilityHint={t("quizStartHint")}
             onPress={() => router.push("/quiz")}
           />
-          <Button
-            secondary
-            title={t("build")}
-            accessibilityHint={t("quizStartHint")}
-            onPress={() => router.push("/quiz")}
-          />
         </ActionBar>
       }
     >

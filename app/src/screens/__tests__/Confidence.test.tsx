@@ -68,7 +68,7 @@ it("moves a slider without changing other topics and opens the quiz", async () =
     5,
   );
   expect(useApp.getState().confidence).toEqual([0.1, 1, 0.3, 0.4, 0.5]);
-  await fireEvent.press(screen.getByRole("button", { name: "build" }));
+  await fireEvent.press(screen.getByRole("button", { name: "quizBegin" }));
   expect(router.push).toHaveBeenCalledWith("/quiz");
   expect(useApp.getState().onboarded).toBe(false);
 });
@@ -141,4 +141,11 @@ it("draws the path curve behind the lesson nodes only, not the unit reward", asy
   ).toBeTruthy();
   expect(pathArea.queryByText("roadmapScreen.finishUnit")).toBeNull();
   expect(screen.getByText("roadmapScreen.finishUnit")).toBeTruthy();
+});
+
+it("only offers the quiz, so nobody skips it to build a path", async () => {
+  const screen = await render(<Confidence />);
+
+  expect(screen.getByRole("button", { name: "quizBegin" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "build" })).toBeNull();
 });
