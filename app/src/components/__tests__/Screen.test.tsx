@@ -2,6 +2,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import { render } from "@testing-library/react-native";
 import { Screen } from "../ui";
+import { layout, spacing } from "../../theme/tokens";
 
 jest.mock("expo-router", () => ({ useFocusEffect: jest.fn(), router: {} }));
 jest.mock("expo-speech", () => ({ stop: jest.fn(), speak: jest.fn() }));
@@ -30,8 +31,8 @@ it("lets the background fill the display while protecting scroll content from th
   expect(screen.getByTestId("scenery")).toBeTruthy();
   const content =
     screen.getByTestId("screen-scroll").props.contentContainerStyle;
-  expect(content.paddingTop).toBe(75);
-  expect(content.paddingBottom).toBe(46);
+  expect(content.paddingTop).toBe(spacing.lg + 59);
+  expect(content.paddingBottom).toBe(layout.sectionGap + 34);
   expect(JSON.stringify(screen.toJSON())).not.toContain('"maxWidth":540');
 });
 it("protects the fixed footer without adding a bottom gap to the scrolling content", async () => {
@@ -43,7 +44,7 @@ it("protects the fixed footer without adding a bottom gap to the scrolling conte
   expect(
     screen.getByTestId("screen-scroll").props.contentContainerStyle
       .paddingBottom,
-  ).toBe(12);
+  ).toBe(layout.sectionGap);
   expect(screen.getByTestId("screen-footer")).toHaveStyle({
     paddingBottom: 34,
   });

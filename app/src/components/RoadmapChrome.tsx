@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import Svg, {
   Circle,
   ClipPath,
@@ -7,8 +7,6 @@ import Svg, {
   Image as SvgImage,
 } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useTranslation } from "react-i18next";
 import { colors } from "../theme/tokens";
 import type { Topic } from "../types/api";
 const illustration = require("../../assets/path/reference.png");
@@ -106,49 +104,6 @@ export function Badge({
           <Feather name="lock" size={size * 0.4} color={colors.darkBlue} />
         </View>
       )}
-    </View>
-  );
-}
-
-/** Persistent navigation matching the roadmap’s rounded bottom bar. */
-export function RoadmapNavigation({ active = "path" }: { active?: string }) {
-  const { t } = useTranslation();
-  const items = [
-    ["path", "home", "/roadmap"],
-    ["practice", "book-open", "/practice"],
-    ["ask", "message-circle", "/ask"],
-    ["leagues", "award", "/leagues"],
-    ["shop", "shopping-bag", "/shop"],
-  ] as const;
-  return (
-    <View className="flex-row rounded-t-3xl bg-white px-3 pb-3 pt-2">
-      {items.map(([name, icon, route]) => (
-        <Pressable
-          key={name}
-          accessibilityRole="tab"
-          accessibilityLabel={t(name)}
-          accessibilityHint={t("roadmapScreen.navHint", { screen: t(name) })}
-          accessibilityState={{ selected: name === active }}
-          onPress={() => router.replace(route)}
-          className="min-h-14 flex-1 items-center justify-center gap-1"
-        >
-          <Feather
-            name={icon}
-            size={24}
-            color={name === active ? colors.deepBlue : colors.midBlue}
-          />
-          <Text
-            className={`text-xs font-bold ${name === active ? "text-brand" : "text-ink"}`}
-          >
-            {t(name)}
-          </Text>
-          <View
-            className={
-              name === active ? "h-1 w-10 rounded-full bg-brand" : "h-1 w-10"
-            }
-          />
-        </Pressable>
-      ))}
     </View>
   );
 }

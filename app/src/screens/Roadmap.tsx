@@ -8,9 +8,9 @@ import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen } from "../components/ui";
+import { Nav, Screen } from "../components/ui";
 import { useApp } from "../state/useApp";
-import { Badge, RoadmapNavigation } from "../components/RoadmapChrome";
+import { Badge } from "../components/RoadmapChrome";
 import { colors } from "../theme/tokens";
 import { buildRoadmap } from "../onboarding/roadmap";
 import { KompassLogo } from "../components/KompassLogo";
@@ -56,7 +56,7 @@ export function Roadmap() {
       footer={
         <View>
           <BonusNotification />
-          <RoadmapNavigation />
+          <Nav />
         </View>
       }
     >

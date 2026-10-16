@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Pressable, Text, View, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen } from "../components/ui";
+import { Nav, Screen } from "../components/ui";
 import { AccountHeader } from "../components/AccountHeader";
 import { AppScenery } from "../components/AppScenery";
-import { RoadmapNavigation } from "../components/RoadmapChrome";
+
 import { ShopArt } from "../components/ShopArt";
 import {
   shopCatalog,
@@ -99,7 +99,7 @@ export function Shop() {
       compact
       dark
       background={<AppScenery dark />}
-      footer={<RoadmapNavigation active="shop" />}
+      footer={<Nav active="shop" />}
     >
       <AccountHeader dark showHearts={false} />
       <View className="flex-row items-center">

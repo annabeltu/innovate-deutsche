@@ -28,6 +28,7 @@ jest.mock("@react-native-community/slider", () => ({
 jest.mock("../../components/ui", () => {
   const { View, Text } = jest.requireActual("react-native");
   return {
+    ...jest.requireActual("../../components/ui"),
     Screen: ({
       children,
       footer,

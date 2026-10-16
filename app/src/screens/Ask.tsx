@@ -4,11 +4,11 @@ import { Feather } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Screen } from "../components/ui";
+import { Nav, Screen } from "../components/ui";
 import { AccountHeader } from "../components/AccountHeader";
 import { AppScenery } from "../components/AppScenery";
 import { KikoAvatar } from "../components/KikoAvatar";
-import { RoadmapNavigation } from "../components/RoadmapChrome";
+
 import { Action } from "./Confidence";
 import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
@@ -46,7 +46,7 @@ export default function Ask() {
       narrate={!voice.isRecording}
       dark
       background={<AppScenery dark />}
-      footer={<RoadmapNavigation active="ask" />}
+      footer={<Nav active="ask" />}
     >
       <AccountHeader dark />
       <View className="items-center gap-1">

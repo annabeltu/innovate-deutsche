@@ -11,9 +11,18 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { router, useFocusEffect } from "expo-router";
+import { setStatusBarStyle } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
-import { colors as c, regionAccents } from "../theme/tokens";
+import {
+  colors as c,
+  depth,
+  layout,
+  minTapTarget,
+  radii,
+  regionAccents,
+  spacing,
+} from "../theme/tokens";
 import { stopSpeaking } from "../voice/speech";
 import { useNarration } from "../voice/narration";
 import { ReadAloudDock } from "./ReadAloudBubble";
@@ -31,14 +40,9 @@ export function Title({
   return (
     <Txt
       accessibilityRole="header"
-      style={{
-        fontSize: 36,
-        lineHeight: 42,
-        letterSpacing: -1.3,
-        fontWeight: "500",
-        color: light ? c.white : c.darkBlue,
-        marginVertical: 12,
-      }}
+      variant="title"
+      light={light}
+      style={{ letterSpacing: -1.3 }}
     >
       {children}
     </Txt>
@@ -53,12 +57,8 @@ export function Label({
 }) {
   return (
     <Txt
-      style={{
-        fontSize: 12,
-        letterSpacing: 2,
-        fontWeight: "700",
-        color: light ? c.lightBlue : c.midBlue,
-      }}
+      variant="caption"
+      style={{ letterSpacing: 2, color: light ? c.lightBlue : c.midBlue }}
     >
       {children}
     </Txt>
@@ -69,8 +69,8 @@ function pressedDepth(pressed: boolean, depth: number): ViewStyle {
   return pressed ? { borderBottomWidth: 2, marginTop: depth - 2 } : {};
 }
 type FeatherName = React.ComponentProps<typeof Feather>["name"];
-const BUTTON_DEPTH = 6;
-const CHOICE_DEPTH = 4;
+const BUTTON_DEPTH = depth.button;
+const CHOICE_DEPTH = depth.option;
 
 /** Primary (deep blue) or secondary (white) action with an optional icon. */
 export function Button({
@@ -106,18 +106,14 @@ export function Button({
         {
           backgroundColor: secondary ? c.white : c.deepBlue,
           borderBottomColor: secondary ? c.lightBlue : c.darkBlue,
-          opacity: disabled ? 0.45 : 1,
+          opacity: disabled ? DISABLED_OPACITY : 1,
         },
         pressedDepth(pressed && !disabled, BUTTON_DEPTH),
       ]}
     >
       <Txt
-        style={{
-          color: labelColor,
-          fontWeight: "700",
-          fontSize: 18,
-          textAlign: "center",
-        }}
+        variant="subheading"
+        style={{ color: labelColor, textAlign: "center" }}
       >
         {title}
       </Txt>
@@ -157,11 +153,13 @@ export function Choice({
       ]}
     >
       {icon && (
-        <Txt style={{ fontSize: 30, lineHeight: 40, textAlign: "center" }}>
+        <Txt variant="title" style={{ textAlign: "center" }}>
           {icon}
         </Txt>
       )}
-      <Txt style={{ fontWeight: "700", textAlign: "center" }}>{title}</Txt>
+      <Txt variant="subheading" style={{ textAlign: "center" }}>
+        {title}
+      </Txt>
     </Pressable>
   );
 }
@@ -222,6 +220,12 @@ export function Screen({
       return stopSpeaking;
     }, [narration, narrate]),
   );
+  // Light status bar text on the deep blue screens, dark text everywhere else.
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle(dark ? "light" : "dark");
+    }, [dark]),
+  );
   return (
     <LinearGradient
       colors={dark ? [c.duskBlue, c.darkBlue] : [c.white, c.iceBlue]}
@@ -231,14 +235,12 @@ export function Screen({
       <ScrollView
         testID="screen-scroll"
         contentContainerStyle={{
-          paddingHorizontal: compact ? 16 : 24,
-          paddingLeft: (compact ? 16 : 24) + insets.left,
-          paddingRight: (compact ? 16 : 24) + insets.right,
-          paddingTop: (compact ? 16 : 24) + insets.top,
+          paddingLeft: layout.pagePadding + insets.left,
+          paddingRight: layout.pagePadding + insets.right,
+          paddingTop: spacing.lg + insets.top,
           // The read-aloud dock clears the home indicator when it is shown.
           paddingBottom:
-            (compact ? 12 : 32) + (footer || readAloud ? 0 : insets.bottom),
-          gap: 20,
+            layout.sectionGap + (footer || readAloud ? 0 : insets.bottom),
           flexGrow: 1,
         }}
         showsVerticalScrollIndicator={false}
@@ -246,8 +248,10 @@ export function Screen({
         <View
           style={{
             width: "100%",
+            // Compact screens (roadmap, challenges) use the full phone width.
+            maxWidth: compact ? undefined : layout.maxContentWidth,
             alignSelf: "center",
-            gap: compact ? 12 : 20,
+            gap: compact ? layout.itemGap : layout.sectionGap,
             flex: 1,
           }}
         >
@@ -284,7 +288,7 @@ export function Row({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 10,
+          gap: layout.itemGap,
         },
         style,
       ]}
@@ -394,59 +398,191 @@ export function Landscape({
     </Svg>
   );
 }
-export function Nav({ active }: { active: string }) {
+const NAV_ITEMS = [
+  ["path", "home", "/roadmap"],
+  ["practice", "book-open", "/practice"],
+  ["ask", "message-circle", "/ask"],
+  ["leagues", "award", "/leagues"],
+  ["shop", "shopping-bag", "/shop"],
+] as const;
+const NAV_ICON_SIZE = 24;
+
+/** The one bottom tab bar, shared by every main screen. */
+export function Nav({ active = "path" }: { active?: string }) {
   const { t } = useTranslation();
-  const items = [
-    ["path", "arrow-right", "/roadmap"],
-    ["practice", "book-open", "/practice"],
-    ["ask", "mic", "/ask"],
-    ["leagues", "award", "/leagues"],
-    ["shop", "shopping-bag", "/shop"],
-  ] as const;
   return (
-    <View
-      className="flex-row bg-white"
-      style={{ paddingVertical: 12, borderTopWidth: 1, borderColor: c.iceBlue }}
-    >
-      {items.map(([name, icon, url]) => (
-        <Pressable
-          key={name}
-          onPress={() => router.replace(url)}
-          accessibilityRole="tab"
-          accessibilityLabel={t(name)}
-          accessibilityHint={t("app.navHint", { screen: t(name) })}
-          accessibilityState={{ selected: active === name }}
-          style={{ flex: 1, minHeight: 48, alignItems: "center", gap: 4 }}
-        >
-          <Feather
-            name={icon}
-            size={23}
-            color={active === name ? c.deepBlue : c.midBlue}
-          />
-          <Txt
-            style={{
-              fontSize: 10,
-              fontWeight: "700",
-              color: active === name ? c.deepBlue : c.midBlue,
-            }}
+    <View style={s.nav}>
+      {NAV_ITEMS.map(([name, icon, route]) => {
+        const selected = name === active;
+        const color = selected ? c.deepBlue : c.midBlue;
+        return (
+          <Pressable
+            key={name}
+            accessibilityRole="tab"
+            accessibilityLabel={t(name)}
+            accessibilityHint={t("roadmapScreen.navHint", { screen: t(name) })}
+            accessibilityState={{ selected }}
+            onPress={() => router.replace(route)}
+            style={s.navItem}
           >
-            {t(name)}
-          </Txt>
-        </Pressable>
-      ))}
+            <Feather name={icon} size={NAV_ICON_SIZE} color={color} />
+            <Txt variant="caption" style={{ color }}>
+              {t(name)}
+            </Txt>
+            <View
+              style={[s.navMarker, selected && { backgroundColor: c.deepBlue }]}
+            />
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
+
+/**
+ * Bottom action area for a Screen footer: full width inside the page
+ * padding, with stacked actions separated by the item gap.
+ */
+export function ActionBar({ children }: { children: React.ReactNode }) {
+  return <View style={s.actionBar}>{children}</View>;
+}
+
+/** Round icon-only control (back, close) with a 48 pt tap target. */
+export function IconButton({
+  icon,
+  onPress,
+  accessibilityLabel,
+  accessibilityHint,
+  disabled = false,
+}: {
+  icon: FeatherName;
+  onPress: () => void;
+  accessibilityLabel: string;
+  accessibilityHint: string;
+  disabled?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      hitSlop={spacing.sm}
+      style={[s.iconButton, disabled && s.disabled]}
+    >
+      <Feather name={icon} size={NAV_ICON_SIZE} color={c.deepBlue} />
+    </Pressable>
+  );
+}
+
+type OptionTone = "neutral" | "danger" | "positive";
+const OPTION_TONES: Record<
+  OptionTone,
+  { background: string; border: string; text: string }
+> = {
+  neutral: { background: c.white, border: c.grey, text: c.darkBlue },
+  danger: {
+    background: c.warningSurface,
+    border: c.errorText,
+    text: c.errorText,
+  },
+  positive: {
+    background: c.successSurface,
+    border: c.successText,
+    text: c.successText,
+  },
+};
+
+/**
+ * Answer option for quizzes and challenges: equal size, letter badge on
+ * the left, deep blue outline when selected. Danger and positive tones are
+ * only for answers that are themselves feedback (Scam / Legit).
+ */
+export function OptionRow({
+  title,
+  letter,
+  selected = false,
+  onPress,
+  disabled = false,
+  tone = "neutral",
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityRole = "radio",
+}: {
+  title: string;
+  letter?: string;
+  selected?: boolean;
+  onPress: () => void;
+  disabled?: boolean;
+  tone?: OptionTone;
+  accessibilityLabel?: string;
+  accessibilityHint: string;
+  accessibilityRole?: "radio" | "button";
+}) {
+  const colors = OPTION_TONES[tone];
+  return (
+    <Pressable
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ checked: selected, disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        s.option,
+        {
+          backgroundColor: colors.background,
+          borderBottomColor: colors.border,
+        },
+        selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
+        pressedDepth(pressed && !disabled, CHOICE_DEPTH),
+      ]}
+    >
+      {letter && (
+        <View
+          style={[s.optionLetter, selected && { backgroundColor: c.deepBlue }]}
+        >
+          <Txt
+            variant="subheading"
+            style={{ color: selected ? c.white : c.deepBlue }}
+          >
+            {letter}
+          </Txt>
+        </View>
+      )}
+      <Txt
+        variant={letter ? "body" : "subheading"}
+        style={{
+          flex: 1,
+          color: colors.text,
+          textAlign: letter ? "left" : "center",
+        }}
+      >
+        {title}
+      </Txt>
+      {selected && (
+        <Feather name="check" size={NAV_ICON_SIZE} color={c.deepBlue} />
+      )}
+    </Pressable>
+  );
+}
+const OPTION_LETTER_SIZE = 36;
+const NAV_MARKER = { width: 40, height: 4 };
+const DISABLED_OPACITY = 0.45;
+
 const s = StyleSheet.create({
   button: {
-    padding: 19,
-    borderRadius: 20,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.button,
     borderBottomWidth: BUTTON_DEPTH,
     minHeight: 64,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: spacing.sm,
   },
   choice: {
     backgroundColor: c.white,
@@ -454,17 +590,74 @@ const s = StyleSheet.create({
     borderColor: "transparent",
     borderBottomWidth: CHOICE_DEPTH,
     borderBottomColor: c.grey,
-    borderRadius: 18,
-    padding: 14,
+    borderRadius: radii.option,
+    padding: spacing.md,
     minHeight: 56,
+    justifyContent: "center",
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    borderWidth: 2,
+    borderColor: "transparent",
+    borderBottomWidth: CHOICE_DEPTH,
+    borderRadius: radii.option,
+    padding: spacing.lg,
+    minHeight: 64,
+  },
+  optionLetter: {
+    width: OPTION_LETTER_SIZE,
+    height: OPTION_LETTER_SIZE,
+    borderRadius: radii.pill,
+    backgroundColor: c.iceBlue,
+    alignItems: "center",
     justifyContent: "center",
   },
   card: {
     backgroundColor: c.white,
-    borderRadius: 24,
-    padding: 20,
-    borderBottomWidth: 5,
+    borderRadius: radii.card,
+    padding: spacing.lg,
+    borderBottomWidth: depth.card,
     borderBottomColor: c.lightBlue,
-    gap: 12,
+    gap: layout.itemGap,
+  },
+  actionBar: {
+    width: "100%",
+    maxWidth: layout.maxContentWidth,
+    alignSelf: "center",
+    paddingHorizontal: layout.pagePadding,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+    gap: layout.itemGap,
+  },
+  iconButton: {
+    minWidth: minTapTarget,
+    minHeight: minTapTarget,
+    borderRadius: radii.pill,
+    backgroundColor: c.white,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  disabled: { opacity: DISABLED_OPACITY },
+  nav: {
+    flexDirection: "row",
+    backgroundColor: c.white,
+    borderTopLeftRadius: radii.card,
+    borderTopRightRadius: radii.card,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+  },
+  navItem: {
+    flex: 1,
+    minHeight: minTapTarget,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+  },
+  navMarker: {
+    ...NAV_MARKER,
+    borderRadius: radii.pill,
   },
 });

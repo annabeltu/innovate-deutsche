@@ -91,7 +91,7 @@ export const typeScale = {
     lineHeight: 42,
     largeFontSize: 40,
     largeLineHeight: 48,
-    fontWeight: "700",
+    fontWeight: "500",
   },
   heading: {
     fontSize: 22,

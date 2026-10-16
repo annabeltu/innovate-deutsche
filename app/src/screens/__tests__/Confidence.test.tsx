@@ -32,6 +32,7 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 jest.mock("../../components/ui", () => {
   const { View, Text } = jest.requireActual("react-native");
   return {
+    ...jest.requireActual("../../components/ui"),
     Screen: ({
       children,
       background,
