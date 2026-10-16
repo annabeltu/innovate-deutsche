@@ -77,7 +77,7 @@ export function ChoiceCard({
   const { t } = useTranslation();
   const solved = state.checked && state.answer === card.correct_option;
   return (
-    <View style={{ gap: layout.sectionGap }}>
+    <View style={{ gap: spacing.lg }}>
       <KeyText text={card.text} variant="heading" />
       <Shake trigger={state.wrongTries} still={still}>
         <View style={{ gap: layout.itemGap }}>
@@ -120,7 +120,7 @@ export function ScamCard({
   const solved = state.checked && state.answer === card.correct_option;
   const options = Object.entries(card.options);
   return (
-    <View style={{ gap: layout.sectionGap }}>
+    <View style={{ gap: spacing.lg }}>
       <View
         style={{
           alignSelf: "flex-start",

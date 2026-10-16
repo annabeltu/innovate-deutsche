@@ -1,6 +1,7 @@
 import {
   cardSections,
   highlightRuns,
+  isComparisonBridge,
   scamParts,
   splitSentences,
 } from "../lesson-text";
@@ -75,5 +76,23 @@ describe("scamParts", () => {
       message: "Send $50 today.",
       question: "",
     });
+  });
+});
+
+describe("isComparisonBridge", () => {
+  it("treats a Findex comparison as a flip-card bridge", () => {
+    expect(
+      isComparisonBridge(
+        "In your country, 45% of adults save. In richer countries, it is 70%.",
+      ),
+    ).toBe(true);
+  });
+
+  it("treats plain advice written as a bridge as an ordinary card", () => {
+    expect(
+      isComparisonBridge(
+        "Choose a safe place to keep the money. Keep it separate from spending.",
+      ),
+    ).toBe(false);
   });
 });

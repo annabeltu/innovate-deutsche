@@ -47,3 +47,13 @@ export function scamParts(text: string): { message: string; question: string } {
     return { message: sentences.slice(0, -1).join(" "), question: last };
   return { message: text.trim(), question: "" };
 }
+
+/**
+ * Whether a bridge card is a "people like you" comparison (its first
+ * sentence has a number), so it can show as the two flip cards. Older
+ * generated lessons used bridge for plain advice; those read as concepts.
+ */
+export function isComparisonBridge(text: string): boolean {
+  const [first = ""] = splitSentences(text);
+  return highlightRuns(first).some((run) => run.key);
+}

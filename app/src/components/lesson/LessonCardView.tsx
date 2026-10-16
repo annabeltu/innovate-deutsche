@@ -23,9 +23,9 @@ import { AnswerState, ChoiceCard, ScamCard } from "./AnswerCards";
 import { BridgeCard } from "./BridgeCard";
 import { ConceptCard, TakeawayCard } from "./TextCards";
 import { LessonTopBar } from "./LessonTopBar";
-import { cardSections } from "../../lessons/lesson-text";
+import { cardSections, isComparisonBridge } from "../../lessons/lesson-text";
 
-const KIKO_SIZE = 64;
+const KIKO_SIZE = 56;
 const NOT_ANSWERED: AnswerState = {
   answer: null,
   checked: false,
@@ -46,7 +46,9 @@ function interactionDone(
     case "concept":
       return revealed || cardSections(card.text).rows.length === 0;
     case "bridge":
-      return flipped[0] && flipped[1];
+      return isComparisonBridge(card.text)
+        ? flipped[0] && flipped[1]
+        : revealed || cardSections(card.text).rows.length === 0;
     default:
       return true;
   }
@@ -196,7 +198,7 @@ export function LessonCardView({
     >
       <LessonTopBar progress={progress} />
       <View style={{ flex: 1, justifyContent: "center", gap: layout.itemGap }}>
-        <Card style={{ gap: layout.sectionGap, padding: spacing.xl }}>
+        <Card style={{ gap: spacing.lg, padding: spacing.lg }}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View style={{ flex: 1 }}>
               <Label>{title}</Label>
@@ -229,7 +231,7 @@ export function LessonCardView({
               still={still}
               onAnswer={check}
             />
-          ) : card.type === "bridge" ? (
+          ) : card.type === "bridge" && isComparisonBridge(card.text) ? (
             <BridgeCard
               card={card}
               flipped={flipped}

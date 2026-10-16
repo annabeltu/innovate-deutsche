@@ -728,8 +728,9 @@ const s = StyleSheet.create({
     borderColor: "transparent",
     borderBottomWidth: CHOICE_DEPTH,
     borderRadius: radii.option,
-    padding: spacing.lg,
-    minHeight: 64,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    minHeight: COMPACT_BUTTON_HEIGHT,
   },
   correctGlow: {
     shadowColor: c.success,

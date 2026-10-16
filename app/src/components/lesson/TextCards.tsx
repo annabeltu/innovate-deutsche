@@ -89,6 +89,7 @@ export function TakeawayCard({
   still: boolean;
 }) {
   const { t } = useTranslation();
+  const { title, rows } = cardSections(card.text);
   return (
     <View style={{ alignItems: "center", gap: layout.itemGap }}>
       <Animated.View
@@ -111,8 +112,11 @@ export function TakeawayCard({
       <Txt variant="caption" tone="positive" weight="bold">
         {t("lessonCard.keyTakeaway").toUpperCase()}
       </Txt>
-      <View style={{ alignSelf: "stretch" }}>
-        <KeyText text={card.text} variant="heading" />
+      <View style={{ alignSelf: "stretch", gap: layout.itemGap }}>
+        <KeyText text={title} variant="heading" />
+        {rows.map((row) => (
+          <LessonRow key={row} text={row} />
+        ))}
       </View>
       {rewardCoins > 0 && <CoinReward count={rewardCoins} still={still} />}
     </View>
