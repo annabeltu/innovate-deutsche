@@ -129,6 +129,7 @@ export function Choice({
   icon,
   style,
   accessibilityLabel,
+  accessibilityHint,
 }: {
   title: string;
   selected?: boolean;
@@ -137,6 +138,7 @@ export function Choice({
   style?: ViewStyle;
   /** Spoken name when the visible title is a symbol, such as "‹". */
   accessibilityLabel?: string;
+  accessibilityHint?: string;
 }) {
   const { t } = useTranslation();
   return (
@@ -145,7 +147,7 @@ export function Choice({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ selected }}
-      accessibilityHint={t("app.selectHint")}
+      accessibilityHint={accessibilityHint ?? t("app.selectHint")}
       style={({ pressed }) => [
         s.choice,
         selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
@@ -540,6 +542,7 @@ export function OptionRow({
   onPress,
   disabled = false,
   tone = "neutral",
+  centered = false,
   accessibilityLabel,
   accessibilityHint,
   accessibilityRole = "radio",
@@ -550,6 +553,8 @@ export function OptionRow({
   onPress: () => void;
   disabled?: boolean;
   tone?: OptionTone;
+  /** Center the title, for short side-by-side answers. */
+  centered?: boolean;
   accessibilityLabel?: string;
   accessibilityHint: string;
   accessibilityRole?: "radio" | "button";
@@ -586,11 +591,11 @@ export function OptionRow({
         </View>
       )}
       <Txt
-        variant={letter ? "body" : "subheading"}
+        variant={centered ? "subheading" : "body"}
         style={{
           flex: 1,
           color: colors.text,
-          textAlign: letter ? "left" : "center",
+          textAlign: centered ? "center" : "left",
         }}
       >
         {title}

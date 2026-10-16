@@ -22,7 +22,8 @@ import {
 } from "../i18n/use-rotating-language";
 import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
-import { Txt } from "../components/ui";
+import { Button, Txt } from "../components/ui";
+import { alpha, colors } from "../theme/tokens";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { ACCESSIBILITY_OPTIONS } from "../onboarding/options";
 import { stopSpeaking } from "../voice/speech";
@@ -30,8 +31,8 @@ import { useNarration } from "../voice/narration";
 import { ReadAloudDock } from "../components/ReadAloudBubble";
 import { KompassLogo } from "../components/KompassLogo";
 
-const blue = "#0012B3";
-const ink = "#000C62";
+const blue = colors.deepBlue;
+const ink = colors.darkBlue;
 const reference = require("../../assets/welcome/reference.png");
 const countries = {
   US: {
@@ -126,9 +127,9 @@ export function Welcome() {
             <LinearGradient
               pointerEvents="none"
               colors={[
-                "rgba(244,248,255,0.94)",
-                "rgba(244,248,255,0.45)",
-                "rgba(244,248,255,0)",
+                alpha(colors.welcomePanel, 0.94),
+                alpha(colors.welcomePanel, 0.45),
+                colors.welcomePanelTransparent,
               ]}
               locations={[0, 0.55, 1]}
               style={{
@@ -295,8 +296,11 @@ export function Welcome() {
                         accessibilityHint={t(option.helperKey)}
                         value={s[key]}
                         onValueChange={(value) => s.set({ [key]: value })}
-                        trackColor={{ false: "#B9CEFC", true: "#93B8FF" }}
-                        thumbColor="#FFFFFF"
+                        trackColor={{
+                          false: colors.grey,
+                          true: colors.brightBlue,
+                        }}
+                        thumbColor={colors.white}
                         style={
                           Platform.OS === "ios"
                             ? { transform: [{ scale: 0.72 }] }
@@ -331,65 +335,48 @@ export function Welcome() {
             paddingHorizontal: padding,
           }}
         >
-          <Pressable
-            accessibilityRole="button"
+          <Button
+            title={shown("getStarted")}
+            icon="arrow-right"
             accessibilityLabel={spoken("getStarted")}
             accessibilityHint={t("actionHint")}
             onPress={() => router.push("/onboarding")}
-            style={[
-              styles.go,
-              {
-                minHeight: Math.max(56, 55 * unit),
-              },
-            ]}
-          >
-            <Txt
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18 * unit,
-                lineHeight: 26 * unit,
-                fontWeight: "600",
-              }}
-            >
-              {shown("getStarted")}
-            </Txt>
-            <Feather name="arrow-right" size={25 * unit} color="#FFFFFF" />
-          </Pressable>
+          />
         </View>
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#EDF3FF" },
+  screen: { flex: 1, backgroundColor: colors.iceBlue },
   content: { flex: 1, minHeight: 0 },
   footer: {
     flexShrink: 0,
-    backgroundColor: "#F5F7FE",
+    backgroundColor: colors.welcomePanel,
     paddingVertical: 10,
   },
   scroll: { flexGrow: 1 },
   page: {
     width: "100%",
     alignSelf: "center",
-    backgroundColor: "#F5F7FE",
+    backgroundColor: colors.welcomePanel,
   },
-  panel: { marginTop: -10, backgroundColor: "#F5F7FE" },
+  panel: { marginTop: -10, backgroundColor: colors.welcomePanel },
   grid: { flexDirection: "row", flexWrap: "wrap" },
   label: {
     color: ink,
     fontFamily: Platform.OS === "ios" ? "TrebuchetMS" : undefined,
   },
   tile: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderRadius: 14,
     borderWidth: 1.5,
     borderColor: "transparent",
     padding: 8,
     justifyContent: "center",
-    boxShadow: "0px 3px 0px #D8DFF2",
+    boxShadow: `0px 3px 0px ${colors.grey}`,
   },
-  selected: { borderColor: blue, backgroundColor: "#F8FAFF" },
+  selected: { borderColor: blue, backgroundColor: colors.iceBlue },
   option: {
     fontWeight: "700",
     color: ink,
@@ -399,22 +386,11 @@ const styles = StyleSheet.create({
   countryName: { flex: 1, fontWeight: "600", color: ink },
   accessTile: {
     borderRadius: 14,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     paddingHorizontal: 5,
     alignItems: "center",
     justifyContent: "center",
   },
   accessName: { color: ink, textAlign: "center", fontWeight: "500" },
-  go: {
-    backgroundColor: "#0018A8",
-    borderRadius: 16,
-    borderBottomWidth: 5,
-    borderBottomColor: ink,
-    padding: 10,
-    flexDirection: "row",
-    gap: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   extraAction: { minHeight: 44, justifyContent: "center", marginTop: 8 },
 });

@@ -131,3 +131,17 @@ export const typeScale = {
 } as const satisfies Record<string, TypeStyle>;
 
 export type TypeVariant = keyof typeof typeScale;
+
+const HEX_CHANNELS = [1, 3, 5];
+const HEX_RADIX = 16;
+
+/**
+ * A token color at the given opacity, for overlays and fades. Keeps
+ * translucent layers on the palette instead of inventing rgba values.
+ */
+export function alpha(hex: string, opacity: number): string {
+  const [red, green, blue] = HEX_CHANNELS.map((start) =>
+    parseInt(hex.slice(start, start + 2), HEX_RADIX),
+  );
+  return `rgba(${red},${green},${blue},${opacity})`;
+}

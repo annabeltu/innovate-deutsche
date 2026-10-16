@@ -74,6 +74,7 @@ export function ScamChallenge() {
                   accessibilityLabel={t(`challenge.${choice}`)}
                   accessibilityHint={t("challenge.answerHint")}
                   tone={choice === "scam" ? "danger" : "positive"}
+                  centered
                   disabled={reward !== null}
                   onPress={() => answer(choice)}
                 />
