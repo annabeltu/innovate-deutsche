@@ -294,5 +294,18 @@
     "upNext": "Up next",
     "pathLoading": "Kiko is drawing your path…",
     "pathError": "Your path couldn't load. Check your connection and try again."
+  },
+  "lessonCard": {
+    "close": "Close lesson",
+    "closeHint": "Goes back to your roadmap",
+    "reveal": "Tap to reveal",
+    "revealHint": "Shows the rest of this card",
+    "yourCountry": "Your country",
+    "biggerPicture": "The bigger picture",
+    "flip": "Tap to flip",
+    "flipHint": "Turns the card over",
+    "keyTakeaway": "Key takeaway",
+    "redFlags": "Red flags are highlighted in the message",
+    "message": "Message"
   }
 }

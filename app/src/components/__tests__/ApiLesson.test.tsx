@@ -12,19 +12,18 @@ import { ApiError } from "../../api/client";
 jest.mock("../../api/voice", () => ({ recognizeIntent: jest.fn() }));
 jest.mock("../VoiceInput", () => {
   const { Button, View } = jest.requireActual("react-native");
-  return {
-    VoiceInput: ({ onText }: { onText: (text: string) => Promise<void> }) => (
-      <View>
-        {["a", "b", "next", "back", "repeat", "help"].map((text) => (
-          <Button
-            key={text}
-            title={`Say ${text}`}
-            onPress={() => onText(text)}
-          />
-        ))}
-      </View>
-    ),
-  };
+  const SpokenReplies = ({
+    onText,
+  }: {
+    onText: (text: string) => Promise<void>;
+  }) => (
+    <View>
+      {["a", "b", "next", "back", "repeat", "help"].map((text) => (
+        <Button key={text} title={`Say ${text}`} onPress={() => onText(text)} />
+      ))}
+    </View>
+  );
+  return { VoiceInput: SpokenReplies, VoiceMicButton: SpokenReplies };
 });
 jest.mock("expo-router", () => ({
   router: { replace: jest.fn(), push: jest.fn() },
@@ -136,13 +135,13 @@ describe("ApiLesson", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Next" }));
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "B. Under the mattress" }),
+      screen.getByRole("radio", { name: "B. Under the mattress" }),
     );
     await fireEvent.press(screen.getByRole("button", { name: "Check" }));
     expect(screen.getByText("Not quite. The answer is A.")).toBeTruthy();
 
     await fireEvent.press(
-      screen.getByRole("button", { name: "A. In a licensed bank" }),
+      screen.getByRole("radio", { name: "A. In a licensed bank" }),
     );
     await fireEvent.press(screen.getByRole("button", { name: "Check" }));
     expect(screen.getByText("Correct. Deposits are insured.")).toBeTruthy();

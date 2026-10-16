@@ -294,5 +294,18 @@
     "upNext": "Inayofuata",
     "pathLoading": "Kiko anachora njia yako…",
     "pathError": "Njia yako haikupakia. Angalia muunganisho wako na ujaribu tena."
+  },
+  "lessonCard": {
+    "close": "Funga somo",
+    "closeHint": "Inarudi kwenye njia yako",
+    "reveal": "Gusa ili kuona",
+    "revealHint": "Inaonyesha sehemu iliyobaki ya kadi hii",
+    "yourCountry": "Nchi yako",
+    "biggerPicture": "Picha kubwa",
+    "flip": "Gusa ili kugeuza",
+    "flipHint": "Inageuza kadi",
+    "keyTakeaway": "Jambo kuu",
+    "redFlags": "Dalili za hatari zimeangaziwa kwenye ujumbe",
+    "message": "Ujumbe"
   }
 }

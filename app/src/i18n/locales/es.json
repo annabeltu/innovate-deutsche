@@ -294,5 +294,18 @@
     "upNext": "Lo siguiente",
     "pathLoading": "Kiko está dibujando tu camino…",
     "pathError": "Tu camino no se pudo cargar. Comprueba tu conexión e inténtalo de nuevo."
+  },
+  "lessonCard": {
+    "close": "Cerrar lección",
+    "closeHint": "Vuelve a tu ruta",
+    "reveal": "Toca para descubrir",
+    "revealHint": "Muestra el resto de esta tarjeta",
+    "yourCountry": "Tu país",
+    "biggerPicture": "El panorama general",
+    "flip": "Toca para voltear",
+    "flipHint": "Voltea la tarjeta",
+    "keyTakeaway": "Lo más importante",
+    "redFlags": "Las señales de alerta están resaltadas en el mensaje",
+    "message": "Mensaje"
   }
 }
