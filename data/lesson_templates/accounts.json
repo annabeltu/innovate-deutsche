@@ -7,10 +7,32 @@
     {
       "card_id": "what-is-an-account",
       "type": "concept",
-      "text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name. To open one, you usually need {id_document}.",
+      "text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name.",
       "voice": {
-        "speak_text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name. To open one, you usually need {id_document}. Say next to continue.",
+        "speak_text": "An account is a safe place at a bank or mobile money provider that keeps your money in your name. Say next to continue.",
         "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "open-account-quiz",
+      "type": "mc_quiz",
+      "text": "What do you usually need to open an account?",
+      "options": {
+        "a": "Proof of who you are, like {id_document}",
+        "b": "A letter from your employer",
+        "c": "A credit card"
+      },
+      "correct_option": "a",
+      "voice": {
+        "speak_text": "What do you usually need to open an account? A: proof of who you are, like {id_document}. B: a letter from your employer. C: a credit card. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "proof of who you are, like {id_document}",
+          "b": "a letter from your employer",
+          "c": "a credit card"
+        },
+        "correct_feedback": "Correct. To open an account, you usually need {id_document}.",
+        "incorrect_feedback": "Not quite. The answer is A. To open an account, you usually need {id_document}."
       }
     },
     {

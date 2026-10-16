@@ -45,27 +45,79 @@
     {
       "card_id": "fake-job-offers",
       "type": "concept",
-      "text": "Fake job offers that ask for a fee first are a common scam. Real employers do not charge you to start.",
+      "text": "Fake job offers that ask for a fee first are a common scam.",
       "life_stages": [
         "student",
         "first_job"
       ],
       "voice": {
-        "speak_text": "Fake job offers that ask for a fee first are a common scam. Real employers do not charge you to start. Say next to continue.",
+        "speak_text": "Fake job offers that ask for a fee first are a common scam. Say next to continue.",
         "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "job-fee-quiz",
+      "type": "mc_quiz",
+      "life_stages": [
+        "student",
+        "first_job"
+      ],
+      "text": "A job offer asks you to pay a fee before you start. What should you do?",
+      "options": {
+        "a": "Pay the fee to get the job",
+        "b": "Refuse, because real employers do not charge you to start",
+        "c": "Pay half now and half later"
+      },
+      "correct_option": "b",
+      "voice": {
+        "speak_text": "A job offer asks you to pay a fee before you start. What should you do? A: pay the fee to get the job. B: refuse, because real employers do not charge you to start. C: pay half now and half later. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "pay the fee to get the job",
+          "b": "refuse, because real employers do not charge you to start",
+          "c": "pay half now and half later"
+        },
+        "correct_feedback": "Correct. Real employers do not charge you to start.",
+        "incorrect_feedback": "Not quite. The answer is B. Real employers do not charge you to start."
       }
     },
     {
       "card_id": "family-in-trouble",
       "type": "concept",
-      "text": "Scammers may pretend to be a family member in trouble. Call them back on a number you already know.",
+      "text": "Scammers may pretend to be a family member in trouble.",
       "life_stages": [
         "parent",
         "retired"
       ],
       "voice": {
-        "speak_text": "Scammers may pretend to be a family member in trouble. Call them back on a number you already know. Say next to continue.",
+        "speak_text": "Scammers may pretend to be a family member in trouble. Say next to continue.",
         "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "family-call-quiz",
+      "type": "mc_quiz",
+      "life_stages": [
+        "parent",
+        "retired"
+      ],
+      "text": "A message says it is your child and they need money now. What do you do first?",
+      "options": {
+        "a": "Send the money right away",
+        "b": "Call them back on a number you already know",
+        "c": "Reply with your PIN"
+      },
+      "correct_option": "b",
+      "voice": {
+        "speak_text": "A message says it is your child and they need money now. What do you do first? A: send the money right away. B: call them back on a number you already know. C: reply with your PIN. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "send the money right away",
+          "b": "call them back on a number you already know",
+          "c": "reply with your PIN"
+        },
+        "correct_feedback": "Correct. Call them back on a number you already know.",
+        "incorrect_feedback": "Not quite. The answer is B. Call them back on a number you already know."
       }
     },
     {

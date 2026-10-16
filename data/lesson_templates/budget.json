@@ -25,10 +25,32 @@
     {
       "card_id": "needs-before-wants",
       "type": "concept",
-      "text": "Pay for needs first, like food, rent and transport. Wants come after.",
+      "text": "Pay for needs first, like food, rent and transport.",
       "voice": {
-        "speak_text": "Pay for needs first, like food, rent and transport. Wants come after. Say next to continue.",
+        "speak_text": "Pay for needs first, like food, rent and transport. Say next to continue.",
         "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "needs-or-wants-quiz",
+      "type": "mc_quiz",
+      "text": "Which of these is a want?",
+      "options": {
+        "a": "Rent",
+        "b": "Food",
+        "c": "A new phone"
+      },
+      "correct_option": "c",
+      "voice": {
+        "speak_text": "Which of these is a want? A: rent. B: food. C: a new phone. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "rent",
+          "b": "food",
+          "c": "a new phone"
+        },
+        "correct_feedback": "Correct. A new phone is a want. Needs like rent and food come first.",
+        "incorrect_feedback": "Not quite. The answer is C. A new phone is a want. Needs like rent and food come first."
       }
     },
     {

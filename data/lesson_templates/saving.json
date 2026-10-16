@@ -7,10 +7,32 @@
     {
       "card_id": "where-money-lives",
       "type": "concept",
-      "text": "Money kept at home can be lost, stolen or spent. A bank account keeps it protected.",
+      "text": "Money kept at home can be lost, stolen or spent.",
       "voice": {
-        "speak_text": "Money kept at home can be lost, stolen or spent. A bank account keeps it protected. Say next to continue.",
+        "speak_text": "Money kept at home can be lost, stolen or spent. Say next to continue.",
         "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "home-cash-quiz",
+      "type": "mc_quiz",
+      "text": "What can happen to money kept at home?",
+      "options": {
+        "a": "It can be lost, stolen or spent",
+        "b": "It earns interest",
+        "c": "It is insured by {deposit_insurer}"
+      },
+      "correct_option": "a",
+      "voice": {
+        "speak_text": "What can happen to money kept at home? A: it can be lost, stolen or spent. B: it earns interest. C: it is insured by {deposit_insurer}. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "it can be lost, stolen or spent",
+          "b": "it earns interest",
+          "c": "it is insured by {deposit_insurer}"
+        },
+        "correct_feedback": "Correct. Money at home can be lost, stolen or spent. A bank account keeps it protected.",
+        "incorrect_feedback": "Not quite. The answer is A. Money at home can be lost, stolen or spent. A bank account keeps it protected."
       }
     },
     {

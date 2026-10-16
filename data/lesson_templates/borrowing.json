@@ -25,10 +25,32 @@
     {
       "card_id": "total-cost",
       "type": "concept",
-      "text": "Always ask for the total you will pay back, not just the weekly payment. Small payments can hide a large total.",
+      "text": "Always ask for the total you will pay back, not just the weekly payment.",
       "voice": {
-        "speak_text": "Always ask for the total you will pay back, not just the weekly payment. Small payments can hide a large total. Say next to continue.",
+        "speak_text": "Always ask for the total you will pay back, not just the weekly payment. Say next to continue.",
         "answer_mode": "say_next"
+      }
+    },
+    {
+      "card_id": "hidden-total-quiz",
+      "type": "mc_quiz",
+      "text": "Why look at the total, not just the weekly payment?",
+      "options": {
+        "a": "Small payments can hide a large total",
+        "b": "Weekly payments are always cheaper",
+        "c": "The total never changes"
+      },
+      "correct_option": "a",
+      "voice": {
+        "speak_text": "Why look at the total, not just the weekly payment? A: small payments can hide a large total. B: weekly payments are always cheaper. C: the total never changes. Say A, B or C.",
+        "answer_mode": "say_option",
+        "spoken_options": {
+          "a": "small payments can hide a large total",
+          "b": "weekly payments are always cheaper",
+          "c": "the total never changes"
+        },
+        "correct_feedback": "Correct. Small payments can hide a large total.",
+        "incorrect_feedback": "Not quite. The answer is A. Small payments can hide a large total."
       }
     },
     {
