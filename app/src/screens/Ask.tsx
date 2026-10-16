@@ -10,7 +10,7 @@ import { AppScenery } from "../components/AppScenery";
 import { KikoAvatar } from "../components/KikoAvatar";
 
 import { useApp } from "../state/useApp";
-import { colors } from "../theme/tokens";
+import { colors, spacing } from "../theme/tokens";
 import { useKikoRecorder } from "../voice/use-kiko-recorder";
 import { LessonRequest } from "../components/LessonRequest";
 import { BenefitBubbles } from "../components/BenefitBubbles";
@@ -85,7 +85,11 @@ export default function Ask() {
           )}
         </Txt>
       </View>
-      <View className="gap-3 rounded-3xl bg-brand/70 p-4">
+      {/* Extra room between the mic prompt and the question box. */}
+      <View
+        className="gap-3 rounded-3xl bg-brand/70 p-4"
+        style={{ marginTop: spacing.lg }}
+      >
         <TextInput
           accessibilityLabel={t("askScreen.input")}
           accessibilityHint={t("askScreen.inputHint")}
