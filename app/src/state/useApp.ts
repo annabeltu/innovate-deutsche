@@ -4,6 +4,9 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Language } from "../types/api";
+
+/** Coins earned the first time a lesson is completed. */
+export const LESSON_REWARD_COINS = 10;
 export type { Language } from "../types/api";
 export type Country = "US" | "MX" | "KE";
 type State = {
@@ -98,7 +101,7 @@ export const useApp = create<State>()(
         if (!get().completed.includes(id))
           set((s) => ({
             completed: [...s.completed, id],
-            coins: s.coins + 10,
+            coins: s.coins + LESSON_REWARD_COINS,
           }));
       },
       buy: (id, price) => {

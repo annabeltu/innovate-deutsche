@@ -260,7 +260,6 @@
     "lessonCount_one": "Somo {{count}} limekamilika",
     "lessonCount_other": "Masomo {{count}} yamekamilika",
     "coinsSaved": "Sarafu {{count}} ulizopata na kuweka",
-    "successLabel": "HIVYO NDIVYO",
     "successTitle": "Vizuri!",
     "practiceComplete": "Mazoezi yamekamilika",
     "coinsAwarded": "Sarafu +{{count}}",

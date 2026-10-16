@@ -260,7 +260,6 @@
     "lessonCount_one": "{{count}} lección completada",
     "lessonCount_other": "{{count}} lecciones completadas",
     "coinsSaved": "{{count}} monedas ganadas y guardadas",
-    "successLabel": "ASÍ SE HACE",
     "successTitle": "¡Muy bien!",
     "practiceComplete": "Práctica completada",
     "coinsAwarded": "+{{count}} monedas",

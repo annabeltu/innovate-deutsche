@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { AccessibilityInfo, StyleSheet, View } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import LottieView from "lottie-react-native";
 import { Feather } from "@expo/vector-icons";
-import { useApp } from "../state/useApp";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LESSON_REWARD_COINS, useApp } from "../state/useApp";
 import {
   ActionBar,
   Screen,
@@ -19,13 +17,15 @@ import {
   Card,
   Nav,
   c,
+  useReduceMotion,
 } from "../components/ui";
+import { CoinReward, RewardCelebration } from "../components/RewardCelebration";
 import { lessons } from "./Onboarding";
 import { ApiLesson } from "../components/ApiLesson";
 import { useBonusLessons, serverLessonId } from "../api/lessons";
 import { LanguageChooser } from "../components/LanguageChooser";
 import { AccountHeader } from "../components/AccountHeader";
-import { layout, radii, spacing } from "../theme/tokens";
+import { layout } from "../theme/tokens";
 
 const STREAK_ICON_SIZE = 24;
 export { Roadmap } from "./Roadmap";
@@ -45,31 +45,9 @@ export function Success() {
   const { rewarded } = useLocalSearchParams<{ rewarded: string }>();
   const { t } = useTranslation();
   const simple = useApp((s) => s.simple);
-  const insets = useSafeAreaInsets();
-  const [reduceMotion, setReduceMotion] = useState(true);
-  useEffect(() => {
-    void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
-    const subscription = AccessibilityInfo.addEventListener(
-      "reduceMotionChanged",
-      setReduceMotion,
-    );
-    return () => subscription.remove();
-  }, []);
+  const still = useReduceMotion() || simple;
   return (
     <Screen
-      background={
-        !simple &&
-        !reduceMotion && (
-          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-            <LottieView
-              autoPlay
-              loop={false}
-              source={require("../../assets/celebration.json")}
-              style={{ width: "100%", height: "40%" }}
-            />
-          </View>
-        )
-      }
       footer={
         <ActionBar>
           <Button
@@ -82,44 +60,26 @@ export function Success() {
     >
       <View
         style={{
-          backgroundColor: c.success,
-          // Bleed the celebration panel to the screen edges and under the status bar.
-          marginHorizontal: -layout.pagePadding,
-          marginTop: -(spacing.lg + insets.top),
-          paddingTop: insets.top + spacing.xxl,
-          paddingBottom: spacing.xxl,
-          borderBottomLeftRadius: radii.card,
-          borderBottomRightRadius: radii.card,
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
           gap: layout.sectionGap,
         }}
       >
-        <Txt
-          variant="heading"
-          style={{
-            color: c.coinGold,
-            textAlign: "center",
-            letterSpacing: spacing.lg,
-          }}
-        >
-          ✦ ✧ ✦
-        </Txt>
-        <Kiko pulse mood="cheer" />
-      </View>
-      <View style={{ alignItems: "center", gap: layout.itemGap }}>
-        <Label>{t("app.successLabel")}</Label>
-        <Txt variant="title" tone="positive">
-          {t("app.successTitle")}
-        </Txt>
-        <Card style={{ backgroundColor: c.coinGoldSoft, borderBottomWidth: 0 }}>
-          <Txt tone="reward" weight="bold">
-            {rewarded === "false"
-              ? `✓ ${t("app.practiceComplete")}`
-              : `● ${t("app.coinsAwarded", { count: 10 })}`}
+        <RewardCelebration still={still} />
+        <View style={{ alignItems: "center", gap: layout.itemGap }}>
+          <Txt variant="title" accessibilityRole="header">
+            {t("app.successTitle")}
           </Txt>
-        </Card>
-        <Txt style={{ textAlign: "center", color: c.midBlue }}>
-          {t("app.successBody")}
-        </Txt>
+          {rewarded === "false" ? (
+            <Txt tone="reward" weight="bold">
+              {`✓ ${t("app.practiceComplete")}`}
+            </Txt>
+          ) : (
+            <CoinReward count={LESSON_REWARD_COINS} still={still} />
+          )}
+          <Txt style={{ textAlign: "center" }}>{t("app.successBody")}</Txt>
+        </View>
       </View>
     </Screen>
   );

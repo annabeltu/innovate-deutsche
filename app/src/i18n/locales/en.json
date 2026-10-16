@@ -260,7 +260,6 @@
     "lessonCount_one": "{{count}} lesson completed",
     "lessonCount_other": "{{count}} lessons completed",
     "coinsSaved": "{{count}} coins earned and saved",
-    "successLabel": "THAT’S THE WAY",
     "successTitle": "Nice!",
     "practiceComplete": "Practice complete",
     "coinsAwarded": "+{{count}} coins",
