@@ -6,13 +6,13 @@ import {
 } from "../components/BonusLessons";
 import { RoadLine, useRoad } from "../components/RoadLine";
 import { IconBubble } from "../components/BenefitBubbles";
+import { TreasureChest } from "../components/TreasureChest";
 import { Txt } from "../components/Txt";
 import { SCENERY_FILL } from "../components/AppScenery";
 import { BonusNotification } from "../components/BonusNotification";
 import { KikoAvatar } from "../components/KikoAvatar";
 import React from "react";
 import { Image, Pressable, View } from "react-native";
-import Svg, { Image as SvgImage } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Card, Nav, Screen } from "../components/ui";
@@ -28,9 +28,9 @@ const scenes = {
   MX: require("../../assets/welcome/mx.png"),
   KE: require("../../assets/welcome/ke.png"),
 };
-const reference = require("../../assets/roadmap/reference.png");
 const nodePositions = [0.32, 0.42, 0.4, 0.43, 0.4];
 const ASK_BUBBLE_SIZE = 40;
+const CHEST_SIZE = 60;
 // How far the Ask bubble sinks while pressed, like the other 3D buttons.
 const PRESS_SINK = 2;
 
@@ -193,14 +193,7 @@ export function Roadmap() {
         {bonus.length > 0 && <BonusLessons road={road.layout} />}
       </View>
       <Card style={{ flexDirection: "row", alignItems: "center" }}>
-        <Svg
-          width={62}
-          height={64}
-          viewBox="246 1364 152 145"
-          accessible={false}
-        >
-          <SvgImage href={reference} width={883} height={1782} />
-        </Svg>
+        <TreasureChest size={CHEST_SIZE} />
         <View className="flex-1">
           <Txt weight="bold">
             {t(
