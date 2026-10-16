@@ -1,9 +1,10 @@
 import React from "react";
+import { Txt } from "./Txt";
 import { SCENERY_FILL } from "./AppScenery";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ActionBar, Button, Screen, Progress } from "./ui";
+import { ActionBar, Button, IconButton, Progress, Screen } from "./ui";
 import { ChallengeArt } from "./ChallengeArt";
 import { useApp } from "../state/useApp";
 import { personalizePath } from "../onboarding/personalized-path";
@@ -66,50 +67,47 @@ export function ChallengeFrame({
     >
       <View className="flex-row items-center justify-between">
         <KompassLogo size={30} />
-        <Text
+        <Txt
           accessibilityLabel={t("roadmapScreen.hearts", { count: hearts })}
-          className="rounded-2xl bg-white px-3 py-2 font-bold text-ink"
+          weight="bold"
+          className="rounded-2xl bg-white px-3 py-2"
         >
           ♥️ {hearts}
-        </Text>
+        </Txt>
       </View>
       <View className="flex-row items-center gap-3">
         <View className="h-2 flex-1">
           <Progress value={position / 5} />
         </View>
-        <Text
+        <Txt
           accessibilityLabel={t("challenge.position", {
             number: position,
             total: 5,
           })}
-          className="rounded-xl bg-ice px-3 py-2 font-bold text-brand"
+          tone="brand"
+          weight="bold"
+          className="rounded-xl bg-ice px-3 py-2"
         >
           {position} / 5
-        </Text>
+        </Txt>
       </View>
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs text-ink">{t("challenge.unit")}</Text>
-        <Pressable
-          accessibilityRole="button"
+        <Txt variant="caption">{t("challenge.unit")}</Txt>
+        <IconButton
+          icon="chevron-left"
           accessibilityLabel={t("quizBack")}
           accessibilityHint={t("challenge.backHint")}
           onPress={() => router.replace("/roadmap")}
-          className="min-h-11 min-w-11 items-center justify-center rounded-full bg-white"
-        >
-          <Text className="text-xl text-brand">‹</Text>
-        </Pressable>
+        />
       </View>
       <View className="flex-row items-center gap-2">
         <View className="flex-1 gap-2">
-          <Text
-            accessibilityRole="header"
-            className="text-3xl font-bold text-ink"
-          >
+          <Txt accessibilityRole="header" variant="title">
             {t(`challenge.${kind}Title`)}
-          </Text>
-          <Text className="text-sm leading-5 text-brand">
+          </Txt>
+          <Txt variant="small" tone="brand">
             {t(`challenge.${kind}Intro`)}
-          </Text>
+          </Txt>
         </View>
         <ChallengeArt kind={kind} size={100} />
       </View>

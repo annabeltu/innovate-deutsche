@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Txt } from "./Txt";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
 
@@ -17,31 +18,35 @@ export function AccountHeader({
   return (
     <View className="flex-row items-center justify-between gap-2">
       <View accessibilityRole="header">
-        <Text
-          className={`text-xs font-bold ${dark ? "text-white" : "text-brand"}`}
-        >
+        <Txt variant="caption" weight="bold" tone={dark ? "light" : "brand"}>
           Deutsche Bank
-        </Text>
-        <Text
-          className={`text-2xl font-extrabold ${dark ? "text-white" : "text-brand"}`}
+        </Txt>
+        <Txt
+          variant="heading"
+          tone={dark ? "light" : "brand"}
+          style={{ fontWeight: "800" }}
         >
           K◉mpass
-        </Text>
+        </Txt>
       </View>
       <View className="flex-row gap-2">
-        <Text
+        <Txt
           accessibilityLabel={t("roadmapScreen.coins", { count: coins })}
-          className="rounded-full bg-white px-3 py-2 text-sm font-bold text-ink"
+          variant="small"
+          weight="bold"
+          className="rounded-full bg-white px-3 py-2"
         >
           🪙 {coins}
-        </Text>
+        </Txt>
         {showHearts && (
-          <Text
+          <Txt
             accessibilityLabel={t("roadmapScreen.hearts", { count: hearts })}
-            className="rounded-full bg-white px-3 py-2 text-sm font-bold text-ink"
+            variant="small"
+            weight="bold"
+            className="rounded-full bg-white px-3 py-2"
           >
             ♥️ {hearts}
-          </Text>
+          </Txt>
         )}
       </View>
     </View>

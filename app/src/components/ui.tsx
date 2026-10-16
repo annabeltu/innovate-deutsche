@@ -58,6 +58,7 @@ export function Label({
   return (
     <Txt
       variant="caption"
+      weight="bold"
       style={{ letterSpacing: 2, color: light ? c.lightBlue : c.midBlue }}
     >
       {children}
@@ -426,7 +427,7 @@ export function Nav({ active = "path" }: { active?: string }) {
             style={s.navItem}
           >
             <Feather name={icon} size={NAV_ICON_SIZE} color={color} />
-            <Txt variant="caption" style={{ color }}>
+            <Txt variant="caption" weight="bold" style={{ color }}>
               {t(name)}
             </Txt>
             <View
@@ -445,6 +446,38 @@ export function Nav({ active = "path" }: { active?: string }) {
  */
 export function ActionBar({ children }: { children: React.ReactNode }) {
   return <View style={s.actionBar}>{children}</View>;
+}
+
+/** Low-emphasis text action (such as "‹ Back") with a 48 pt tap target. */
+export function TextButton({
+  title,
+  onPress,
+  accessibilityLabel,
+  accessibilityHint,
+  disabled = false,
+}: {
+  title: string;
+  onPress: () => void;
+  accessibilityLabel?: string;
+  accessibilityHint: string;
+  disabled?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      hitSlop={spacing.sm}
+      style={[s.textButton, disabled && s.disabled]}
+    >
+      <Txt variant="subheading" tone="brand">
+        {title}
+      </Txt>
+    </Pressable>
+  );
 }
 
 /** Round icon-only control (back, close) with a 48 pt tap target. */
@@ -640,6 +673,11 @@ const s = StyleSheet.create({
     justifyContent: "center",
   },
   disabled: { opacity: DISABLED_OPACITY },
+  textButton: {
+    minHeight: minTapTarget,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   nav: {
     flexDirection: "row",
     backgroundColor: c.white,

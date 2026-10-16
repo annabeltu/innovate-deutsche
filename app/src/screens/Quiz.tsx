@@ -1,11 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Txt } from "../components/Txt";
+import { Image, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as Speech from "expo-speech";
 import { recognizeIntent } from "../api/voice";
 import { VoiceInput } from "../components/VoiceInput";
-import { ActionBar, Button, Screen, Progress } from "../components/ui";
+import {
+  ActionBar,
+  Button,
+  OptionRow,
+  Progress,
+  Screen,
+  TextButton,
+} from "../components/ui";
 import { AppScenery } from "../components/AppScenery";
 import { AccountHeader } from "../components/AccountHeader";
 import { useApp } from "../state/useApp";
@@ -62,31 +70,36 @@ function QuizSession() {
           accessible={false}
           style={KIKO_INTRO_SIZE}
         />
-        <Text
+        <Txt
           accessibilityRole="header"
-          className="text-center text-3xl font-bold text-ink"
+          variant="title"
+          weight="bold"
+          className="text-center"
         >
           {t("quizTitle")}
-        </Text>
-        <Text className="text-center text-base leading-6 text-brand">
+        </Txt>
+        <Txt tone="brand" className="text-center">
           {t("quizIntro")}
-        </Text>
+        </Txt>
       </View>
       {(!request || start.isError) && (
-        <Text
+        <Txt
           accessibilityRole="alert"
-          className="rounded-2xl bg-white p-4 text-danger"
+          tone="danger"
+          className="rounded-2xl bg-white p-4"
         >
           {t(!request ? "unsupportedLanguage" : "apiUnavailable")}
-        </Text>
+        </Txt>
       )}
       {start.isPending ? (
-        <Text
+        <Txt
           accessibilityLiveRegion="polite"
-          className="text-center font-bold text-brand"
+          tone="brand"
+          weight="bold"
+          className="text-center"
         >
           {t("quizLoading")}
-        </Text>
+        </Txt>
       ) : (
         <Button
           title={t("experience.retry")}
@@ -111,16 +124,13 @@ function QuizBack({
 }) {
   const { t } = useTranslation();
   return (
-    <Pressable
-      accessibilityRole="button"
+    <TextButton
+      title={`‹ ${t("quizBack")}`}
       accessibilityLabel={t("quizBack")}
       accessibilityHint={t("quizBackHint")}
       disabled={disabled}
       onPress={onPress}
-      className="min-h-11 items-center justify-center"
-    >
-      <Text className="font-bold text-brand">‹ {t("quizBack")}</Text>
-    </Pressable>
+    />
   );
 }
 
@@ -209,27 +219,34 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
         <View className="h-2 flex-1">
           <Progress value={(index + 1) / session.quiz.questions.length} />
         </View>
-        <Text className="rounded-xl bg-ice px-3 py-2 text-sm font-bold text-brand">
+        <Txt
+          variant="small"
+          tone="brand"
+          weight="bold"
+          className="rounded-xl bg-ice px-3 py-2"
+        >
           {index + 1} / {session.quiz.questions.length}
-        </Text>
+        </Txt>
       </View>
       <View className="flex-row items-center gap-3">
         <View className="flex-1 gap-2">
-          <Text className="text-xs font-bold uppercase tracking-widest text-brand">
-            {t("experience.knowledgeCheck")}
-          </Text>
-          <Text
-            accessibilityRole="header"
-            className="text-3xl font-bold text-ink"
+          <Txt
+            variant="caption"
+            tone="brand"
+            weight="bold"
+            className="uppercase tracking-widest"
           >
+            {t("experience.knowledgeCheck")}
+          </Txt>
+          <Txt accessibilityRole="header" variant="heading" weight="bold">
             {t(`confidenceTopics.${question.topic}`)}
-          </Text>
-          <Text className="text-sm text-brand">
+          </Txt>
+          <Txt variant="small" tone="brand">
             {t("quizCount", {
               number: index + 1,
               total: session.quiz.questions.length,
             })}
-          </Text>
+          </Txt>
         </View>
         <Image
           testID="quiz-kiko"
@@ -240,25 +257,26 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
         />
       </View>
       <View className="gap-4 rounded-3xl bg-white p-5">
-        <Text
+        <Txt
           accessibilityLabel={question.voice.speak_text}
-          className="text-xl font-bold leading-7 text-ink"
+          variant="heading"
+          weight="bold"
         >
           {question.prompt}
-        </Text>
-        <Text className="text-sm text-brand">{t("experience.quizHint")}</Text>
+        </Txt>
+        <Txt variant="small" tone="brand">
+          {t("experience.quizHint")}
+        </Txt>
       </View>
       <View className="gap-3">
         {question.options.map((option) => (
-          <Pressable
+          <OptionRow
             key={option.option_id}
-            accessibilityRole="radio"
+            letter={option.option_id.toUpperCase()}
+            title={option.text}
             accessibilityLabel={`${option.option_id.toUpperCase()}: ${option.text}`}
             accessibilityHint={t("quizOptionHint")}
-            accessibilityState={{
-              checked: selected === option.option_id,
-              disabled: submit.isPending,
-            }}
+            selected={selected === option.option_id}
             disabled={submit.isPending}
             onPress={() =>
               setAnswers((previous) => ({
@@ -266,32 +284,18 @@ function QuizQuestions({ session }: { session: OnboardingResponse }) {
                 [question.question_id]: option.option_id,
               }))
             }
-            className={`min-h-16 flex-row items-center gap-3 rounded-2xl border-2 p-4 ${selected === option.option_id ? "border-brand bg-ice" : "border-transparent bg-white"}`}
-          >
-            <Text
-              className={`h-9 w-9 rounded-full pt-2 text-center font-bold ${selected === option.option_id ? "bg-brand text-white" : "bg-ice text-brand"}`}
-            >
-              {option.option_id.toUpperCase()}
-            </Text>
-            <Text className="flex-1 text-base leading-6 text-ink">
-              {option.text}
-            </Text>
-            {selected === option.option_id && (
-              <Text accessible={false} className="font-bold text-brand">
-                ✓
-              </Text>
-            )}
-          </Pressable>
+          />
         ))}
       </View>
       <VoiceInput onText={spokenReply} />
       {submit.isError && (
-        <Text
+        <Txt
           accessibilityRole="alert"
-          className="rounded-2xl bg-white p-4 text-danger"
+          tone="danger"
+          className="rounded-2xl bg-white p-4"
         >
           {t("apiUnavailable")}
-        </Text>
+        </Txt>
       )}
     </Screen>
   );

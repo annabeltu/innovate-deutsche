@@ -1,5 +1,6 @@
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Txt } from "../components/Txt";
+import { Image, Pressable, View } from "react-native";
 import { useWindowSize } from "../hooks/use-window-size";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
@@ -147,9 +148,9 @@ export function PersonalizedPath() {
             />
           </View>
           <View style={{ width: "57%" }}>
-            <Text
+            <Txt
               accessibilityRole="header"
-              className="font-bold text-ink"
+              weight="bold"
               style={{
                 fontSize: 30 * unit,
                 lineHeight: 33 * unit,
@@ -157,9 +158,10 @@ export function PersonalizedPath() {
               }}
             >
               {t("pathPreview.titleLead")}
-            </Text>
-            <Text
-              className="font-bold text-brand"
+            </Txt>
+            <Txt
+              tone="brand"
+              weight="bold"
               style={{
                 fontSize: 30 * unit,
                 lineHeight: 33 * unit,
@@ -167,22 +169,24 @@ export function PersonalizedPath() {
               }}
             >
               {t("pathPreview.titleReady")}
-            </Text>
-            <Text
-              className="mt-2 text-brand"
+            </Txt>
+            <Txt
+              tone="brand"
+              className="mt-2"
               style={{ fontSize: 13 * unit, lineHeight: 18 * unit }}
             >
               {t("pathPreview.intro")}
-            </Text>
+            </Txt>
           </View>
         </View>
-        <Text
+        <Txt
           accessibilityRole="header"
-          className="mb-3 mt-1 font-bold text-ink"
+          weight="bold"
+          className="mb-3 mt-1"
           style={{ fontSize: 14 * unit }}
         >
           {t("pathPreview.lessons")}
-        </Text>
+        </Txt>
         <View style={{ gap: 7 * unit }}>
           {path.map((lesson, index) => {
             const title = t(`confidenceTopics.${lesson.topic}`);
@@ -205,12 +209,13 @@ export function PersonalizedPath() {
                   className="items-center justify-center rounded-full bg-ice"
                   style={{ width: 24 * unit, height: 24 * unit }}
                 >
-                  <Text
-                    className="font-medium text-brand"
+                  <Txt
+                    tone="brand"
+                    weight="medium"
                     style={{ fontSize: 12 * unit }}
                   >
                     {index + 1}
-                  </Text>
+                  </Txt>
                 </View>
                 <ReferenceArt
                   region={artRegions[lesson.topic]}
@@ -218,12 +223,12 @@ export function PersonalizedPath() {
                   height={58 * unit}
                 />
                 <View className="flex-1" style={{ gap: 5 * unit }}>
-                  <Text
-                    className="font-bold text-ink"
+                  <Txt
+                    weight="bold"
                     style={{ fontSize: 13 * unit, lineHeight: 16 * unit }}
                   >
                     {title}
-                  </Text>
+                  </Txt>
                   <View
                     className={expanded ? "gap-1" : "flex-row items-center"}
                     style={{ gap: 6 * unit }}
@@ -235,12 +240,13 @@ export function PersonalizedPath() {
                         paddingVertical: 4 * unit,
                       }}
                     >
-                      <Text
-                        className="font-medium text-brand"
+                      <Txt
+                        tone="brand"
+                        weight="medium"
                         style={{ fontSize: 9 * unit }}
                       >
                         {t("pathPreview.why")}
-                      </Text>
+                      </Txt>
                     </View>
                     <View
                       className="flex-1 rounded-lg bg-ice"
@@ -249,22 +255,21 @@ export function PersonalizedPath() {
                         paddingVertical: 5 * unit,
                       }}
                     >
-                      <Text
-                        className="text-ink"
+                      <Txt
                         style={{ fontSize: 9.5 * unit, lineHeight: 12 * unit }}
                       >
                         {reason}
-                      </Text>
+                      </Txt>
                     </View>
                   </View>
                 </View>
-                <Text
+                <Txt
                   accessible={false}
-                  className="text-brand"
+                  tone="brand"
                   style={{ fontSize: 24 * unit }}
                 >
                   ›
-                </Text>
+                </Txt>
               </Pressable>
             );
           })}

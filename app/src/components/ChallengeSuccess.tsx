@@ -1,6 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Txt } from "./Txt";
 import React, { useEffect } from "react";
-import { Modal, ScrollView, Text, View } from "react-native";
+import { Modal, ScrollView, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ChallengeArt } from "./ChallengeArt";
@@ -62,24 +63,20 @@ export function ChallengeSuccess({
           <ScrollView contentContainerClassName="gap-4">
             <View className="flex-row items-center">
               <View className="flex-1 gap-2">
-                <Text
+                <Txt
                   accessibilityRole="header"
-                  className={
-                    kind !== "scam"
-                      ? "text-5xl font-bold text-positive"
-                      : "text-2xl font-bold text-danger"
-                  }
+                  variant={kind !== "scam" ? "title" : "heading"}
+                  tone={kind !== "scam" ? "positive" : "danger"}
+                  weight="bold"
                 >
                   {t(
                     kind !== "scam"
                       ? "challenge.nice"
                       : "challenge.scamHeading",
                   )}
-                </Text>
-                <Text className="text-3xl font-bold text-ink">{coinText}</Text>
-                <Text className="text-base leading-6 text-ink">
-                  {explanation}
-                </Text>
+                </Txt>
+                <Txt variant="title">{coinText}</Txt>
+                <Txt>{explanation}</Txt>
               </View>
               <ChallengeArt
                 kind={kind !== "scam" ? "success" : "scamSuccess"}
@@ -88,33 +85,31 @@ export function ChallengeSuccess({
             </View>
             {kind === "scam" && (
               <View className="gap-2">
-                <Text className="font-bold text-ink">
-                  {t("challenge.redFlags")}
-                </Text>
+                <Txt weight="bold">{t("challenge.redFlags")}</Txt>
                 {["flagUrgency", "flagPin", "flagLink"].map((key) => (
                   <View
                     key={key}
                     className="flex-row items-center gap-2 rounded-xl bg-white p-3"
                   >
-                    <Text accessible={false} className="font-bold text-danger">
+                    <Txt accessible={false} tone="danger" weight="bold">
                       !
-                    </Text>
-                    <Text className="flex-1 text-sm text-ink">
+                    </Txt>
+                    <Txt variant="small" className="flex-1">
                       {t(`challenge.${key}`)}
-                    </Text>
+                    </Txt>
                   </View>
                 ))}
               </View>
             )}
             <View className="flex-row gap-3 rounded-2xl bg-white p-4">
-              <Text accessible={false} className="text-3xl">
+              <Txt accessible={false} variant="title">
                 💡
-              </Text>
+              </Txt>
               <View className="flex-1 gap-1">
-                <Text className="font-bold text-brand">
+                <Txt tone="brand" weight="bold">
                   {t("challenge.tip")}
-                </Text>
-                <Text className="text-sm leading-5 text-ink">{tip}</Text>
+                </Txt>
+                <Txt variant="small">{tip}</Txt>
               </View>
             </View>
             <Button

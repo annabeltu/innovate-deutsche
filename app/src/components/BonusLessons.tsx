@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Txt } from "./Txt";
+import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
@@ -51,7 +52,7 @@ export function BonusLessons() {
               accessible={false}
               className="h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-brand"
             >
-              <Text className="text-3xl">⭐</Text>
+              <Txt variant="title">⭐</Txt>
             </View>
             <Pressable
               accessibilityRole="button"
@@ -62,17 +63,22 @@ export function BonusLessons() {
               }
               className="min-h-20 flex-1 gap-1 rounded-2xl bg-white p-3"
             >
-              <Text className="self-start rounded-full bg-brand px-2 py-1 text-xs font-bold text-white">
+              <Txt
+                variant="caption"
+                light
+                weight="bold"
+                className="self-start rounded-full bg-brand px-2 py-1"
+              >
                 {t(
                   completed.includes(id)
                     ? "roadmapScreen.completed"
                     : "shopScreen.new",
                 )}
-              </Text>
-              <Text className="font-bold text-brand">{label}</Text>
-              <Text className="text-xs text-ink">
-                {t("experience.youAsked")}
-              </Text>
+              </Txt>
+              <Txt tone="brand" weight="bold">
+                {label}
+              </Txt>
+              <Txt variant="caption">{t("experience.youAsked")}</Txt>
             </Pressable>
           </View>
         );

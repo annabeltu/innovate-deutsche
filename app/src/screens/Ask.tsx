@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Txt } from "../components/Txt";
+import { Pressable, TextInput, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
 import { router } from "expo-router";
@@ -49,13 +50,10 @@ export default function Ask() {
     >
       <AccountHeader dark />
       <View className="items-center gap-1">
-        <Text
-          accessibilityRole="header"
-          className="text-4xl font-bold text-white"
-        >
+        <Txt accessibilityRole="header" variant="title" light>
           {t("askScreen.title")}
-        </Text>
-        <Text className="text-base text-white">{t("askScreen.subtitle")}</Text>
+        </Txt>
+        <Txt light>{t("askScreen.subtitle")}</Txt>
       </View>
       <View className="flex-row gap-2">
         {(
@@ -70,9 +68,9 @@ export default function Ask() {
             className="min-h-14 flex-1 flex-row items-center gap-2 rounded-2xl bg-brand/60 p-2"
           >
             <Feather name={icon} size={20} color={colors.white} />
-            <Text className="flex-1 text-xs leading-4 text-white">
+            <Txt variant="caption" light className="flex-1">
               {t(`askScreen.${key}`)}
-            </Text>
+            </Txt>
           </View>
         ))}
       </View>
@@ -99,9 +97,11 @@ export default function Ask() {
           </Pressable>
           <Wave />
         </View>
-        <Text
+        <Txt
           accessibilityLiveRegion="polite"
-          className="mt-2 text-sm text-white"
+          variant="small"
+          light
+          className="mt-2"
         >
           {t(
             voice.isRecording
@@ -110,7 +110,7 @@ export default function Ask() {
                 ? "askScreen.thinking"
                 : "askScreen.ready",
           )}
-        </Text>
+        </Txt>
       </View>
       <View className="gap-3 rounded-3xl bg-brand/70 p-4">
         <TextInput
@@ -146,30 +146,36 @@ export default function Ask() {
         onPress={() => ask(t("askScreen.exampleQuestion"), true)}
         className="min-h-11 items-center justify-center"
       >
-        <Text className="font-semibold text-white underline">
+        <Txt light weight="semibold" className="underline">
           {t("askScreen.tryExample")}
-        </Text>
+        </Txt>
       </Pressable>
       {(voice.error || answer.isError) && (
-        <Text
+        <Txt
           accessibilityRole="alert"
-          className="rounded-xl bg-white p-3 text-danger"
+          tone="danger"
+          className="rounded-xl bg-white p-3"
         >
           {voice.error || t("askScreen.connectionError")}
-        </Text>
+        </Txt>
       )}
       {answer.data && (
         <>
           <View className="gap-3 rounded-3xl bg-white p-4">
             <View className="flex-row items-center justify-between">
               <KikoAvatar size={48} />
-              <Text className="flex-1 px-2 text-xs font-bold text-brand">
+              <Txt
+                variant="caption"
+                tone="brand"
+                weight="bold"
+                className="flex-1 px-2"
+              >
                 {t(
                   answer.data.sample
                     ? "askScreen.sample"
                     : "askScreen.response",
                 )}
-              </Text>
+              </Txt>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t("askScreen.read")}
@@ -183,12 +189,7 @@ export default function Ask() {
                 <Feather name="volume-2" size={22} color={colors.deepBlue} />
               </Pressable>
             </View>
-            <Text
-              accessibilityLiveRegion="polite"
-              className="text-base leading-6 text-ink"
-            >
-              {answer.data.answer}
-            </Text>
+            <Txt accessibilityLiveRegion="polite">{answer.data.answer}</Txt>
           </View>
           {answer.data.canAddLesson && (
             <Button
@@ -216,9 +217,9 @@ export default function Ask() {
                 onPress={() => ask(t(`askScreen.${key}Question`), true)}
                 className="min-h-11 flex-1 items-center justify-center rounded-full border border-white px-2 py-3"
               >
-                <Text className="text-center text-xs text-white">
+                <Txt variant="caption" light className="text-center">
                   {t(`askScreen.${key}Question`)}
-                </Text>
+                </Txt>
               </Pressable>
             ))}
           </View>

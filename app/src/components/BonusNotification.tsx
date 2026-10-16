@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Txt } from "./Txt";
+import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../state/useApp";
@@ -13,9 +14,9 @@ export function BonusNotification() {
   const title = pending.startsWith("i18n:") ? t(pending.slice(5)) : pending;
   return (
     <View className="mx-4 mb-2 flex-row items-center gap-2 rounded-2xl bg-white p-3">
-      <Text accessible={false} className="text-2xl">
+      <Txt accessible={false} variant="heading" weight="regular">
         🎉
-      </Text>
+      </Txt>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t("experience.newLessonLabel", { title })}
@@ -30,10 +31,10 @@ export function BonusNotification() {
         }}
         className="min-h-11 flex-1 justify-center"
       >
-        <Text accessibilityLiveRegion="polite" className="font-bold text-brand">
+        <Txt accessibilityLiveRegion="polite" tone="brand" weight="bold">
           {t("experience.newLesson")}
-        </Text>
-        <Text className="text-xs text-ink">{title}</Text>
+        </Txt>
+        <Txt variant="caption">{title}</Txt>
       </Pressable>
       <Pressable
         accessibilityRole="button"
@@ -42,7 +43,9 @@ export function BonusNotification() {
         onPress={() => useApp.getState().dismissBonus()}
         className="min-h-11 min-w-11 items-center justify-center"
       >
-        <Text className="text-2xl text-brand">×</Text>
+        <Txt variant="heading" tone="brand" weight="regular">
+          ×
+        </Txt>
       </Pressable>
     </View>
   );

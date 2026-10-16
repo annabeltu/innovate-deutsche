@@ -91,7 +91,7 @@ export const typeScale = {
     lineHeight: 42,
     largeFontSize: 40,
     largeLineHeight: 48,
-    fontWeight: "500",
+    fontWeight: "700",
   },
   heading: {
     fontSize: 22,
@@ -126,7 +126,7 @@ export const typeScale = {
     lineHeight: 16,
     largeFontSize: 14,
     largeLineHeight: 20,
-    fontWeight: "700",
+    fontWeight: "400",
   },
 } as const satisfies Record<string, TypeStyle>;
 

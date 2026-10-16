@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Txt } from "../components/Txt";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { ActionBar, Button, Screen } from "../components/ui";
+import { ActionBar, Button, OptionRow, Screen } from "../components/ui";
 import { AppScenery } from "../components/AppScenery";
 import { AccountHeader } from "../components/AccountHeader";
 import { KikoAvatar } from "../components/KikoAvatar";
@@ -50,50 +51,43 @@ export function TransferLesson({ id }: { id: string }) {
           <AccountHeader />
           <View className="flex-row items-center gap-3">
             <View className="flex-1 gap-2">
-              <Text className="text-xs font-bold text-brand">
+              <Txt variant="caption" tone="brand" weight="bold">
                 {t("roadmapScreen.bonus")}
-              </Text>
-              <Text
-                accessibilityRole="header"
-                className="text-3xl font-bold text-ink"
-              >
+              </Txt>
+              <Txt accessibilityRole="header" variant="title">
                 {t("shopScreen.transferTitle")}
-              </Text>
+              </Txt>
             </View>
             <KikoAvatar size={100} />
           </View>
-          <Text className="rounded-3xl bg-white p-5 text-base leading-6 text-ink">
+          <Txt className="rounded-3xl bg-white p-5">
             {t("askScreen.exampleAnswer")}
-          </Text>
-          <Text className="text-xl font-bold text-ink">
+          </Txt>
+          <Txt variant="heading" weight="bold">
             {t("experience.transferQuestion")}
-          </Text>
+          </Txt>
           {(["a", "b"] as const).map((option) => (
-            <Pressable
+            <OptionRow
               key={option}
-              accessibilityRole="radio"
+              letter={option.toUpperCase()}
+              title={t(`experience.transfer${option.toUpperCase()}`)}
               accessibilityLabel={`${option.toUpperCase()}. ${t(`experience.transfer${option.toUpperCase()}`)}`}
               accessibilityHint={t("quizOptionHint")}
-              accessibilityState={{ checked: selected === option }}
+              selected={selected === option}
               onPress={() => {
                 setSelected(option);
                 setError(false);
               }}
-              className={`min-h-16 rounded-2xl border-2 p-4 ${selected === option ? "border-brand bg-ice" : "border-transparent bg-white"}`}
-            >
-              <Text className="text-base text-ink">
-                {option.toUpperCase()}.{" "}
-                {t(`experience.transfer${option.toUpperCase()}`)}
-              </Text>
-            </Pressable>
+            />
           ))}
           {error && (
-            <Text
+            <Txt
               accessibilityRole="alert"
-              className="rounded-2xl bg-white p-4 text-danger"
+              tone="danger"
+              className="rounded-2xl bg-white p-4"
             >
               {t("experience.transferRetry")}
-            </Text>
+            </Txt>
           )}
         </Screen>
       </View>

@@ -1,9 +1,10 @@
 import { BonusLessons } from "../components/BonusLessons";
+import { Txt } from "../components/Txt";
 import { SCENERY_FILL } from "../components/AppScenery";
 import { BonusNotification } from "../components/BonusNotification";
 import { KikoAvatar } from "../components/KikoAvatar";
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -74,28 +75,33 @@ export function Roadmap() {
               accessibilityLabel={t(`roadmapScreen.${key}`, { count: value })}
               className="min-h-10 flex-row items-center justify-center rounded-full bg-white px-2"
             >
-              <Text className="text-xs font-bold text-ink">
+              <Txt variant="caption" weight="bold">
                 {icon} {value}
-              </Text>
+              </Txt>
             </View>
           ))}
         </View>
       </View>
       <View className="rounded-3xl bg-brand px-5 py-4">
-        <Text className="text-xs font-bold text-white">
+        <Txt variant="caption" light weight="bold">
           {t("roadmapScreen.unit")}
-        </Text>
+        </Txt>
         <View className="mt-1 flex-row items-center justify-between gap-3">
-          <Text
+          <Txt
             accessibilityRole="header"
-            className="flex-1 text-3xl font-bold text-white"
+            variant="title"
+            light
+            weight="bold"
+            className="flex-1"
           >
             {t("roadmapScreen.title")}
-          </Text>
-          <Text className="text-3xl text-white">›</Text>
-          <Text className="w-24 text-xs text-white">
+          </Txt>
+          <Txt variant="title" light>
+            ›
+          </Txt>
+          <Txt variant="caption" light className="w-24">
             {t("roadmapScreen.subtitle")}
-          </Text>
+          </Txt>
         </View>
       </View>
       <View style={{ minHeight: rowHeight * 5.6 }}>
@@ -160,12 +166,14 @@ export function Roadmap() {
                   />
                 </View>
                 <View className="flex-1 gap-1">
-                  <Text className="text-sm font-bold text-ink">{title}</Text>
-                  <Text
-                    className={
-                      lesson.status === "completed"
-                        ? "text-xs font-semibold text-brand"
-                        : "text-xs text-ink"
+                  <Txt variant="small" weight="bold">
+                    {title}
+                  </Txt>
+                  <Txt
+                    variant="caption"
+                    tone={lesson.status === "completed" ? "brand" : "ink"}
+                    weight={
+                      lesson.status === "completed" ? "semibold" : "regular"
                     }
                   >
                     {lesson.status === "completed"
@@ -174,9 +182,11 @@ export function Roadmap() {
                         ? "▶ "
                         : ""}
                     {t(`roadmapScreen.${lesson.status}`)}
-                  </Text>
+                  </Txt>
                 </View>
-                <Text className="text-xl text-brand">›</Text>
+                <Txt variant="heading" tone="brand" weight="regular">
+                  ›
+                </Txt>
               </Pressable>
               {lesson.status === "current" && (
                 <View pointerEvents="none" className="absolute left-0 top-4">
@@ -197,16 +207,14 @@ export function Roadmap() {
             <SvgImage href={reference} width={883} height={1782} />
           </Svg>
           <View className="flex-1">
-            <Text className="font-bold text-ink">
+            <Txt weight="bold">
               {t(
                 path.every((lesson) => lesson.status === "completed")
                   ? "roadmapScreen.unitDone"
                   : "roadmapScreen.finishUnit",
               )}
-            </Text>
-            <Text className="text-xs text-ink">
-              {t("roadmapScreen.reward")}
-            </Text>
+            </Txt>
+            <Txt variant="caption">{t("roadmapScreen.reward")}</Txt>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -216,7 +224,9 @@ export function Roadmap() {
             className="min-h-14 min-w-14 items-center justify-center rounded-full bg-brand p-3"
           >
             <Feather name="mic" size={22} color={colors.white} />
-            <Text className="text-xs text-white">{t("ask")}</Text>
+            <Txt variant="caption" light>
+              {t("ask")}
+            </Txt>
           </Pressable>
         </View>
       </View>

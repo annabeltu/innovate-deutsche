@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Txt } from "./Txt";
+import { Pressable, View } from "react-native";
 import { LANGUAGES_BY_COUNTRY } from "../api/learner";
 import i18n from "../i18n";
 import { useApp, type Language } from "../state/useApp";
@@ -32,7 +33,9 @@ export function LanguageSelector({ stacked = false }: { stacked?: boolean }) {
             }
             className={`min-h-12 items-center justify-center rounded-2xl border-2 px-2 py-3 ${stacked ? "w-full" : "flex-1"} ${chosen && language === code ? "border-brand bg-ice" : "border-transparent bg-white"}`}
           >
-            <Text className="text-center font-bold text-ink">{name}</Text>
+            <Txt weight="bold" className="text-center">
+              {name}
+            </Txt>
           </Pressable>
         ))}
     </View>

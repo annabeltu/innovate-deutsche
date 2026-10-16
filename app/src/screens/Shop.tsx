@@ -1,6 +1,7 @@
 import { KikoAvatar } from "../components/KikoAvatar";
+import { Txt } from "../components/Txt";
 import React, { useState } from "react";
-import { Pressable, Text, View, useWindowDimensions } from "react-native";
+import { Pressable, View, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Nav, Screen } from "../components/ui";
@@ -75,23 +76,30 @@ export function Shop() {
         width={outfit ? (stacked ? 150 : Math.max(68, (width - 96) / 3)) : 110}
         height={outfit ? 90 : 85}
       />
-      <Text
-        className={`text-center font-bold text-ink ${outfit ? "text-xs" : "text-lg"}`}
+      <Txt
+        variant={outfit ? "caption" : "subheading"}
+        weight="bold"
+        className="text-center"
       >
         {t(`shopScreen.items.${item.id}.title`)}
-      </Text>
+      </Txt>
       {!outfit && (
-        <Text className="text-center text-sm leading-5 text-ink">
+        <Txt variant="small" className="text-center">
           {t(`shopScreen.items.${item.id}.description`)}
-        </Text>
+        </Txt>
       )}
-      <Text className="mt-auto w-full rounded-full bg-ice px-2 py-2 text-center text-sm font-bold text-brand">
+      <Txt
+        variant="small"
+        tone="brand"
+        weight="bold"
+        className="mt-auto w-full rounded-full bg-ice px-2 py-2 text-center"
+      >
         {equipped === item.id
           ? t("shopScreen.equipped")
           : owned(item)
             ? t(outfit ? "shopScreen.equip" : "shopScreen.owned")
             : `🪙 ${item.price}`}
-      </Text>
+      </Txt>
     </Pressable>
   );
   return (
@@ -104,15 +112,10 @@ export function Shop() {
       <AccountHeader dark showHearts={false} />
       <View className="flex-row items-center">
         <View className="flex-1 gap-2">
-          <Text
-            accessibilityRole="header"
-            className="text-5xl font-bold text-white"
-          >
+          <Txt accessibilityRole="header" variant="title" light>
             {t("shop")}
-          </Text>
-          <Text className="text-base leading-6 text-white">
-            {t("shopScreen.intro")}
-          </Text>
+          </Txt>
+          <Txt light>{t("shopScreen.intro")}</Txt>
         </View>
         <KikoAvatar size={130} />
       </View>
@@ -142,15 +145,11 @@ export function Shop() {
         <View className="flex-row items-center gap-3 rounded-2xl bg-white p-4">
           <ShopArt kind="globe" width={52} />
           <View className="flex-1 gap-1">
-            <Text className="text-xs font-bold text-brand">
+            <Txt variant="caption" tone="brand" weight="bold">
               {t("shopScreen.new")}
-            </Text>
-            <Text className="font-bold text-ink">
-              {t("shopScreen.transferTitle")}
-            </Text>
-            <Text className="text-xs leading-4 text-ink">
-              {t("shopScreen.transferSub")}
-            </Text>
+            </Txt>
+            <Txt weight="bold">{t("shopScreen.transferTitle")}</Txt>
+            <Txt variant="caption">{t("shopScreen.transferSub")}</Txt>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -167,22 +166,24 @@ export function Shop() {
             onPress={() => activate(TRANSFER_ITEM)}
             className="min-h-12 rounded-2xl bg-ice p-3"
           >
-            <Text className="font-bold text-brand">
+            <Txt tone="brand" weight="bold">
               {bonus.includes(TRANSFER_LESSON)
                 ? t("shopScreen.open")
                 : `🪙 ${TRANSFER_ITEM.price}`}
-            </Text>
+            </Txt>
           </Pressable>
         </View>
         {message && (
-          <Text
+          <Txt
             accessibilityRole="alert"
-            className="text-sm font-bold text-brand"
+            variant="small"
+            tone="brand"
+            weight="bold"
           >
             {t(message.key, {
               item: t(`shopScreen.items.${message.itemId}.title`),
             })}
-          </Text>
+          </Txt>
         )}
       </View>
     </Screen>
@@ -192,10 +193,10 @@ export function Shop() {
 function Section({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <View className="gap-1">
-      <Text accessibilityRole="header" className="text-2xl font-bold text-ink">
+      <Txt accessibilityRole="header" variant="heading" weight="bold">
         {title}
-      </Text>
-      <Text className="text-sm text-ink">{subtitle}</Text>
+      </Txt>
+      <Txt variant="small">{subtitle}</Txt>
     </View>
   );
 }

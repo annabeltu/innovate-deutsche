@@ -1,6 +1,7 @@
 import { BudgetCategoryArt, ChallengeArt } from "../components/ChallengeArt";
+import { Txt } from "../components/Txt";
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useTranslation } from "react-i18next";
 import { ChallengeFrame } from "../components/ChallengeFrame";
@@ -64,16 +65,12 @@ export function BudgetChallenge() {
         >
           <View className="gap-1 rounded-3xl bg-white p-3">
             <View className="mb-1 flex-row items-center gap-3">
-              <Text accessible={false} className="text-3xl">
+              <Txt accessible={false} variant="title">
                 💵
-              </Text>
+              </Txt>
               <View>
-                <Text className="font-bold text-ink">
-                  {t("challenge.income")}
-                </Text>
-                <Text className="text-3xl font-bold text-ink">
-                  {money(scenario.income)}
-                </Text>
+                <Txt weight="bold">{t("challenge.income")}</Txt>
+                <Txt variant="title">{money(scenario.income)}</Txt>
               </View>
             </View>
             {budgetCategories.map((category) => (
@@ -83,14 +80,14 @@ export function BudgetChallenge() {
               >
                 <BudgetCategoryArt category={category} />
                 <View className="w-20">
-                  <Text className="text-xs font-semibold text-ink">
+                  <Txt variant="caption" weight="semibold">
                     {t(`challenge.${category}`)}
-                  </Text>
-                  <Text className="text-[10px] text-ink">
+                  </Txt>
+                  <Txt className="text-[10px]">
                     {t("challenge.minimum", {
                       amount: money(scenario.minimums[category]),
                     })}
-                  </Text>
+                  </Txt>
                 </View>
                 <Slider
                   accessibilityRole="adjustable"
@@ -118,41 +115,44 @@ export function BudgetChallenge() {
                   thumbTintColor={colors.deepBlue}
                   style={{ flex: 1, height: 44 }}
                 />
-                <Text className="w-14 text-right text-xs font-bold text-ink">
+                <Txt
+                  variant="caption"
+                  weight="bold"
+                  className="w-14 text-right"
+                >
                   {money(allocation[category])}
-                </Text>
+                </Txt>
               </View>
             ))}
           </View>
           <View className="gap-1 rounded-2xl bg-warning p-4">
-            <Text className="text-xl font-bold text-danger">
+            <Txt variant="heading" tone="danger" weight="bold">
               {t("challenge.surprise")}
-            </Text>
-            <Text className="font-bold text-ink">
+            </Txt>
+            <Txt weight="bold">
               {t("challenge.surpriseText", { amount: money(scenario.repair) })}
-            </Text>
-            <Text className="text-sm text-ink">
-              {t("challenge.budgetHelp")}
-            </Text>
+            </Txt>
+            <Txt variant="small">{t("challenge.budgetHelp")}</Txt>
           </View>
-          <Text
+          <Txt
             accessibilityLiveRegion="polite"
-            className="rounded-xl bg-white p-3 text-center font-bold text-ink"
+            weight="bold"
+            className="rounded-xl bg-white p-3 text-center"
           >
             {t("challenge.remaining", { amount: money(remaining) })}
-          </Text>
+          </Txt>
           {error && (
             <View
               accessibilityRole="alert"
               className="flex-row items-center gap-2 rounded-xl bg-white p-3"
             >
-              <Text className="flex-1 text-sm text-danger">
+              <Txt variant="small" tone="danger" className="flex-1">
                 {t("challenge.budgetError")}
-              </Text>
+              </Txt>
               <ChallengeArt kind="scam" size={80} />
             </View>
           )}
-          <Text className="text-xs text-ink">{t("challenge.synthetic")}</Text>
+          <Txt variant="caption">{t("challenge.synthetic")}</Txt>
         </ChallengeFrame>
       </View>
       {reward !== null && <ChallengeSuccess kind="budget" reward={reward} />}

@@ -1,6 +1,8 @@
 import { ChallengeArt } from "../components/ChallengeArt";
+import { Txt } from "../components/Txt";
 import React, { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
+import { OptionRow } from "../components/ui";
 import { useTranslation } from "react-i18next";
 import { ChallengeFrame } from "../components/ChallengeFrame";
 import { ChallengeSuccess } from "../components/ChallengeSuccess";
@@ -34,53 +36,48 @@ export function ScamChallenge() {
         <ChallengeFrame kind="scam" narration={narration}>
           <View className="overflow-hidden rounded-3xl bg-white">
             <View className="items-center gap-1 bg-ice p-3">
-              <Text accessible={false} className="text-3xl">
+              <Txt accessible={false} variant="title">
                 👤
-              </Text>
-              <Text className="text-sm font-bold text-ink">
+              </Txt>
+              <Txt variant="small" weight="bold">
                 {t("challenge.sender")}
-              </Text>
+              </Txt>
             </View>
-            <Text className="py-3 text-center text-xs text-ink">
+            <Txt variant="caption" className="py-3 text-center">
               {t("challenge.exampleMessage")}
-            </Text>
+            </Txt>
             <View className="mx-4 mb-4 gap-3 rounded-3xl bg-ice p-4">
-              <Text className="text-lg leading-7 text-ink">
-                <Text className="bg-warning font-bold">
+              <Txt variant="subheading" weight="regular">
+                <Txt weight="bold" className="bg-warning">
                   {t("challenge.messageStart")}
-                </Text>
+                </Txt>
                 {"\n"}
-                <Text className="bg-warning font-bold">
+                <Txt weight="bold" className="bg-warning">
                   {t("challenge.messagePin")}
-                </Text>
+                </Txt>
                 {"\n"}
-                <Text className="text-brand underline">
+                <Txt tone="brand" className="underline">
                   {t("challenge.messageLink")}
-                </Text>
-              </Text>
-              <Text className="text-lg leading-7 text-ink">
+                </Txt>
+              </Txt>
+              <Txt variant="subheading" weight="regular">
                 {t("challenge.messageEnd")}
-              </Text>
+              </Txt>
             </View>
           </View>
           <View className="flex-row gap-3">
             {(["scam", "legit"] as const).map((choice) => (
-              <Pressable
-                key={choice}
-                accessibilityRole="button"
-                accessibilityLabel={t(`challenge.${choice}`)}
-                accessibilityHint={t("challenge.answerHint")}
-                disabled={reward !== null}
-                onPress={() => answer(choice)}
-                className={`min-h-16 flex-1 items-center justify-center rounded-3xl border-2 p-3 ${choice === "scam" ? "border-danger bg-warning" : "border-positive bg-positiveSurface"}`}
-              >
-                <Text
-                  className={`text-2xl font-bold ${choice === "scam" ? "text-danger" : "text-positive"}`}
-                >
-                  {choice === "scam" ? "🚩 " : "✓ "}
-                  {t(`challenge.${choice}`)}
-                </Text>
-              </Pressable>
+              <View key={choice} className="flex-1">
+                <OptionRow
+                  accessibilityRole="button"
+                  title={`${choice === "scam" ? "🚩" : "✓"} ${t(`challenge.${choice}`)}`}
+                  accessibilityLabel={t(`challenge.${choice}`)}
+                  accessibilityHint={t("challenge.answerHint")}
+                  tone={choice === "scam" ? "danger" : "positive"}
+                  disabled={reward !== null}
+                  onPress={() => answer(choice)}
+                />
+              </View>
             ))}
           </View>
           {error && (
@@ -89,17 +86,15 @@ export function ScamChallenge() {
               className="flex-row items-center gap-2 rounded-2xl bg-white p-4"
             >
               <View className="flex-1 gap-2">
-                <Text className="font-bold text-danger">
+                <Txt tone="danger" weight="bold">
                   {t("challenge.tryAgain")}
-                </Text>
-                <Text className="text-sm text-ink">
-                  {t("challenge.scamError")}
-                </Text>
+                </Txt>
+                <Txt variant="small">{t("challenge.scamError")}</Txt>
               </View>
               <ChallengeArt kind="scam" size={80} />
             </View>
           )}
-          <Text className="text-xs text-ink">{t("challenge.scamHelp")}</Text>
+          <Txt variant="caption">{t("challenge.scamHelp")}</Txt>
         </ChallengeFrame>
       </View>
       {reward !== null && <ChallengeSuccess kind="scam" reward={reward} />}
