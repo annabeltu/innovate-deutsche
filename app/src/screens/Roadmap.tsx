@@ -1,11 +1,17 @@
-import { BonusLessons } from "../components/BonusLessons";
+import {
+  BADGE_CENTER_OFFSET,
+  BADGE_OVERLAP,
+  BADGE_TEXT_INSET,
+  BonusLessons,
+} from "../components/BonusLessons";
+import { RoadLine, useRoad } from "../components/RoadLine";
 import { Txt } from "../components/Txt";
 import { SCENERY_FILL } from "../components/AppScenery";
 import { BonusNotification } from "../components/BonusNotification";
 import { KikoAvatar } from "../components/KikoAvatar";
 import React from "react";
 import { Image, Pressable, View } from "react-native";
-import Svg, { Image as SvgImage, Path } from "react-native-svg";
+import Svg, { Image as SvgImage } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -42,7 +48,7 @@ export function Roadmap() {
   const badgeSize = Math.min(76, mapWidth * 0.23);
   const openLesson = (id: string) =>
     router.push({ pathname: "/lesson", params: { id } });
-  const curve = `M ${mapWidth * 0.15} 0 C ${mapWidth * 0.8} ${rowHeight}, ${mapWidth * 0.55} ${rowHeight * 1.3}, ${mapWidth * 0.42} ${rowHeight * 2} S ${mapWidth * 0.7} ${rowHeight * 3}, ${mapWidth * 0.43} ${rowHeight * 4} S ${mapWidth * 0.5} ${rowHeight * 5}, ${mapWidth * 0.25} ${rowHeight * 5.5}`;
+  const road = useRoad(mapWidth, rowHeight, badgeSize);
   return (
     <Screen
       compact
@@ -104,37 +110,8 @@ export function Roadmap() {
           </Txt>
         </View>
       </View>
-      <View testID="roadmap-path" style={{ minHeight: rowHeight * 5.6 }}>
-        <View pointerEvents="none" className="absolute inset-0">
-          <Svg
-            width="100%"
-            height="100%"
-            viewBox={`0 0 ${mapWidth} ${rowHeight * 5.6}`}
-            // Stretch with the rows, so taller (large text) rows keep the path under the nodes.
-            preserveAspectRatio="none"
-            accessible={false}
-          >
-            <Path
-              d={curve}
-              fill="none"
-              stroke={colors.lightBlue}
-              strokeWidth={20}
-            />
-            <Path
-              d={curve}
-              fill="none"
-              stroke={colors.white}
-              strokeWidth={13}
-            />
-            <Path
-              d={curve}
-              fill="none"
-              stroke={colors.brightBlue}
-              strokeWidth={1.5}
-              strokeDasharray="5 5"
-            />
-          </Svg>
-        </View>
+      <View testID="roadmap-path" onLayout={road.onLayout}>
+        <RoadLine d={road.path} />
         {path.map((lesson, index) => {
           const title = t(`confidenceTopics.${lesson.topic}`);
           return (
@@ -144,6 +121,15 @@ export function Roadmap() {
               style={{
                 minHeight: rowHeight,
                 paddingLeft: mapWidth * nodePositions[index],
+              }}
+              onLayout={(event) => {
+                const { y, height } = event.nativeEvent.layout;
+                road.layout.onNode(lesson.topic, {
+                  x:
+                    mapWidth * nodePositions[index] +
+                    badgeSize * BADGE_CENTER_OFFSET,
+                  y: y + height / 2,
+                });
               }}
             >
               <Pressable
@@ -158,9 +144,12 @@ export function Roadmap() {
                 disabled={lesson.status === "locked"}
                 onPress={() => openLesson(lesson.topic)}
                 className="min-h-14 flex-row items-center rounded-2xl bg-white py-3 pr-2"
-                style={{ paddingLeft: badgeSize * 0.65 }}
+                style={{ paddingLeft: badgeSize * BADGE_TEXT_INSET }}
               >
-                <View className="absolute" style={{ left: -badgeSize * 0.42 }}>
+                <View
+                  className="absolute"
+                  style={{ left: -badgeSize * BADGE_OVERLAP }}
+                >
                   <Badge
                     topic={lesson.topic}
                     status={lesson.status}
@@ -198,8 +187,8 @@ export function Roadmap() {
             </View>
           );
         })}
+        {bonus.length > 0 && <BonusLessons road={road.layout} />}
       </View>
-      {bonus.length > 0 && <BonusLessons />}
       <Card style={{ flexDirection: "row", alignItems: "center" }}>
         <Svg
           width={62}
