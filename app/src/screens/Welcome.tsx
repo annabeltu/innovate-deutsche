@@ -23,7 +23,7 @@ import {
 import { lessonLanguage } from "../api/learner";
 import { Country, useApp } from "../state/useApp";
 import { Button, Txt } from "../components/ui";
-import { alpha, colors } from "../theme/tokens";
+import { alpha, colors, spacing } from "../theme/tokens";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { ACCESSIBILITY_OPTIONS } from "../onboarding/options";
 import { stopSpeaking } from "../voice/speech";
@@ -86,10 +86,6 @@ export function Welcome() {
   const padding = pageWidth * 0.065;
   const gap = 9 * unit;
   const heroHeight = Math.max(220 * unit, availableHeight - 520 * unit);
-  const labelStyle = {
-    fontSize: s.large ? 18 : 12.5 * unit,
-    lineHeight: s.large ? 25 : 19 * unit,
-  };
   const narration = `Deutsche Bank. Kompass. ${t("language")}. ${t("country")}. ${t(`onboarding.country.${s.country}`)}. ${t("access")}. ${t("getStarted")}.`;
   useFocusEffect(
     useCallback(() => {
@@ -164,9 +160,15 @@ export function Welcome() {
               },
             ]}
           >
-            <Txt style={[styles.label, labelStyle]}>{shown("language")}</Txt>
+            <Txt variant="small" weight="medium">
+              {shown("language")}
+            </Txt>
             <LanguageSelector stacked={narrow} />
-            <Txt style={[styles.label, labelStyle, { marginTop: 17 * unit }]}>
+            <Txt
+              variant="small"
+              weight="medium"
+              style={{ marginTop: spacing.lg }}
+            >
               {shown("country")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
@@ -212,15 +214,7 @@ export function Welcome() {
                       paddingVertical: 8 * unit,
                     }}
                   >
-                    <Txt
-                      style={[
-                        styles.countryName,
-                        {
-                          fontSize: s.large ? 18 : 11.5 * unit,
-                          lineHeight: s.large ? 25 : 16 * unit,
-                        },
-                      ]}
-                    >
+                    <Txt variant="small" weight="semibold" style={{ flex: 1 }}>
                       {shown(`onboarding.country.${code}`)}
                     </Txt>
                     <Feather
@@ -232,7 +226,11 @@ export function Welcome() {
                 </Pressable>
               ))}
             </View>
-            <Txt style={[styles.label, labelStyle, { marginTop: 18 * unit }]}>
+            <Txt
+              variant="small"
+              weight="medium"
+              style={{ marginTop: spacing.lg }}
+            >
               {shown("access")}
             </Txt>
             <View style={[styles.grid, { gap, marginTop: 9 * unit }]}>
@@ -259,27 +257,14 @@ export function Welcome() {
                     ]}
                   >
                     {key === "large" ? (
-                      <Txt
-                        style={{
-                          color: ink,
-                          fontSize: 22 * unit,
-                          lineHeight: 25 * unit,
-                          fontWeight: "700",
-                        }}
-                      >
-                        Aa
-                      </Txt>
+                      <Txt variant="heading">Aa</Txt>
                     ) : (
                       <Feather name={icon} size={23 * unit} color={ink} />
                     )}
                     <Txt
-                      style={[
-                        styles.accessName,
-                        {
-                          fontSize: s.large ? 17 : 10.5 * unit,
-                          lineHeight: s.large ? 24 : 15 * unit,
-                        },
-                      ]}
+                      variant="caption"
+                      weight="medium"
+                      style={{ textAlign: "center" }}
                     >
                       {name}
                     </Txt>
@@ -363,10 +348,6 @@ const styles = StyleSheet.create({
   },
   panel: { marginTop: -10, backgroundColor: colors.welcomePanel },
   grid: { flexDirection: "row", flexWrap: "wrap" },
-  label: {
-    color: ink,
-    fontFamily: Platform.OS === "ios" ? "TrebuchetMS" : undefined,
-  },
   tile: {
     backgroundColor: colors.white,
     borderRadius: 14,
@@ -383,7 +364,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 21,
   },
-  countryName: { flex: 1, fontWeight: "600", color: ink },
   accessTile: {
     borderRadius: 14,
     backgroundColor: colors.white,
@@ -391,6 +371,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  accessName: { color: ink, textAlign: "center", fontWeight: "500" },
   extraAction: { minHeight: 44, justifyContent: "center", marginTop: 8 },
 });
