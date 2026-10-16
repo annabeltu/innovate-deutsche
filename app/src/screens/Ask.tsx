@@ -72,9 +72,9 @@ export default function Ask() {
         </View>
         <Txt
           accessibilityLiveRegion="polite"
-          variant="small"
           light
-          className="mt-2"
+          weight="semibold"
+          style={{ marginTop: spacing.lg }}
         >
           {t(
             voice.isRecording
