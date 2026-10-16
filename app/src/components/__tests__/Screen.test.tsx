@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 import { render } from "@testing-library/react-native";
-import { Screen } from "../ui";
+import { Nav, Screen } from "../ui";
 import { layout, spacing } from "../../theme/tokens";
 
 jest.mock("expo-router", () => ({ useFocusEffect: jest.fn(), router: {} }));
@@ -37,7 +37,7 @@ it("lets the background fill the display while protecting scroll content from th
 });
 it("protects the fixed footer without adding a bottom gap to the scrolling content", async () => {
   const screen = await render(
-    <Screen compact footer={<View testID="footer" />}>
+    <Screen compact footer={<Nav />}>
       <Text>Content</Text>
     </Screen>,
   );
@@ -45,7 +45,14 @@ it("protects the fixed footer without adding a bottom gap to the scrolling conte
     screen.getByTestId("screen-scroll").props.contentContainerStyle
       .paddingBottom,
   ).toBe(layout.sectionGap);
-  expect(screen.getByTestId("screen-footer")).toHaveStyle({
+  // The tab bar's own background covers the home indicator area, flush to
+  // the bottom edge, instead of padding outside it.
+  expect(screen.getByTestId("screen-footer")).not.toHaveStyle({
     paddingBottom: 34,
+  });
+  expect(screen.getByTestId("tab-bar")).toHaveStyle({
+    paddingBottom: spacing.md + 34,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   });
 });

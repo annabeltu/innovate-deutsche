@@ -280,13 +280,11 @@ export function Screen({
       </ScrollView>
       <ReadAloudDock bottomInset={!footer} />
       {footer && (
+        // The footer (Nav or ActionBar) pads for the home indicator itself,
+        // so its background runs to the bottom edge.
         <View
           testID="screen-footer"
-          style={{
-            paddingBottom: insets.bottom,
-            paddingLeft: insets.left,
-            paddingRight: insets.right,
-          }}
+          style={{ paddingLeft: insets.left, paddingRight: insets.right }}
         >
           {footer}
         </View>
@@ -431,8 +429,12 @@ const NAV_ICON_SIZE = 24;
 /** The one bottom tab bar, shared by every main screen. */
 export function Nav({ active = "path" }: { active?: string }) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   return (
-    <View style={s.nav}>
+    <View
+      testID="tab-bar"
+      style={[s.nav, { paddingBottom: spacing.md + insets.bottom }]}
+    >
       {NAV_ITEMS.map(([name, icon, route]) => {
         const selected = name === active;
         const color = selected ? c.deepBlue : c.midBlue;
@@ -465,7 +467,15 @@ export function Nav({ active = "path" }: { active?: string }) {
  * padding, with stacked actions separated by the item gap.
  */
 export function ActionBar({ children }: { children: React.ReactNode }) {
-  return <View style={s.actionBar}>{children}</View>;
+  const insets = useSafeAreaInsets();
+  return (
+    <View
+      testID="action-bar"
+      style={[s.actionBar, { paddingBottom: spacing.lg + insets.bottom }]}
+    >
+      {children}
+    </View>
+  );
 }
 
 /** Low-emphasis text action (such as "‹ Back") with a 48 pt tap target. */
@@ -692,7 +702,6 @@ const s = StyleSheet.create({
     alignSelf: "center",
     paddingHorizontal: layout.pagePadding,
     paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
     gap: layout.itemGap,
   },
   iconButton: {
@@ -714,9 +723,11 @@ const s = StyleSheet.create({
     backgroundColor: c.white,
     borderTopLeftRadius: radii.card,
     borderTopRightRadius: radii.card,
+    // Square bottom so the bar sits flush with the screen edge.
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
   },
   navItem: {
     flex: 1,
