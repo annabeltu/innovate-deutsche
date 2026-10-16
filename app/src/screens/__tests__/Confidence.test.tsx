@@ -1,6 +1,6 @@
 import { Roadmap } from "../Roadmap";
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { render, fireEvent, within } from "@testing-library/react-native";
 import { PersonalizedPath } from "../PersonalizedPath";
 import { Confidence } from "../Confidence";
 import { useApp } from "../../state/useApp";
@@ -125,4 +125,20 @@ it("opens the current roadmap lesson and prevents opening locked lessons", async
   const count = jest.mocked(router.push).mock.calls.length;
   fireEvent.press(locked);
   expect(jest.mocked(router.push).mock.calls).toHaveLength(count);
+});
+
+it("draws the path curve behind the lesson nodes only, not the unit reward", async () => {
+  useApp
+    .getState()
+    .set({ confidence: [0.75, 0.5, 1, 0, 0.25], completed: [], bonus: [] });
+  const screen = await render(<Roadmap />);
+  const pathArea = within(screen.getByTestId("roadmap-path"));
+
+  expect(
+    pathArea.getByRole("button", {
+      name: "confidenceTopics.scams. roadmapScreen.current",
+    }),
+  ).toBeTruthy();
+  expect(pathArea.queryByText("roadmapScreen.finishUnit")).toBeNull();
+  expect(screen.getByText("roadmapScreen.finishUnit")).toBeTruthy();
 });

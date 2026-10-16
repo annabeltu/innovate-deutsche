@@ -9,10 +9,10 @@ import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Nav, Screen } from "../components/ui";
+import { Card, Nav, Screen } from "../components/ui";
 import { useApp } from "../state/useApp";
 import { Badge } from "../components/RoadmapChrome";
-import { colors } from "../theme/tokens";
+import { colors, layout } from "../theme/tokens";
 import { buildRoadmap } from "../onboarding/roadmap";
 import { KompassLogo } from "../components/KompassLogo";
 import { useWindowSize } from "../hooks/use-window-size";
@@ -37,7 +37,7 @@ export function Roadmap() {
   const { width, fontScale } = useWindowSize();
   const { t } = useTranslation();
   const path = buildRoadmap(confidence, completed);
-  const mapWidth = width - 32;
+  const mapWidth = width - layout.pagePadding * 2;
   const rowHeight = fontScale > 1.3 ? 138 : 98;
   const badgeSize = Math.min(76, mapWidth * 0.23);
   const openLesson = (id: string) =>
@@ -104,12 +104,14 @@ export function Roadmap() {
           </Txt>
         </View>
       </View>
-      <View style={{ minHeight: rowHeight * 5.6 }}>
+      <View testID="roadmap-path" style={{ minHeight: rowHeight * 5.6 }}>
         <View pointerEvents="none" className="absolute inset-0">
           <Svg
             width="100%"
             height="100%"
             viewBox={`0 0 ${mapWidth} ${rowHeight * 5.6}`}
+            // Stretch with the rows, so taller (large text) rows keep the path under the nodes.
+            preserveAspectRatio="none"
             accessible={false}
           >
             <Path
@@ -196,40 +198,40 @@ export function Roadmap() {
             </View>
           );
         })}
-        {bonus.length > 0 && <BonusLessons />}
-        <View className="mt-3 flex-row items-center gap-3 rounded-2xl bg-white p-3">
-          <Svg
-            width={62}
-            height={64}
-            viewBox="246 1364 152 145"
-            accessible={false}
-          >
-            <SvgImage href={reference} width={883} height={1782} />
-          </Svg>
-          <View className="flex-1">
-            <Txt weight="bold">
-              {t(
-                path.every((lesson) => lesson.status === "completed")
-                  ? "roadmapScreen.unitDone"
-                  : "roadmapScreen.finishUnit",
-              )}
-            </Txt>
-            <Txt variant="caption">{t("roadmapScreen.reward")}</Txt>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t("roadmapScreen.ask")}
-            accessibilityHint={t("roadmapScreen.askHint")}
-            onPress={() => router.push("/ask")}
-            className="min-h-14 min-w-14 items-center justify-center rounded-full bg-brand p-3"
-          >
-            <Feather name="mic" size={22} color={colors.white} />
-            <Txt variant="caption" light>
-              {t("ask")}
-            </Txt>
-          </Pressable>
-        </View>
       </View>
+      {bonus.length > 0 && <BonusLessons />}
+      <Card style={{ flexDirection: "row", alignItems: "center" }}>
+        <Svg
+          width={62}
+          height={64}
+          viewBox="246 1364 152 145"
+          accessible={false}
+        >
+          <SvgImage href={reference} width={883} height={1782} />
+        </Svg>
+        <View className="flex-1">
+          <Txt weight="bold">
+            {t(
+              path.every((lesson) => lesson.status === "completed")
+                ? "roadmapScreen.unitDone"
+                : "roadmapScreen.finishUnit",
+            )}
+          </Txt>
+          <Txt variant="caption">{t("roadmapScreen.reward")}</Txt>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("roadmapScreen.ask")}
+          accessibilityHint={t("roadmapScreen.askHint")}
+          onPress={() => router.push("/ask")}
+          className="min-h-14 min-w-14 items-center justify-center rounded-full bg-brand p-3"
+        >
+          <Feather name="mic" size={22} color={colors.white} />
+          <Txt variant="caption" light>
+            {t("ask")}
+          </Txt>
+        </Pressable>
+      </Card>
     </Screen>
   );
 }
