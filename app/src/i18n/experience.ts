@@ -81,7 +81,6 @@ export const experienceCopy = {
       inputHint: "Type a money question.",
       send: "Ask Kiko →",
       sendHint: "Send your question.",
-      tryExample: "Try an example conversation",
       exampleHint: "Explore a pre-written example about sending money.",
       sample: "Example answer",
       response: "Kiko’s answer",
@@ -90,12 +89,11 @@ export const experienceCopy = {
       turnIntoLesson: "✦ Turn this into a lesson →",
       added: "✓ Added to your roadmap",
       addHint: "Add the sample money-transfer lesson to your path.",
-      connectionError:
-        "Kiko could not connect. Try again, or explore the example conversation.",
+      connectionError: "Kiko could not connect. Try again in a moment.",
       permissionDenied:
         "Microphone access is off. You can still type your question.",
       voiceUnavailable:
-        "Voice transcription is unavailable. Type your question or try the example.",
+        "Voice transcription is unavailable. Type your question instead.",
       previewOnly:
         "This example conversation covers sending money abroad. Try the example question or one of its follow-ups.",
       exampleQuestion: "How do I send money to my mom in another country?",
@@ -194,7 +192,6 @@ export const experienceCopy = {
       inputHint: "Escribe una pregunta sobre dinero.",
       send: "Preguntar a Kiko →",
       sendHint: "Envía tu pregunta.",
-      tryExample: "Prueba una conversación de ejemplo",
       exampleHint: "Explora un ejemplo escrito sobre enviar dinero.",
       sample: "Respuesta de ejemplo",
       response: "Respuesta de Kiko",
@@ -204,11 +201,11 @@ export const experienceCopy = {
       added: "✓ Añadida a tu ruta",
       addHint: "Añade la lección de ejemplo sobre transferencias a tu ruta.",
       connectionError:
-        "Kiko no pudo conectarse. Inténtalo de nuevo o prueba el ejemplo.",
+        "Kiko no pudo conectarse. Inténtalo de nuevo en un momento.",
       permissionDenied:
         "El micrófono está desactivado. Puedes escribir tu pregunta.",
       voiceUnavailable:
-        "La transcripción no está disponible. Escribe tu pregunta o prueba el ejemplo.",
+        "La transcripción no está disponible. Escribe tu pregunta.",
       previewOnly:
         "Este ejemplo trata sobre enviar dinero al extranjero. Prueba la pregunta de ejemplo o una de sus preguntas relacionadas.",
       exampleQuestion: "¿Cómo envío dinero a mi mamá en otro país?",
@@ -306,7 +303,6 @@ export const experienceCopy = {
       inputHint: "Andika swali kuhusu pesa.",
       send: "Uliza Kiko →",
       sendHint: "Tuma swali lako.",
-      tryExample: "Jaribu mazungumzo ya mfano",
       exampleHint: "Chunguza mfano ulioandikwa kuhusu kutuma pesa.",
       sample: "Jibu la mfano",
       response: "Jibu la Kiko",
@@ -315,12 +311,11 @@ export const experienceCopy = {
       turnIntoLesson: "✦ Geuza kuwa somo →",
       added: "✓ Limeongezwa kwenye njia yako",
       addHint: "Ongeza somo la mfano la kutuma pesa kwenye njia yako.",
-      connectionError:
-        "Kiko hakuweza kuunganisha. Jaribu tena au chunguza mfano.",
+      connectionError: "Kiko hakuweza kuunganisha. Jaribu tena baadaye kidogo.",
       permissionDenied:
         "Ruhusa ya maikrofoni imezimwa. Unaweza kuandika swali lako.",
       voiceUnavailable:
-        "Unukuzi wa sauti haupatikani. Andika swali au jaribu mfano.",
+        "Unukuzi wa sauti haupatikani. Andika swali lako badala yake.",
       previewOnly:
         "Mfano huu unahusu kutuma pesa nje ya nchi. Jaribu swali la mfano au maswali yake ya ziada.",
       exampleQuestion: "Ninatumaje pesa kwa mama yangu katika nchi nyingine?",

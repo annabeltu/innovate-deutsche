@@ -148,18 +148,6 @@ export default function Ask() {
       {isApiConfigured() && (
         <LessonRequest key={`${language}-${question}`} question={question} />
       )}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t("askScreen.tryExample")}
-        accessibilityHint={t("askScreen.exampleHint")}
-        disabled={busy || voice.isRecording}
-        onPress={() => ask(t("askScreen.exampleQuestion"), true)}
-        className="min-h-11 items-center justify-center"
-      >
-        <Txt light weight="semibold" className="underline">
-          {t("askScreen.tryExample")}
-        </Txt>
-      </Pressable>
       {answer.data && (
         <>
           <View className="gap-3 rounded-3xl bg-white p-4">

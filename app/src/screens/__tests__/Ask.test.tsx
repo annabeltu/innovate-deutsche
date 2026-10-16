@@ -113,7 +113,7 @@ it("offers the same real lesson for a recorded question", async () => {
   });
 });
 
-it("shows a connection error right under the question, above the example link", async () => {
+it("shows a connection error right under the question, above the lesson request", async () => {
   await showAsk();
 
   await fireEvent.changeText(
@@ -126,6 +126,12 @@ it("shows a connection error right under the question, above the example link", 
   const tree = JSON.stringify(screen.toJSON());
   expect(error).toBeTruthy();
   expect(tree.indexOf("Kiko could not connect")).toBeLessThan(
-    tree.indexOf("Try an example conversation"),
+    tree.indexOf("Turn this into a lesson"),
   );
+});
+
+it("does not offer the example conversation", async () => {
+  await showAsk();
+
+  expect(screen.queryByText("Try an example conversation")).toBeNull();
 });
