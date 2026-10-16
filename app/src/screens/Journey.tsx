@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, AccessibilityInfo } from "react-native";
+import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
 import { Feather } from "@expo/vector-icons";
 import { useApp } from "../state/useApp";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  ActionBar,
   Screen,
   Txt,
   Title,
@@ -22,6 +24,10 @@ import { lessons } from "./Onboarding";
 import { ApiLesson } from "../components/ApiLesson";
 import { useBonusLessons, serverLessonId } from "../api/lessons";
 import { LanguageChooser } from "../components/LanguageChooser";
+import { AccountHeader } from "../components/AccountHeader";
+import { layout, radii, spacing } from "../theme/tokens";
+
+const STREAK_ICON_SIZE = 24;
 export { Roadmap } from "./Roadmap";
 export function Lesson() {
   const { id = "budget" } = useLocalSearchParams<{ id: string }>();
@@ -39,6 +45,7 @@ export function Success() {
   const { rewarded } = useLocalSearchParams<{ rewarded: string }>();
   const { t } = useTranslation();
   const simple = useApp((s) => s.simple);
+  const insets = useSafeAreaInsets();
   const [reduceMotion, setReduceMotion] = useState(true);
   useEffect(() => {
     void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
@@ -49,45 +56,62 @@ export function Success() {
     return () => subscription.remove();
   }, []);
   return (
-    <Screen>
-      {!simple && !reduceMotion && (
-        <LottieView
-          autoPlay
-          loop={false}
-          source={require("../../assets/celebration.json")}
-          style={{ position: "absolute", width: "100%", height: 300 }}
-        />
-      )}
+    <Screen
+      background={
+        !simple &&
+        !reduceMotion && (
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            <LottieView
+              autoPlay
+              loop={false}
+              source={require("../../assets/celebration.json")}
+              style={{ width: "100%", height: "40%" }}
+            />
+          </View>
+        )
+      }
+      footer={
+        <ActionBar>
+          <Button
+            title={t("keep")}
+            icon="arrow-right"
+            onPress={() => router.replace("/roadmap")}
+          />
+        </ActionBar>
+      }
+    >
       <View
         style={{
           backgroundColor: c.success,
-          margin: -24,
-          padding: 55,
-          paddingTop: 80,
-          borderBottomLeftRadius: 48,
-          borderBottomRightRadius: 48,
-          gap: 24,
+          // Bleed the celebration panel to the screen edges and under the status bar.
+          marginHorizontal: -layout.pagePadding,
+          marginTop: -(spacing.lg + insets.top),
+          paddingTop: insets.top + spacing.xxl,
+          paddingBottom: spacing.xxl,
+          borderBottomLeftRadius: radii.card,
+          borderBottomRightRadius: radii.card,
+          gap: layout.sectionGap,
         }}
       >
         <Txt
+          variant="heading"
           style={{
             color: c.coinGold,
             textAlign: "center",
-            fontSize: 28,
-            letterSpacing: 20,
+            letterSpacing: spacing.lg,
           }}
         >
           ✦ ✧ ✦
         </Txt>
         <Kiko pulse mood="cheer" />
       </View>
-      <View style={{ alignItems: "center", gap: 20, paddingVertical: 30 }}>
+      <View style={{ alignItems: "center", gap: layout.itemGap }}>
         <Label>{t("app.successLabel")}</Label>
-        <Txt style={{ fontSize: 58, lineHeight: 70, color: c.success }}>
+        <Txt variant="title" tone="positive">
           {t("app.successTitle")}
         </Txt>
         <Card style={{ backgroundColor: c.coinGoldSoft, borderBottomWidth: 0 }}>
-          <Txt style={{ color: c.coinGoldText, fontWeight: "700" }}>
+          <Txt tone="reward" weight="bold">
             {rewarded === "false"
               ? `✓ ${t("app.practiceComplete")}`
               : `● ${t("app.coinsAwarded", { count: 10 })}`}
@@ -97,11 +121,6 @@ export function Success() {
           {t("app.successBody")}
         </Txt>
       </View>
-      <Button
-        title={t("keep")}
-        icon="arrow-right"
-        onPress={() => router.replace("/roadmap")}
-      />
     </Screen>
   );
 }
@@ -122,9 +141,11 @@ export function Practice() {
   ];
   return (
     <Screen footer={<Nav active="practice" />}>
-      <LanguageChooser />
-      <Label>{t("app.practiceLabel")}</Label>
-      <Title>{t("app.practiceTitle")}</Title>
+      <AccountHeader />
+      <View>
+        <Label>{t("app.practiceLabel")}</Label>
+        <Title>{t("app.practiceTitle")}</Title>
+      </View>
       <Txt style={{ color: c.midBlue }}>{t("app.practiceBody")}</Txt>
       {s.completed.length === 0 && (
         <>
@@ -140,7 +161,7 @@ export function Practice() {
         .filter((l) => s.completed.includes(l.id))
         .map((l) => (
           <Card key={l.id}>
-            <Txt style={{ fontWeight: "700" }}>{l.title}</Txt>
+            <Txt variant="subheading">{l.title}</Txt>
             <Button
               secondary
               icon="rotate-ccw"
@@ -151,6 +172,7 @@ export function Practice() {
             />
           </Card>
         ))}
+      <LanguageChooser />
     </Screen>
   );
 }
@@ -159,16 +181,16 @@ export function Leagues() {
   const { t } = useTranslation();
   return (
     <Screen footer={<Nav active="leagues" />}>
-      <LanguageChooser />
-      <Label>{t("app.personalBest")}</Label>
-      <Title>{t("app.smallWins")}</Title>
+      <AccountHeader />
+      <View>
+        <Label>{t("app.personalBest")}</Label>
+        <Title>{t("app.smallWins")}</Title>
+      </View>
       <Kiko mood={s.streak > 0 ? "cheer" : "happy"} />
       <Card>
         <Row style={{ justifyContent: "flex-start" }}>
-          <Feather name="zap" size={26} color={c.coinGoldText} />
-          <Txt style={{ fontSize: 28, lineHeight: 36, fontWeight: "700" }}>
-            {t("app.streak", { count: s.streak })}
-          </Txt>
+          <Feather name="zap" size={STREAK_ICON_SIZE} color={c.coinGoldText} />
+          <Txt variant="heading">{t("app.streak", { count: s.streak })}</Txt>
         </Row>
         <Txt>{t("app.lessonCount", { count: s.completed.length })}</Txt>
         <Txt>● {t("app.coinsSaved", { count: s.coins })}</Txt>
@@ -179,6 +201,7 @@ export function Leagues() {
         title={t("app.keepLearning")}
         onPress={() => router.replace("/roadmap")}
       />
+      <LanguageChooser />
     </Screen>
   );
 }

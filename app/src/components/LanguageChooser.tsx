@@ -4,7 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LANGUAGES_BY_COUNTRY, ensureLearner } from "../api/learner";
 import { useApp } from "../state/useApp";
 import type { Language } from "../types/api";
-import { Button, Card, Txt } from "./ui";
+import { Button, Card, OptionRow, Txt } from "./ui";
+
+const LANGUAGE_NAMES: Record<Language, string> = {
+  en: "English",
+  es: "Español",
+  sw: "Kiswahili",
+};
 
 /** Changes lesson language on the same learner and refreshes translated lessons. */
 export function LanguageChooser() {
@@ -30,14 +36,21 @@ export function LanguageChooser() {
   }
   return (
     <Card>
-      <Txt>{t("language")}</Txt>
-      <Txt>{t("languageHint")}</Txt>
+      <Txt accessibilityRole="header" variant="subheading">
+        {t("language")}
+      </Txt>
+      <Txt variant="small">{t("languageHint")}</Txt>
       {LANGUAGES_BY_COUNTRY[country].map((code) => (
-        <Button
+        <OptionRow
           key={code}
-          title={`${code === language ? "✓ " : ""}${{ en: "English", es: "Español", sw: "Kiswahili" }[code]}`}
-          disabled={busy || code === language}
-          onPress={() => void changeLanguage(code)}
+          accessibilityRole="button"
+          title={LANGUAGE_NAMES[code]}
+          accessibilityHint={t("app.selectHint")}
+          selected={code === language}
+          disabled={busy}
+          onPress={() => {
+            if (code !== language) void changeLanguage(code);
+          }}
         />
       ))}
       {busy && <Txt accessibilityLiveRegion="polite">{t("saving")}</Txt>}

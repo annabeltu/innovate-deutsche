@@ -5,19 +5,30 @@ import { useWindowSize } from "../hooks/use-window-size";
 import Svg, { Image as SvgImage, Path } from "react-native-svg";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { Feather } from "@expo/vector-icons";
 import {
   ActionBar,
   Button,
+  Card,
   KikoNote,
-  Screen,
   Progress,
+  Screen,
+  Title,
 } from "../components/ui";
+import { KompassLogo } from "../components/KompassLogo";
 import { useApp } from "../state/useApp";
-import { colors } from "../theme/tokens";
+import { colors, layout } from "../theme/tokens";
 import { usePath } from "../api/path";
 import { topics } from "../onboarding/request";
 
 const reference = require("../../assets/path/reference.png");
+// How far through onboarding this screen is.
+const PATH_PROGRESS = 0.7;
+const KIKO_WIDTH = 120;
+const KIKO_HEIGHT = 132;
+const LESSON_ART_WIDTH = 54;
+const LESSON_ART_HEIGHT = 58;
+const CHEVRON_SIZE = 24;
 const artRegions = {
   accounts: "148 876 126 127",
   saving: "148 701 126 127",
@@ -52,8 +63,7 @@ function ReferenceArt({
 /** Reference-proportioned lesson preview with confidence-based ordering and reasons. */
 export function PersonalizedPath() {
   const confidence = useApp((state) => state.confidence);
-  const large = useApp((state) => state.large);
-  const { width, height, fontScale } = useWindowSize();
+  const { width, height } = useWindowSize();
   const { t } = useTranslation();
   const result = usePath();
   if (result.isPending)
@@ -84,7 +94,6 @@ export function PersonalizedPath() {
     Math.min(width, 540) / 390,
     Math.max(0.85, height / 800),
   );
-  const expanded = large || fontScale > 1.3 || width < 350;
   const openLesson = (topic: string) => {
     useApp.getState().set({ onboarded: true });
     router.push({ pathname: "/lesson", params: { id: topic } });
@@ -121,159 +130,68 @@ export function PersonalizedPath() {
         </ActionBar>
       }
     >
-      <View className="px-2">
-        <View
-          className="flex-row items-center justify-between"
-          style={{ marginBottom: 14 * unit }}
-        >
-          <ReferenceArt
-            region="87 98 258 96"
-            width={164 * unit}
-            height={61 * unit}
-          />
-        </View>
-        <View style={{ height: 7 * unit }}>
-          <Progress value={0.7} />
-        </View>
-        <View
-          className="relative justify-center"
-          style={{ minHeight: 174 * unit, marginTop: 12 * unit }}
-        >
-          <View className="absolute right-0 top-0" pointerEvents="none">
-            <Image
-              source={require("../../assets/challenges/kiko-happy-transparent.png")}
-              resizeMode="contain"
-              accessible={false}
-              style={{ width: 158 * unit, height: 174 * unit }}
-            />
-          </View>
-          <View style={{ width: "57%" }}>
-            <Txt
-              accessibilityRole="header"
-              weight="bold"
-              style={{
-                fontSize: 30 * unit,
-                lineHeight: 33 * unit,
-                letterSpacing: -0.8 * unit,
-              }}
-            >
-              {t("pathPreview.titleLead")}
-            </Txt>
-            <Txt
-              tone="brand"
-              weight="bold"
-              style={{
-                fontSize: 30 * unit,
-                lineHeight: 33 * unit,
-                letterSpacing: -0.8 * unit,
-              }}
-            >
+      <KompassLogo size={36} />
+      <View className="h-2">
+        <Progress value={PATH_PROGRESS} />
+      </View>
+      <View className="flex-row items-center">
+        <View className="flex-1 gap-2">
+          <View>
+            <Title>{t("pathPreview.titleLead")}</Title>
+            <Txt variant="title" tone="brand">
               {t("pathPreview.titleReady")}
             </Txt>
-            <Txt
-              tone="brand"
-              className="mt-2"
-              style={{ fontSize: 13 * unit, lineHeight: 18 * unit }}
-            >
-              {t("pathPreview.intro")}
-            </Txt>
           </View>
+          <Txt variant="small" tone="brand">
+            {t("pathPreview.intro")}
+          </Txt>
         </View>
-        <Txt
-          accessibilityRole="header"
-          weight="bold"
-          className="mb-3 mt-1"
-          style={{ fontSize: 14 * unit }}
-        >
+        <Image
+          source={require("../../assets/challenges/kiko-happy-transparent.png")}
+          resizeMode="contain"
+          accessible={false}
+          style={{ width: KIKO_WIDTH * unit, height: KIKO_HEIGHT * unit }}
+        />
+      </View>
+      <View style={{ gap: layout.itemGap }}>
+        <Txt accessibilityRole="header" variant="subheading">
           {t("pathPreview.lessons")}
         </Txt>
-        <View style={{ gap: 7 * unit }}>
-          {path.map((lesson, index) => {
-            const title = t(`confidenceTopics.${lesson.topic}`);
-            const reason = `${t(`pathPreview.${lesson.band}`)} ${t(`pathPreview.details.${lesson.topic}`)}`;
-            return (
-              <Pressable
-                key={lesson.topic}
-                accessibilityRole="button"
-                accessibilityLabel={`${index + 1}. ${title}. ${reason}`}
-                accessibilityHint={t("pathPreview.openHint")}
-                onPress={() => openLesson(lesson.topic)}
-                className="flex-row items-center rounded-2xl bg-white"
-                style={{
-                  minHeight: 76 * unit,
-                  padding: 8 * unit,
-                  gap: 6 * unit,
-                }}
-              >
-                <View
-                  className="items-center justify-center rounded-full bg-ice"
-                  style={{ width: 24 * unit, height: 24 * unit }}
-                >
-                  <Txt
-                    tone="brand"
-                    weight="medium"
-                    style={{ fontSize: 12 * unit }}
-                  >
-                    {index + 1}
-                  </Txt>
-                </View>
+        {path.map((lesson, index) => {
+          const title = t(`confidenceTopics.${lesson.topic}`);
+          const reason = `${t(`pathPreview.${lesson.band}`)} ${t(`pathPreview.details.${lesson.topic}`)}`;
+          return (
+            <Pressable
+              key={lesson.topic}
+              accessibilityRole="button"
+              accessibilityLabel={`${index + 1}. ${title}. ${reason}`}
+              accessibilityHint={t("pathPreview.openHint")}
+              onPress={() => openLesson(lesson.topic)}
+            >
+              <Card style={{ flexDirection: "row", alignItems: "center" }}>
                 <ReferenceArt
                   region={artRegions[lesson.topic]}
-                  width={54 * unit}
-                  height={58 * unit}
+                  width={LESSON_ART_WIDTH}
+                  height={LESSON_ART_HEIGHT}
                 />
-                <View className="flex-1" style={{ gap: 5 * unit }}>
-                  <Txt
-                    weight="bold"
-                    style={{ fontSize: 13 * unit, lineHeight: 16 * unit }}
-                  >
-                    {title}
+                <View className="flex-1 gap-1">
+                  <Txt variant="subheading">
+                    {index + 1}. {title}
                   </Txt>
-                  <View
-                    className={expanded ? "gap-1" : "flex-row items-center"}
-                    style={{ gap: 6 * unit }}
-                  >
-                    <View
-                      className="self-start rounded-full bg-ice"
-                      style={{
-                        paddingHorizontal: 8 * unit,
-                        paddingVertical: 4 * unit,
-                      }}
-                    >
-                      <Txt
-                        tone="brand"
-                        weight="medium"
-                        style={{ fontSize: 9 * unit }}
-                      >
-                        {t("pathPreview.why")}
-                      </Txt>
-                    </View>
-                    <View
-                      className="flex-1 rounded-lg bg-ice"
-                      style={{
-                        paddingHorizontal: 7 * unit,
-                        paddingVertical: 5 * unit,
-                      }}
-                    >
-                      <Txt
-                        style={{ fontSize: 9.5 * unit, lineHeight: 12 * unit }}
-                      >
-                        {reason}
-                      </Txt>
-                    </View>
-                  </View>
+                  <Txt variant="caption" tone="brand" weight="bold">
+                    {t("pathPreview.why")}
+                  </Txt>
+                  <Txt variant="small">{reason}</Txt>
                 </View>
-                <Txt
-                  accessible={false}
-                  tone="brand"
-                  style={{ fontSize: 24 * unit }}
-                >
-                  ›
-                </Txt>
-              </Pressable>
-            );
-          })}
-        </View>
+                <Feather
+                  name="chevron-right"
+                  size={CHEVRON_SIZE}
+                  color={colors.deepBlue}
+                />
+              </Card>
+            </Pressable>
+          );
+        })}
       </View>
     </Screen>
   );
