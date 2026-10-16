@@ -107,23 +107,30 @@ export function Button({
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        s.button,
-        {
-          backgroundColor: secondary ? c.white : c.deepBlue,
-          borderBottomColor: secondary ? c.lightBlue : c.darkBlue,
-          opacity: disabled ? DISABLED_OPACITY : 1,
-        },
-        pressedDepth(pressed && !disabled, BUTTON_DEPTH),
-      ]}
     >
-      <Txt
-        variant="subheading"
-        style={{ color: labelColor, textAlign: "center" }}
-      >
-        {title}
-      </Txt>
-      {icon && <Feather name={icon} size={22} color={labelColor} />}
+      {({ pressed }) => (
+        // Styled on an inner View: a style function on Pressable is dropped on
+        // native iOS here, which left buttons without a background.
+        <View
+          style={[
+            s.button,
+            {
+              backgroundColor: secondary ? c.white : c.deepBlue,
+              borderBottomColor: secondary ? c.lightBlue : c.darkBlue,
+              opacity: disabled ? DISABLED_OPACITY : 1,
+            },
+            pressedDepth(pressed && !disabled, BUTTON_DEPTH),
+          ]}
+        >
+          <Txt
+            variant="subheading"
+            style={{ color: labelColor, textAlign: "center" }}
+          >
+            {title}
+          </Txt>
+          {icon && <Feather name={icon} size={22} color={labelColor} />}
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -153,21 +160,26 @@ export function Choice({
       accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ selected }}
       accessibilityHint={accessibilityHint ?? t("app.selectHint")}
-      style={({ pressed }) => [
-        s.choice,
-        selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
-        style,
-        pressedDepth(pressed, CHOICE_DEPTH),
-      ]}
+      style={style}
     >
-      {icon && (
-        <Txt variant="title" style={{ textAlign: "center" }}>
-          {icon}
-        </Txt>
+      {({ pressed }) => (
+        <View
+          style={[
+            s.choice,
+            selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
+            pressedDepth(pressed, CHOICE_DEPTH),
+          ]}
+        >
+          {icon && (
+            <Txt variant="title" style={{ textAlign: "center" }}>
+              {icon}
+            </Txt>
+          )}
+          <Txt variant="subheading" style={{ textAlign: "center" }}>
+            {title}
+          </Txt>
+        </View>
       )}
-      <Txt variant="subheading" style={{ textAlign: "center" }}>
-        {title}
-      </Txt>
     </Pressable>
   );
 }
@@ -309,6 +321,7 @@ export function Progress({ value }: { value: number }) {
   const { t } = useTranslation();
   return (
     <View
+      accessible
       accessibilityRole="progressbar"
       accessibilityLabel={t("app.progress")}
       accessibilityValue={{ min: 0, max: 100, now: Math.round(value * 100) }}
@@ -573,40 +586,48 @@ export function OptionRow({
       accessibilityState={{ checked: selected, disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        s.option,
-        {
-          backgroundColor: colors.background,
-          borderBottomColor: colors.border,
-        },
-        selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
-        pressedDepth(pressed && !disabled, CHOICE_DEPTH),
-      ]}
     >
-      {letter && (
+      {({ pressed }) => (
         <View
-          style={[s.optionLetter, selected && { backgroundColor: c.deepBlue }]}
+          style={[
+            s.option,
+            {
+              backgroundColor: colors.background,
+              borderBottomColor: colors.border,
+            },
+            selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
+            pressedDepth(pressed && !disabled, CHOICE_DEPTH),
+          ]}
         >
+          {letter && (
+            <View
+              style={[
+                s.optionLetter,
+                selected && { backgroundColor: c.deepBlue },
+              ]}
+            >
+              <Txt
+                variant="subheading"
+                style={{ color: selected ? c.white : c.deepBlue }}
+              >
+                {letter}
+              </Txt>
+            </View>
+          )}
           <Txt
-            variant="subheading"
-            style={{ color: selected ? c.white : c.deepBlue }}
+            variant={centered ? "subheading" : "body"}
+            style={{
+              flex: 1,
+              color: colors.text,
+              textAlign: centered ? "center" : "left",
+            }}
           >
-            {letter}
+            {title}
           </Txt>
+          {selected && (
+            <Feather name="check" size={NAV_ICON_SIZE} color={c.deepBlue} />
+          )}
         </View>
-      )}
-      <Txt
-        variant={centered ? "subheading" : "body"}
-        style={{
-          flex: 1,
-          color: colors.text,
-          textAlign: centered ? "center" : "left",
-        }}
-      >
-        {title}
-      </Txt>
-      {selected && (
-        <Feather name="check" size={NAV_ICON_SIZE} color={c.deepBlue} />
       )}
     </Pressable>
   );

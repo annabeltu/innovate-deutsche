@@ -26,3 +26,13 @@ it("sends the selected stage, goal and comfort ids through the API adapter", asy
   expect(request.comfort).toBe(1);
   expect(useApp.getState().completed).toEqual([]);
 });
+
+it("reports setup progress as a whole number, which iOS requires", async () => {
+  useApp.setState(useApp.getInitialState());
+  await render(<JourneySetup />);
+
+  const values = JSON.stringify(screen.toJSON()).match(/"now":[\d.]+/g);
+  expect(values).not.toBeNull();
+  for (const value of values ?? [])
+    expect(Number.isInteger(Number(value.split(":")[1]))).toBe(true);
+});

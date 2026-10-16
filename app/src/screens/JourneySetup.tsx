@@ -86,11 +86,7 @@ export function JourneySetup() {
       }
     >
       <KompassLogo size={36} />
-      <View
-        accessibilityRole="progressbar"
-        accessibilityValue={{ min: 0, max: 100, now: SETUP_PROGRESS * 100 }}
-        className="h-2"
-      >
+      <View className="h-2">
         <Progress value={SETUP_PROGRESS} />
       </View>
       <View>
