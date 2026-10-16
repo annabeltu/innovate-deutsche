@@ -84,6 +84,7 @@ export function Button({
   onPress,
   secondary = false,
   disabled = false,
+  compact = false,
   icon,
   accessibilityLabel,
   accessibilityHint,
@@ -92,6 +93,8 @@ export function Button({
   onPress: () => void;
   secondary?: boolean;
   disabled?: boolean;
+  /** 56 pt instead of 64 pt, for screens with a mic button beside it. */
+  compact?: boolean;
   icon?: FeatherName;
   /** Spoken name when the visible title is a symbol, such as "→". */
   accessibilityLabel?: string;
@@ -114,6 +117,7 @@ export function Button({
         <View
           style={[
             s.button,
+            compact && s.buttonCompact,
             {
               backgroundColor: secondary ? c.white : c.deepBlue,
               borderBottomColor: secondary ? c.lightBlue : c.darkBlue,
@@ -594,6 +598,7 @@ export function OptionRow({
   disabled = false,
   tone = "neutral",
   centered = false,
+  result,
   accessibilityLabel,
   accessibilityHint,
   accessibilityRole = "radio",
@@ -606,11 +611,16 @@ export function OptionRow({
   tone?: OptionTone;
   /** Center the title, for short side-by-side answers. */
   centered?: boolean;
+  /** After checking: a correct answer glows green, a wrong one turns red. */
+  result?: "correct" | "wrong";
   accessibilityLabel?: string;
   accessibilityHint: string;
   accessibilityRole?: "radio" | "button";
 }) {
-  const colors = OPTION_TONES[tone];
+  const colors =
+    OPTION_TONES[
+      result === "correct" ? "positive" : result === "wrong" ? "danger" : tone
+    ];
   return (
     <Pressable
       accessibilityRole={accessibilityRole}
@@ -628,7 +638,13 @@ export function OptionRow({
               backgroundColor: colors.background,
               borderBottomColor: colors.border,
             },
-            selected && { borderColor: c.deepBlue, backgroundColor: c.iceBlue },
+            selected &&
+              !result && {
+                borderColor: c.deepBlue,
+                backgroundColor: c.iceBlue,
+              },
+            result && { borderColor: colors.border },
+            result === "correct" && s.correctGlow,
             pressedDepth(pressed && !disabled, CHOICE_DEPTH),
           ]}
         >
@@ -637,11 +653,12 @@ export function OptionRow({
               style={[
                 s.optionLetter,
                 selected && { backgroundColor: c.deepBlue },
+                result && { backgroundColor: colors.border },
               ]}
             >
               <Txt
                 variant="subheading"
-                style={{ color: selected ? c.white : c.deepBlue }}
+                style={{ color: selected || result ? c.white : c.deepBlue }}
               >
                 {letter}
               </Txt>
@@ -657,8 +674,12 @@ export function OptionRow({
           >
             {title}
           </Txt>
-          {selected && (
-            <Feather name="check" size={NAV_ICON_SIZE} color={c.deepBlue} />
+          {(selected || result) && (
+            <Feather
+              name={result === "wrong" ? "x" : "check"}
+              size={NAV_ICON_SIZE}
+              color={result ? colors.text : c.deepBlue}
+            />
           )}
         </View>
       )}
@@ -666,8 +687,11 @@ export function OptionRow({
   );
 }
 const OPTION_LETTER_SIZE = 36;
+export const COMPACT_BUTTON_HEIGHT = 56;
+const GLOW_RADIUS = 12;
+const GLOW_OPACITY = 0.55;
 const NAV_MARKER = { width: 40, height: 4 };
-const DISABLED_OPACITY = 0.45;
+export const DISABLED_OPACITY = 0.45;
 
 const s = StyleSheet.create({
   button: {
@@ -680,6 +704,10 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.sm,
+  },
+  buttonCompact: {
+    minHeight: COMPACT_BUTTON_HEIGHT,
+    paddingVertical: spacing.md,
   },
   choice: {
     backgroundColor: c.white,
@@ -702,6 +730,13 @@ const s = StyleSheet.create({
     borderRadius: radii.option,
     padding: spacing.lg,
     minHeight: 64,
+  },
+  correctGlow: {
+    shadowColor: c.success,
+    shadowOpacity: GLOW_OPACITY,
+    shadowRadius: GLOW_RADIUS,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: spacing.sm,
   },
   optionLetter: {
     width: OPTION_LETTER_SIZE,

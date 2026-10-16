@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import {
   AudioModule,
   RecordingPresets,
@@ -10,14 +12,15 @@ import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
 import { transcribeRecording } from "../api/voice";
 import { useApp } from "../state/useApp";
-import { Button, Txt } from "./ui";
+import { Button, COMPACT_BUTTON_HEIGHT, DISABLED_OPACITY, Txt } from "./ui";
+import { colors, depth, radii } from "../theme/tokens";
 
-/** Record on demand and deliver a server transcript to the current screen. */
-export function VoiceInput({
-  onText,
-}: {
-  onText: (text: string) => void | Promise<void>;
-}) {
+/**
+ * Record on demand and deliver a server transcript to the current screen.
+ * `message` is an i18n key for anything the learner should hear or read
+ * (nothing heard, microphone off, an error).
+ */
+export function useVoiceReply(onText: (text: string) => void | Promise<void>) {
   const language = useApp((state) => state.language);
   const readAloud = useApp((state) => state.readAloud);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -63,21 +66,87 @@ export function VoiceInput({
       setBusy(false);
     }
   }
+  return {
+    record,
+    busy,
+    isRecording: recording.isRecording,
+    message,
+  };
+}
+
+/** Full-width "Record a reply" button with its status message below. */
+export function VoiceInput({
+  onText,
+}: {
+  onText: (text: string) => void | Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const { record, busy, isRecording, message } = useVoiceReply(onText);
   return (
     <>
       <Button
         secondary
         title={t(
-          busy
-            ? "quizLoading"
-            : recording.isRecording
-              ? "voiceStop"
-              : "voiceRecord",
+          busy ? "quizLoading" : isRecording ? "voiceStop" : "voiceRecord",
         )}
         disabled={busy}
         onPress={() => void record()}
       />
       {message && <Txt accessibilityLiveRegion="polite">{t(message)}</Txt>}
     </>
+  );
+}
+
+const MIC_ICON_SIZE = 24;
+
+/**
+ * Round "Record a reply" button that sits beside a 56 pt primary action.
+ * Status messages go to `onMessage` so the screen can place them.
+ */
+export function VoiceMicButton({
+  onText,
+  onMessage,
+}: {
+  onText: (text: string) => void | Promise<void>;
+  onMessage: (messageKey: string) => void;
+}) {
+  const { t } = useTranslation();
+  const { record, busy, isRecording, message } = useVoiceReply(onText);
+  useEffect(() => onMessage(message), [message, onMessage]);
+  const label = t(
+    busy ? "quizLoading" : isRecording ? "voiceStop" : "voiceRecord",
+  );
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={t("voice.lesson.help")}
+      accessibilityState={{ disabled: busy, busy }}
+      disabled={busy}
+      onPress={() => void record()}
+    >
+      {({ pressed }) => (
+        <View
+          style={{
+            width: COMPACT_BUTTON_HEIGHT,
+            height: COMPACT_BUTTON_HEIGHT,
+            borderRadius: radii.pill,
+            backgroundColor: isRecording ? colors.errorText : colors.white,
+            borderBottomWidth: pressed ? depth.option / 2 : depth.option,
+            borderBottomColor: isRecording ? colors.darkBlue : colors.lightBlue,
+            marginTop: pressed ? depth.option / 2 : 0,
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: busy ? DISABLED_OPACITY : 1,
+          }}
+        >
+          <Feather
+            name={isRecording ? "square" : "mic"}
+            size={MIC_ICON_SIZE}
+            color={isRecording ? colors.white : colors.deepBlue}
+          />
+        </View>
+      )}
+    </Pressable>
   );
 }
