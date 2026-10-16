@@ -1,5 +1,6 @@
 import { ScrollViewStyleReset } from "expo-router/html";
 import type { ReactNode } from "react";
+import { colors } from "../theme/tokens";
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
@@ -22,8 +23,9 @@ export default function Root({ children }: { children: ReactNode }) {
         */}
         <ScrollViewStyleReset />
 
-        {/* Using raw CSS styles as an escape-hatch to ensure the background color never flickers in dark-mode. */}
-        <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
+        {/* Kompass is light-only; match the screen gradient so over-scroll never shows another color. */}
+        <style dangerouslySetInnerHTML={{ __html: pageBackground }} />
+
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
       <body>{children}</body>
@@ -31,12 +33,7 @@ export default function Root({ children }: { children: ReactNode }) {
   );
 }
 
-const responsiveBackground = `
+const pageBackground = `
 body {
-  background-color: #fff;
-}
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #000;
-  }
+  background-color: ${colors.iceBlue};
 }`;
