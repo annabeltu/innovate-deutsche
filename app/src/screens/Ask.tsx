@@ -13,6 +13,7 @@ import { useApp } from "../state/useApp";
 import { colors } from "../theme/tokens";
 import { useKikoRecorder } from "../voice/use-kiko-recorder";
 import { LessonRequest } from "../components/LessonRequest";
+import { BenefitBubbles } from "../components/BenefitBubbles";
 
 /** Ask Kiko: type or say a money question and turn it into a lesson on the roadmap. */
 export default function Ask() {
@@ -45,25 +46,7 @@ export default function Ask() {
         </Txt>
         <Txt light>{t("askScreen.subtitle")}</Txt>
       </View>
-      <View className="flex-row gap-2">
-        {(
-          [
-            ["message-circle", "questionBenefit"],
-            ["book-open", "answerBenefit"],
-            ["zap", "lessonBenefit"],
-          ] as const
-        ).map(([icon, key]) => (
-          <View
-            key={key}
-            className="min-h-14 flex-1 flex-row items-center gap-2 rounded-2xl bg-brand/60 p-2"
-          >
-            <Feather name={icon} size={20} color={colors.white} />
-            <Txt variant="caption" light className="flex-1">
-              {t(`askScreen.${key}`)}
-            </Txt>
-          </View>
-        ))}
-      </View>
+      <BenefitBubbles />
       <View className="items-center">
         <KikoAvatar size={125} />
         <View className="-mt-3 flex-row items-center gap-4">
