@@ -79,35 +79,13 @@ export const experienceCopy = {
       ready: "Speak or type your question.",
       input: "Your question for Kiko",
       inputHint: "Type a money question.",
-      send: "Ask Kiko →",
-      sendHint: "Send your question.",
-      exampleHint: "Explore a pre-written example about sending money.",
-      sample: "Example answer",
-      response: "Kiko’s answer",
-      read: "Read answer aloud",
-      readHint: "Hear this answer in your language.",
-      turnIntoLesson: "✦ Turn this into a lesson →",
-      added: "✓ Added to your roadmap",
-      addHint: "Add the sample money-transfer lesson to your path.",
-      connectionError: "Kiko could not connect. Try again in a moment.",
       permissionDenied:
         "Microphone access is off. You can still type your question.",
       voiceUnavailable:
         "Voice transcription is unavailable. Type your question instead.",
-      previewOnly:
-        "This example conversation covers sending money abroad. Try the example question or one of its follow-ups.",
       exampleQuestion: "How do I send money to my mom in another country?",
-      feesQuestion: "What are the fees?",
-      timeQuestion: "How long does it take?",
-      safetyQuestion: "Which option is safest?",
       exampleAnswer:
         "Compare a bank transfer with a trusted money-transfer service. Check the total fee, exchange rate, and recipient details before sending. Keep your PIN private.",
-      feesAnswer:
-        "Compare the total cost, including the transfer fee and the exchange rate. Look at how much the recipient receives, not just the advertised fee.",
-      timeAnswer:
-        "Delivery time depends on the service, destination, and payment method. Check the provider’s estimated arrival time before confirming.",
-      safetyAnswer:
-        "Use an established provider through its official app or website. Verify the recipient and never share your PIN or one-time security codes.",
     },
   },
   es: {
@@ -190,36 +168,13 @@ export const experienceCopy = {
       ready: "Habla o escribe tu pregunta.",
       input: "Tu pregunta para Kiko",
       inputHint: "Escribe una pregunta sobre dinero.",
-      send: "Preguntar a Kiko →",
-      sendHint: "Envía tu pregunta.",
-      exampleHint: "Explora un ejemplo escrito sobre enviar dinero.",
-      sample: "Respuesta de ejemplo",
-      response: "Respuesta de Kiko",
-      read: "Leer la respuesta",
-      readHint: "Escucha esta respuesta en tu idioma.",
-      turnIntoLesson: "✦ Convertir en una lección →",
-      added: "✓ Añadida a tu ruta",
-      addHint: "Añade la lección de ejemplo sobre transferencias a tu ruta.",
-      connectionError:
-        "Kiko no pudo conectarse. Inténtalo de nuevo en un momento.",
       permissionDenied:
         "El micrófono está desactivado. Puedes escribir tu pregunta.",
       voiceUnavailable:
         "La transcripción no está disponible. Escribe tu pregunta.",
-      previewOnly:
-        "Este ejemplo trata sobre enviar dinero al extranjero. Prueba la pregunta de ejemplo o una de sus preguntas relacionadas.",
       exampleQuestion: "¿Cómo envío dinero a mi mamá en otro país?",
-      feesQuestion: "¿Cuáles son las comisiones?",
-      timeQuestion: "¿Cuánto tarda?",
-      safetyQuestion: "¿Qué opción es más segura?",
       exampleAnswer:
         "Compara una transferencia bancaria con un servicio de transferencias de confianza. Revisa la comisión total, el tipo de cambio y los datos del destinatario. No compartas tu PIN.",
-      feesAnswer:
-        "Compara el costo total, incluida la comisión y el tipo de cambio. Revisa cuánto recibe el destinatario, no solo la comisión anunciada.",
-      timeAnswer:
-        "El plazo depende del servicio, el destino y la forma de pago. Revisa la fecha estimada de llegada antes de confirmar.",
-      safetyAnswer:
-        "Usa un proveedor reconocido mediante su aplicación o web oficial. Verifica al destinatario y no compartas tu PIN ni códigos de seguridad.",
     },
   },
   sw: {
@@ -301,35 +256,13 @@ export const experienceCopy = {
       ready: "Sema au andika swali lako.",
       input: "Swali lako kwa Kiko",
       inputHint: "Andika swali kuhusu pesa.",
-      send: "Uliza Kiko →",
-      sendHint: "Tuma swali lako.",
-      exampleHint: "Chunguza mfano ulioandikwa kuhusu kutuma pesa.",
-      sample: "Jibu la mfano",
-      response: "Jibu la Kiko",
-      read: "Soma jibu kwa sauti",
-      readHint: "Sikiliza jibu hili kwa lugha yako.",
-      turnIntoLesson: "✦ Geuza kuwa somo →",
-      added: "✓ Limeongezwa kwenye njia yako",
-      addHint: "Ongeza somo la mfano la kutuma pesa kwenye njia yako.",
-      connectionError: "Kiko hakuweza kuunganisha. Jaribu tena baadaye kidogo.",
       permissionDenied:
         "Ruhusa ya maikrofoni imezimwa. Unaweza kuandika swali lako.",
       voiceUnavailable:
         "Unukuzi wa sauti haupatikani. Andika swali lako badala yake.",
-      previewOnly:
-        "Mfano huu unahusu kutuma pesa nje ya nchi. Jaribu swali la mfano au maswali yake ya ziada.",
       exampleQuestion: "Ninatumaje pesa kwa mama yangu katika nchi nyingine?",
-      feesQuestion: "Ada ni kiasi gani?",
-      timeQuestion: "Inachukua muda gani?",
-      safetyQuestion: "Njia gani ni salama zaidi?",
       exampleAnswer:
         "Linganisha uhamisho wa benki na huduma ya kutuma pesa inayoaminika. Angalia ada yote, kiwango cha ubadilishaji na taarifa za mpokeaji. Weka PIN yako siri.",
-      feesAnswer:
-        "Linganisha gharama yote, ikijumuisha ada na kiwango cha ubadilishaji. Angalia kiasi anachopokea mpokeaji, si ada iliyotangazwa pekee.",
-      timeAnswer:
-        "Muda hutegemea huduma, nchi inayopokea na njia ya malipo. Angalia muda wa kuwasili unaokadiriwa kabla ya kuthibitisha.",
-      safetyAnswer:
-        "Tumia huduma inayojulikana kupitia programu au tovuti yake rasmi. Hakiki mpokeaji na usishiriki PIN au namba za usalama za mara moja.",
     },
   },
 } as const;

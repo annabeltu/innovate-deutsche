@@ -113,20 +113,28 @@ it("offers the same real lesson for a recorded question", async () => {
   });
 });
 
-it("shows a connection error right under the question, above the lesson request", async () => {
+it("makes the question box's only action turn the question into a lesson", async () => {
   await showAsk();
+  jest.mocked(apiRequest).mockRejectedValue(new Error("offline"));
 
   await fireEvent.changeText(
     screen.getByLabelText("Your question for Kiko"),
     "How do I save?",
   );
-  await fireEvent.press(screen.getByRole("button", { name: "Ask Kiko →" }));
-  const error = await screen.findByRole("alert");
+  expect(screen.queryByRole("button", { name: "Ask Kiko →" })).toBeNull();
+  expect(
+    screen.getAllByRole("button", { name: "✦ Turn this into a lesson" }),
+  ).toHaveLength(1);
 
-  const tree = JSON.stringify(screen.toJSON());
-  expect(error).toBeTruthy();
-  expect(tree.indexOf("Kiko could not connect")).toBeLessThan(
-    tree.indexOf("Turn this into a lesson"),
+  await fireEvent.press(
+    screen.getByRole("button", { name: "✦ Turn this into a lesson" }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByText(
+        "Kiko could not make a lesson right now. Please try again.",
+      ),
+    ).toBeTruthy(),
   );
 });
 
