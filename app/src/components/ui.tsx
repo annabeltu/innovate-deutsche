@@ -417,6 +417,15 @@ export function Landscape({
     </Svg>
   );
 }
+/**
+ * Bottom padding for a bar that sits on the screen edge. The home indicator
+ * only fills the last few points of the safe-area inset, so the bar's
+ * content may use part of it instead of stacking padding on top of it.
+ */
+export function bottomPadding(inset: number, minimum: number): number {
+  return Math.max(inset - spacing.md, minimum);
+}
+
 const NAV_ITEMS = [
   ["path", "home", "/roadmap"],
   ["practice", "book-open", "/practice"],
@@ -433,7 +442,10 @@ export function Nav({ active = "path" }: { active?: string }) {
   return (
     <View
       testID="tab-bar"
-      style={[s.nav, { paddingBottom: spacing.md + insets.bottom }]}
+      style={[
+        s.nav,
+        { paddingBottom: bottomPadding(insets.bottom, spacing.sm) },
+      ]}
     >
       {NAV_ITEMS.map(([name, icon, route]) => {
         const selected = name === active;
@@ -471,7 +483,10 @@ export function ActionBar({ children }: { children: React.ReactNode }) {
   return (
     <View
       testID="action-bar"
-      style={[s.actionBar, { paddingBottom: spacing.lg + insets.bottom }]}
+      style={[
+        s.actionBar,
+        { paddingBottom: bottomPadding(insets.bottom, spacing.lg) },
+      ]}
     >
       {children}
     </View>

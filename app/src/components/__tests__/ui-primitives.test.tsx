@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { router } from "expo-router";
-import { IconButton, Nav, OptionRow } from "../ui";
+import { bottomPadding, IconButton, Nav, OptionRow } from "../ui";
 import { useApp } from "../../state/useApp";
 import i18n from "../../i18n";
 
@@ -82,4 +82,11 @@ it("marks the active tab and switches screens from the tab bar", async () => {
   ).toMatchObject({ selected: true });
   await fireEvent.press(screen.getByRole("tab", { name: "Practice" }));
   expect(router.replace).toHaveBeenCalledWith("/practice");
+});
+
+it("lets bottom bars use the home indicator inset instead of stacking on it", () => {
+  // iPhone with a home indicator: content sits closer to the edge, still clear of it.
+  expect(bottomPadding(34, 8)).toBe(22);
+  // No home indicator: keep the bar's own minimum padding.
+  expect(bottomPadding(0, 16)).toBe(16);
 });
